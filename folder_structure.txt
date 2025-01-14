@@ -1,0 +1,13 @@
+.
+├── README.md
+├── folder_structure.txt
+├── instance
+├── main.py
+├── poetry.lock
+├── pyproject.toml
+├── sms
+│   └── app
+└── tests
+    └── __init__.py
+
+5 directories, 6 files

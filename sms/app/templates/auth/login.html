@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    Inteleeva login-page
+{% endblock %}
+
+
+
+{% block navlink %}
+    <a href="#about" class="text-gray-600 hover:text-teal-400 transition-colors">About</a>
+    <a href="#service" class="text-gray-600 hover:text-teal-400 transition-colors">Services</a>
+    <a href="#contact" class="text-gray-600 hover:text-teal-400 transition-colors">Contact</a>
+{% endblock %}
+
+{% block head %}
+    <!-- style , css link goes here -->
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+	<div class="max-w-7xl w-full">
+		<div class="flex flex-col lg:flex-row gap-8">
+			<!-- Login Card -->
+			<div class="bg-white rounded-lg shadow-md overflow-hidden flex-1">
+				
+				<div class="relative h-48">
+					<img id="schoolLogo" src="https://via.placeholder.com/1200x400" alt="School Building" class="w-full h-full object-cover">
+					<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 text-white">
+						<h1 id="schoolName" class="text-2xl font-bold">Evergreen High School</h1>
+						<p id="schoolLocation" class="text-sm">123 Education Lane, Knowledge City, ST 12345</p>
+					</div>
+				</div>
+
+				<div class="p-6">
+					<h2 class="text-2xl font-semibold text-gray-800 mb-2">Welcome Back!</h2>
+					<p class="text-gray-600 mb-6">Access your dashboard by entering your credentials below. Let's get started!</p>
+					
+					<!-- Error Message -->
+					<div id="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-md mb-8 hidden" role="alert">
+						<span class="block sm:inline">Invalid school ID. Please try again.</span>
+					</div>
+					
+					<form>
+						<div class="space-y-4">
+							<div>
+								<label for="role" class="block text-sm font-medium text-gray-700 mb-1">
+									Select your role:
+								</label>
+								<select
+									id="role"
+									class="w-full p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+									required
+								>
+									<option value="">Select a role</option>
+									<option value="student">Student</option>
+									<option value="teacher">Teacher</option>
+									<option value="admin">Admin</option>
+								</select>
+							</div>
+							<div>
+								<label for="userId" class="block text-sm font-medium text-gray-700 mb-1">
+									User ID
+								</label>
+								<input
+									type="text"
+									id="userId"
+									placeholder="Enter your User ID"
+									class="w-full p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+									required
+								>
+							</div>
+							<div>
+								<label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+									Password
+								</label>
+								<input
+									type="password"
+									id="password"
+									placeholder="Enter your password"
+									class="w-full p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+									required
+								>
+							</div>
+							<button
+                                id="loginButton" 
+								type="submit"
+								class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300"
+							>
+								Log In
+							</button>
+						</div>
+					</form>
+					<div class="mt-4 text-center">
+						<a href="#" class="text-teal-600 hover:underline">Forgot password?</a>
+					</div>
+					<div class="mt-2 text-center text-gray-600">
+						Don't have an account? <a href="#" class="text-teal-600 hover:underline">Sign up</a>
+					</div>
+					<div class="mt-4 text-center text-sm text-gray-500">
+						By clicking Log In, you agree to our <a href="#" class="text-teal-600 hover:underline">Terms and Conditions</a>.
+					</div>
+				</div>
+			</div>
+
+			<!-- FAQ Card -->
+			<div class="bg-white rounded-lg shadow-md overflow-hidden flex-1 lg:max-w-md">
+				<div class="p-6">
+					<h3 class="text-xl font-semibold text-gray-800 mb-4">Frequently Asked Questions</h3>
+					<div class="space-y-4">
+						<div class="border-b border-gray-200 pb-4">
+							<button class="accordion-header flex justify-between items-center w-full text-left">
+								<span class="font-medium text-gray-700">I don't know my User ID. What should I do?</span>
+								<svg class="h-5 w-5 text-gray-500 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+								</svg>
+							</button>
+							<p class="accordion-content mt-2 text-gray-600 text-sm">If you don't know your User ID, please check your ID card. If you can't find it there, contact your school's Administration office for assistance.</p>
+						</div>
+						<div class="border-b border-gray-200 pb-4">
+							<button class="accordion-header flex justify-between items-center w-full text-left">
+								<span class="font-medium text-gray-700">I can't log in. What could be the problem?</span>
+								<svg class="h-5 w-5 text-gray-500 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+								</svg>
+							</button>
+							<p class="accordion-content mt-2 text-gray-600 text-sm">First, ensure you've selected the correct role. If you're still unable to log in, your account may not have web access permissions. Please contact your school's IT administrator for help.</p>
+						</div>
+						<div class="border-b border-gray-200 pb-4">
+							<button class="accordion-header flex justify-between items-center w-full text-left">
+								<span class="font-medium text-gray-700">How do I reset my password?</span>
+								<svg class="h-5 w-5 text-gray-500 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+								</svg>
+							</button>
+							<p class="accordion-content mt-2 text-gray-600 text-sm">Click on the 'Forgot password?' link below the login form. You'll be guided through the process of resetting your password. If you encounter any issues, please contact your school's IT support.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- javascript link , script goes here -->
+    <script src="{{ url_for('static', filename='js/auth/login.js') }}"></script>
+{% endblock %}
+
+
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> bbe3dd1 (home choose login page design with some new features)

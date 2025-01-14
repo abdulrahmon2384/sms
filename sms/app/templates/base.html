@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block script %}
+        Intelleva - School Management System
+        {% endblock %}
+    </title>
+    {% block head %}
+       <!-- Other Head contecnt goes here -->
+    {% endblock %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .animate-fade-in-down {
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-gradient-to-br from-gray-100 to-gray-200">
+    <header class="sticky top-0 z-50 bg-white bg-opacity-90 backdrop-blur-md shadow-md">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="book-open" class="h-6 w-6 text-teal-600 dark:text-teal-400"></i>
+                <span class="text-lg font-bold text-teal-600 dark:text-teal-600">Intelleva</span>
+            </div>
+            <div id="menu" class="hidden md:flex md:space-x-4">
+                {% block navlink %}
+                <a href="#hero" class="text-gray-600 hover:text-teal-400 transition-colors">Home</a>
+                <a href="#actions" class="text-gray-600 hover:text-teal-400 transition-colors">Get Started</a>
+                <a href="#benefits" class="text-gray-600 hover:text-teal-400 transition-colors">Benefits</a>
+                <a href="#demo" class="text-gray-600 hover:text-teal-400 transition-colors">Demo</a>
+                <a href="#trusted" class="text-gray-600 hover:text-teal-400 transition-colors">Clients</a>
+                <a href="#Contact Us" class="text-gray-600 hover:text-teal-400 transition-colors">Contact-Us</a>
+                <a href="#About" class="text-gray-600 hover:text-teal-400 transition-colors">Why Intelleva</a>
+                {% endblock %}
+            </div>
+            <button id="menuToggle" class="md:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+    </header>
+
+    <main>
+    {% block content %}
+        <section id="hero" class="relative bg-gray-900 text-white text-center py-20 overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <img src="https://f005.backblazeb2.com/file/School-management-system/header-background.jpg" alt="Abstract background" class="w-full h-full object-cover opacity-20">
+            </div>
+            <div class="container mx-auto px-4 relative z-10">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 animate-fade-in-down">
+                    Revolutionize Your School Management
+                </h1>
+                <p class="text-xl mb-8 animate-fade-in-up">
+                    Empower your administration with cutting-edge tools designed for efficiency and success.
+                </p>
+                <div class="space-y-4 md:space-y-0 md:space-x-4 animate-fade-in">
+                    <a href="#actions" class="inline-block bg-teal-600 hover:bg-teal-400 text-white font-bold py-2 px-4 rounded">
+                        Get Started
+                    </a>
+                    <a href="#demo" class="inline-block bg-transparent hover:bg-white hover:text-gray-900 text-white font-bold py-2 px-4 rounded border border-white">
+                        Watch Demo
+                    </a>
+                </div>
+            </div>
+           <!--  <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#3A9196] to-transparent"></div> -->
+        </section>
+
+        <section id="actions" class="py-20 bg-teal-600 relative overflow-hidden">
+            <div class="absolute inset-0 z-0 opacity-5 bg-repeat" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+            <div class="container mx-auto px-4 relative z-10">
+                <h2 class="text-3xl font-bold text-center mb-12">Choose Your Path</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-4 text-orange-600 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2 text-center">Register New School</h3>
+                        <p class="text-gray-600 mb-4 text-center">Join our ecosystem and start managing your school efficiently.</p>
+                        <a href="/register" class="block w-full bg-orange-600 hover:bg-orange-800 text-white font-bold py-2 px-4 rounded text-center">
+                            Register Now
+                        </a>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-4 text-blue-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2 text-center">Existing User Login</h3>
+                        <p class="text-gray-600 mb-4 text-center">Already registered? Access your school management dashboard.</p>
+                        <a href="/login" class="block w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded text-center">
+                            Login
+                        </a>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-4 text-green-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2 text-center">Learn More</h3>
+                        <p class="text-gray-600 mb-4 text-center">Discover how our platform can transform your school administration.</p>
+                        <a href="#benefits" class="block w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded text-center">
+                            Explore Features
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="benefits" class="py-20 bg-gray-100 relative overflow-hidden">
+            <div class="absolute inset-0 z-0 opacity-5 bg-repeat" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+            <div class="container mx-auto px-4 relative z-10">
+                <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Key Benefits for Administrators</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2">
+                        <svg class="w-12 h-12 mb-4 text-orange-500 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">Data-Driven Insights</h3>
+                        <p class="text-gray-600">Access real-time analytics and reports to make informed decisions and improve school performance.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2">
+                        <svg class="w-12 h-12 mb-4 text-blue-500 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">Time-Saving Automation</h3>
+                        <p class="text-gray-600">Automate routine tasks like attendance tracking, grade reporting, and scheduling to focus on what matters most.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2">
+                        <svg class="w-12 h-12 mb-4 text-green-500 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">Enhanced Security</h3>
+                        <p class="text-gray-600">Ensure data protection and compliance with advanced security features and role-based access control.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2">
+                        <svg class="w-12 h-12 mb-4 text-purple-500 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 8a6 6 0 0 0-8 0"></path>
+                            <path d="M21 12c0-2.21-1.45-4-3.57-5.5"></path>
+                            <path d="M3 12c0-2.21 1.45-4 3.57-5.5"></path>
+                            <path d="M12 22v-2"></path>
+                            <path d="M8 20l2-2"></path>
+                            <path d="M16 20l-2-2"></path>
+                            <path d="M6 10c1.5-1.5 4.5-1.5 6 0"></path>
+                            <path d="M18 10c-1.5-1.5-4.5-1.5-6 0"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">Empowered Learning</h3>
+                        <p class="text-gray-600">Streamline communication between teachers and students, and enhance learning experiences through easy performance tracking and attendance management.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="demo" class="py-20 bg-gray-100 relative overflow-hidden">
+            <div class="absolute inset-0 z-0 opacity-5 bg-repeat" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+            <div class="container mx-auto px-4 relative z-10">
+                <h2 class="text-3xl font-bold text-center mb-12">See Inteleeva in Action</h2>
+                <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-2xl">
+                    <iframe 
+                        class="w-full h-full"
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                        title="Inteleeva Demo Video"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen
+                    ></iframe>
+                </div>
+            </div>
+        </section>
+
+        <section id="trusted" class="py-20 bg-white relative overflow-hidden">
+            <div class="absolute inset-0 z-0 opacity-5 bg-repeat" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+            <div class="container mx-auto px-4 relative z-10">
+                <h2 class="text-3xl font-bold text-center mb-12">Trusted by Leading Institutions</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div class="flex items-center justify-center bg-white p-4 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl">
+                        <img src="https://via.placeholder.com/160x80?text=School+1" alt="School Logo 1" width="160" height="80">
+                    </div>
+                    <div class="flex items-center justify-center bg-white p-4 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl">
+                        <img src="https://via.placeholder.com/160x80?text=School+2" alt="School Logo 2" width="160" height="80">
+                    </div>
+                    <div class="flex items-center justify-center bg-white p-4 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl">
+                        <img src="https://via.placeholder.com/160x80?text=School+3" alt="School Logo 3" width="160" height="80">
+                    </div>
+                    <div class="flex items-center justify-center bg-white p-4 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl">
+                        <img src="https://via.placeholder.com/160x80?text=School+4" alt="School Logo 4" width="160" height="80">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cta" class="py-20 bg-gradient-to-r from-teal-200 to-teal-800 text-white text-center relative overflow-hidden">
+            <div class="absolute inset-0 z-0 opacity-30">
+                <img src="https://f005.backblazeb2.com/file/School-management-system/footer-background.jpg" alt="Abstract background" class="w-full h-full object-cover">
+            </div>
+            <div class="container mx-auto px-4 relative z-10">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Ready to Transform Your School Management?</h2>
+                <p class="text-xl mb-8">Join thousands of satisfied administrators and start your journey today.</p>
+                <a href="/register" class="inline-block bg-white text-orange-500 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg text-lg">
+                    Start Free Trial
+                </a>
+            </div>
+        </section>
+    {% endblock %}
+    </main>
+
+    <footer class="bg-gray-900 text-white py-12 relative overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-10 bg-repeat" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#privacy" class="hover:text-gray-300 transition-colors">Privacy Policy</a></li>
+                        <li><a href="#terms" class="hover:text-gray-300 transition-colors">Terms of Use</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <p>intelleva@gmail.com</p>
+                    <p>+1 (555) 123-4567</p>
+                </div>
+            </div>
+            <div class="text-center text-sm text-gray-400 pt-8 border-t border-gray-700">
+                <p>&copy; 2025 Inteleeva School Management. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const menuToggle = document.getElementById('menuToggle');
+            const menu = document.getElementById('menu');
+
+            menuToggle.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+                menu.classList.toggle('flex');
+                menu.classList.toggle('flex-col');
+                menu.classList.toggle('absolute');
+                menu.classList.toggle('top-full');
+                menu.classList.toggle('left-0');
+                menu.classList.toggle('right-0');
+                menu.classList.toggle('bg-white');
+                menu.classList.toggle('shadow-md');
+                menu.classList.toggle('p-4');
+                menu.classList.toggle('space-y-4');
+            });
+
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= sectionTop - sectionHeight / 3) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('text-orange-500', 'font-semibold');
+                    if (link.getAttribute('href').slice(1) === current) {
+                        link.classList.add('text-orange-500', 'font-semibold');
+                    }
+                });
+            });
+        });
+    </script>
+    {% block scripts %}
+    <!-- Additional Script content Goes here-->
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "sms"
+version = "0.1.0"
+description = ""
+authors = ["Abdulrahmon2384 <abdulrahmon2384@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+flask = "^3.1.0"
+flask-sqlalchemy = "^3.1.1"
+flask-wtf = "^1.2.2"
+login = "^0.0.6"
+flask-login = "^0.6.3"
+flask-bcrypt = "^1.0.1"
+sqlalchemy = "^2.0.36"
+uuid = "^1.30"
+psycopg2-binary = "^2.9.10"
+b2sdk = "^2.7.0"
+python-dotenv = "^1.0.1"
+faker = "^33.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
