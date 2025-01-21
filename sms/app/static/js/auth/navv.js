@@ -38,11 +38,33 @@ document.addEventListener('DOMContentLoaded', () => {
       document.addEventListener('click', hideDropdown);
       dropdownMenu.classList.add('hidden');
   
-      // Toggle theme
-      themeToggle?.addEventListener('click', () => {
-        htmlElement.classList.toggle('dark');
+
+
+
+
+      const rootElement = document.documentElement;
+      const savedTheme = localStorage.getItem("theme");
+
+      if (savedTheme === "dark") {
+            rootElement.classList.add("dark");
+      } else if (savedTheme === "light") {
+            rootElement.classList.remove("dark");
+      }
+    
+      // Toggle theme on button click
+      themeToggle.addEventListener("click", () => {
+            if (rootElement.classList.contains("dark")) {
+                rootElement.classList.remove("dark");
+                localStorage.setItem("theme", "light"); // Save preference as light
+            } else {
+                rootElement.classList.add("dark");
+                localStorage.setItem("theme", "dark"); // Save preference as dark
+            }
       });
-  
+
+
+
+      
       const navButtons = document.querySelectorAll('nav button');
       const mainContent = document.querySelector('main');
   
@@ -71,16 +93,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { once: true });
       };
   
-      // Function to load content
+
+
+
+
+      
       const loadContent = (page) => {
         if (contentCache[page]) {
           // Load from cache
           mainContent.innerHTML = contentCache[page];
           lucide.createIcons({ container: mainContent });
           applyTransitionEffect();
+          executePageScripts(mainContent); // Execute page-specific scripts
           return;
         }
-  
+      
         fetch(`${userRole}/${page}`)
           .then(response => {
             if (!response.ok) {
@@ -93,11 +120,30 @@ document.addEventListener('DOMContentLoaded', () => {
             mainContent.innerHTML = content;
             lucide.createIcons({ container: mainContent });
             applyTransitionEffect();
+            executePageScripts(mainContent); // Execute page-specific scripts
           })
           .catch(error => {
             console.error(error);
             mainContent.innerHTML = `<p class="text-center text-red-500">Failed to load content. Please try again.</p>`;
           });
+      };
+      
+      // Function to execute scripts in the loaded content
+      const executePageScripts = (container) => {
+        const scripts = container.querySelectorAll('script');
+        scripts.forEach((script) => {
+          const newScript = document.createElement('script');
+          if (script.src) {
+            // External script
+            newScript.src = script.src;
+            newScript.async = false; // Ensure execution order
+          } else {
+            // Inline script
+            newScript.textContent = script.textContent;
+          }
+          document.body.appendChild(newScript);
+          document.body.removeChild(newScript); // Remove after execution
+        });
       };
   
       // Preload adjacent pages

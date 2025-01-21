@@ -116,7 +116,7 @@ def create_admin_table(schema_name, db, text):
             access BOOLEAN,
             key VARCHAR(200),
             role VARCHAR(50) DEFAULT 'Admin',
-            image_link VARCHAR(100) DEFAULT 'default.png'
+            image_link VARCHAR(100) DEFAULT 'https://f005.backblazeb2.com/file/School-management-system/default.png'
         );
     """))
 def create_event_table(schema_name, db, text):
@@ -213,7 +213,7 @@ def create_student_table(schema_name, db, text):
             medical_information VARCHAR(200),
             parental_consent BOOLEAN DEFAULT TRUE,
             languages_spoken VARCHAR(200),
-            image_link VARCHAR(200) DEFAULT 'default.png',
+            image_link VARCHAR(200) DEFAULT 'https://f005.backblazeb2.com/file/School-management-system/default.png',
             mother_firstname VARCHAR(100),
             mother_lastname VARCHAR(100),
             mother_address VARCHAR(200),
@@ -353,7 +353,7 @@ def create_teacher_table(schema_name, db, text):
             role VARCHAR(50) DEFAULT 'Teacher',
             key VARCHAR(200),
             access BOOLEAN DEFAULT FALSE,
-            image_link VARCHAR(200) DEFAULT 'default.png'
+            image_link VARCHAR(200) DEFAULT 'https://f005.backblazeb2.com/file/School-management-system/default.png'
         );
     """))
 def create_teacher_attendance_table(schema_name, db, text):

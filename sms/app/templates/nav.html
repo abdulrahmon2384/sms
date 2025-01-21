@@ -7,29 +7,29 @@
 		    Intelleva Dashboard
 	</title>
 	<style>
-            .fade-in {
+        .fade-in {
                 animation: fadeIn 0.3s ease-in-out;
-            }
+        }
 
-            @keyframes fadeIn {
+        @keyframes fadeIn {
                 from {
                     opacity: 0;
                 }
                     to {
                         opacity: 1;
                     }
-            }
-    </style>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
+        }
+        
         /* Custom styles */
         .dark .dark\:bg-gray-900 { background-color: #111827; }
         .dark .dark\:text-gray-200 { color: #e5e7eb; }
         .dark .dark\:bg-gray-800 { background-color: #1f2937; }
         .dark .dark\:border-gray-700 { border-color: #374151; }
     </style>
+    <script src="https://cdn.tailwindcss.com" ></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body class="min-h-screen bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 flex flex-col">
     <header class="flex items-center justify-between p-2 shadow-md bg-white dark:bg-gray-900">
         <div class="flex items-center space-x-2">
@@ -89,13 +89,17 @@
         </div>
     </header>
 
-    <main class="flex-1 overflow-auto pb-14 px-4 py-4">
+    <main class="flex-1 overflow-auto pb-14 px-0 py-0">
          <!-- dynamically populate navigation pages here-->
     </main>
     <div id="nav">
        
     </div>
     <script src="{{ url_for('static', filename='js/auth/navv.js') }}" defer></script>
-    <script src="{{ url_for('static', filename='js/auth/ai.js') }}" defer></script>
 </body>
+
+
 </html>
+
+
+

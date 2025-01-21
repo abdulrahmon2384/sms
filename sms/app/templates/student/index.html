@@ -1,3 +1,123 @@
-<section>
-    welcome to dashboard 
-</section>
+
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div class="min-h-screen">
+          <div id="dashboard" class="container mx-auto p-2 space-y-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                <!-- Container -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                  <!-- Profile Section -->
+                  <div class="flex items-center space-x-4">
+                    <!-- Profile Image -->
+                    <div class="w-12 h-12 rounded-full overflow-hidden">
+                      <img id="profilePic" src="" alt="Profile Image" class="w-full h-full object-cover">
+                    </div>
+                    <!-- Profile Details -->
+                    <div id="profile">
+                      <h2 id="name" class="text-lg font-semibold text-gray-900 dark:text-gray-100">Unknown</h2>
+                      <p id="username" class="text-sm text-gray-600 dark:text-gray-400">@Unknown</p>
+                    </div>
+                  </div>
+                  <!-- Info Section -->
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                    <!-- Year -->
+                    <div class="flex items-center space-x-2">
+                      <i data-lucide="graduation-cap" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+                      <div>
+                        <p class="text-gray-600 dark:text-gray-400">Year</p>
+                        <p id="year" class="font-medium text-gray-900 dark:text-gray-100">2023-24</p>
+                      </div>
+                    </div>
+                    <!-- Term -->
+                    <div class="flex items-center space-x-2">
+                      <i data-lucide="calendar-days" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+                      <div>
+                        <p class="text-gray-600 dark:text-gray-400">Term</p>
+                        <p id="term" class="font-medium text-gray-900 dark:text-gray-100">Fall</p>
+                      </div>
+                    </div>
+                    <!-- Grade -->
+                    <div class="flex items-center space-x-2">
+                      <i data-lucide="user" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+                      <div>
+                        <p class="text-gray-600 dark:text-gray-400">Grade</p>
+                        <p id="grade" class="font-medium text-gray-900 dark:text-gray-100">11th</p>
+                      </div>
+                    </div>
+                    <!-- Teacher -->
+                    <div class="flex items-center space-x-2">
+                      <i data-lucide="users" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+                      <div>
+                        <p class="text-gray-600 dark:text-gray-400">Teacher</p>
+                        <p id="teacher" class="font-medium text-gray-900 dark:text-gray-100">Ms. Smith</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Assignments & Events -->
+                <div id="assignments" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"></div>
+
+
+                <div id="per" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+                    <div class="p-4">
+                      <h3 class="text-lg font-bold flex items-center text-teal-600 dark:text-teal-400 mb-8">
+                        <i data-lucide="award" class="w-5 h-5 mr-2"></i>
+                        Performance
+                      </h3>
+                      <div id="performance"></div>
+                    </div>
+                </div>
+
+                <!-- Attendance -->
+                <div id="attendance" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+                    
+                </div>
+
+                <!-- Behavior -->
+                <div id="behavior" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"></div>
+            </div>
+
+            <!-- Class Schedule -->
+            <div id="schedule" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+                <div class="p-4">
+                  <h3 class="text-xl font-semibold text-teal-600 dark:text-teal-400 flex items-center mb-4">
+                    <i data-lucide="calendar-days" class="w-4 h-4 mr-2"></i>
+                        Academic Schedule
+                  </h3>
+                    <div class="w-full">
+                        <div class="flex border-b">
+                            <button class="text-sm py-2 px-4 border-b-2 border-teal-600 dark:border-teal-400" data-tab="class">Class</button>
+                            <button class="text-sm py-2 px-4" data-tab="exam">Exam</button>
+                            <button class="text-sm py-2 px-4" data-tab="test">Test</button>
+                        </div>
+                        <div class="mt-4">
+                            <div id="class-schedule" class="overflow-x-auto"></div>
+                            <div id="exam-schedule" class="hidden overflow-x-auto"></div>
+                            <div id="test-schedule" class="hidden overflow-x-auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community & Financial -->
+            <div class="grid gap-4 md:grid-cols-2">
+                <div id="community" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"></div>
+                <div id="financial" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"></div>
+            </div>
+          </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/student/index.js') }}"></script>
+</body>
+
+
+
+
+
+
+
+
+
+    
