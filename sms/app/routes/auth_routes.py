@@ -20,7 +20,6 @@ def home():
 # choose school 
 @auth_bp.route('/choose-school', methods=['GET', 'POST'])
 def select_school():
-     print("im here "*200)
      return render_template("auth/choose_school.html")
 
 
@@ -36,7 +35,10 @@ def register_school():
 # Login route
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-	return render_template("auth/login.html")
+      school_choosed = session.get("schoolID")
+      if school_choosed:
+            return render_template("auth/login.html")
+      return redirect(url_for("routes.auth.select_school"))
 
 
 
@@ -45,7 +47,7 @@ def login():
 def logout():
 	logout_user()
 	session["login"] = False
-	return redirect(url_for('routes.6auth.login'))
+	return redirect(url_for('routes.auth.login'))
 
 
 # Logout route

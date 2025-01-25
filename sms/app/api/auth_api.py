@@ -1,7 +1,12 @@
 from flask import Blueprint, jsonify, request, session, abort
-from .. import db, app
+from flask_login import login_required
+from .. import db, app, GOOGLE_API_KEY
 from sqlalchemy import text
 from ..libraries.backend_functions import *
+import requests
+
+
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
 
 
 
@@ -22,8 +27,6 @@ def select_school():
      
      session["schoolID"] = schoolID
      return jsonify({"message": "School ID found"})
-
-
 
 
 @auth_api_bp.route('/register_school', methods=['POST', 'GET'])
@@ -60,7 +63,6 @@ def register_school():
 
 
 
-
 # Flask route to upload an image
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
@@ -85,14 +87,12 @@ def upload_image():
         return jsonify({"error": f"Failed to upload image: {str(e)}"}), 500
 
 
-
-
 @app.route('/api/schools', methods=['GET'])
 def get_school():
     schoolID = request.args.get("schoolID")
+
     if request.args.get("insession"):
         schoolID = session.get("schoolID")
-        
     else:
         isValid_school = check_and_set_search_path(schoolID)
         if not isValid_school:
@@ -101,14 +101,11 @@ def get_school():
     # Load a temp dataset to the database ,This is just for testing
     # from .. import gsd
 
-    print(schoolID)
     schoolInfo = get_school_information().get("SchoolInfo")
     if schoolInfo:
         return jsonify(schoolInfo)
     
     abort(404, description="School not found")
-
-
 
 
 @app.route('/api/submit-login-credentials', methods=['POST'])
@@ -131,4 +128,133 @@ def login():
 def user_role():
     role = session.get("role")
     return jsonify({"success": True if role else False, "role": role})
+
+
+
+
+@app.route('/api/intelleva_ai/save_chat', methods=['POST'])
+def save_chat():
+    role = session.get("role")
+    username = session.get("user_id")
+
+    if not role or not username:
+        return jsonify({"error": "Unauthorized access"}), 401
+
+    user = {
+        "student": Students.query.filter_by(username=username).first(),
+        "teacher": Teachers.query.filter_by(username=username).first(),
+        "admin": Admin.query.filter_by(username=username).first()
+    }.get(role)
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    user_message = request.json.get("user_message")
+    ai_message = request.json.get("ai_message")
+
+    # if not user_message or not ai_message:
+    #    return jsonify({"error": "Both user_message and ai_message are required"}), 400
+
+    user.unique_payment_account = user.unique_payment_account or {}
+    user.unique_payment_account.setdefault("chatai", [])
+
+    user.unique_payment_account["chatai"].extend([
+        {"type": "user", "message": user_message},
+        {"type": "ai", "message": ai_message}
+    ])
+
+    db.session.flush() 
+    db.session.commit()
+
+    print(user.unique_payment_account.get("chatai"))
+    return jsonify({"success": True, "message": "Chat saved successfully"}), 200
+
+
+
+
+
+@app.route('/api/intelleva_ai/load_history', methods=['GET'])
+def get_chat():
+    role = session.get("role")
+    username = session.get("user_id")
+
+    if not role or not username:
+        return jsonify({"error": "Unauthorized access"}), 401
+
+    user = {
+        "student": Students.query.filter_by(username=username).first(),
+        "teacher": Teachers.query.filter_by(username=username).first(),
+        "admin": Admin.query.filter_by(username=username).first()
+    }.get(role)
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    user.unique_payment_account = user.unique_payment_account or {}
+    chat_history = user.unique_payment_account.get("chatai", [])
+    return jsonify(chat_history), 200
+
+@app.route("/api/intelleva_ai/chat", methods=["POST"])
+def chat():
+    try:
+        user_input = request.json.get("message")
+        if not user_input:
+            return jsonify({"error": "User input is required"}), 400
+        
+        prompt = create_personalized_prompt(user_input)
+
+        data = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"temperature": 0.8, "topK": 1, "topP": 1}
+        }
+
+        headers = {"Content-Type": "application/json", "x-goog-api-key": GOOGLE_API_KEY}
+        response = requests.post(GEMINI_API_URL, headers=headers, json=data, timeout=10)
+        response.raise_for_status()
+        
+        response_json = response.json()
+        bot_response = (
+            response_json.get("candidates", [{}])[0]
+            .get("content", {})
+            .get("parts", [{}])[0]
+            .get("text", "No response available")
+        )
+
+        return jsonify({"response": bot_response})
+
+    except requests.Timeout:
+        return jsonify({"error": "AI service timeout, please try again later."}), 504
+
+    except requests.RequestException as e:
+        return jsonify({"error": f"AI service error: {str(e)}"}), 500
+
+    except Exception as e:
+        return jsonify({"error": f"Internal error: {str(e)}"}), 500
+
+@app.route('/api/intelleva_ai/clear_history', methods=['POST'])
+def clear_chat():
+    role = session.get("role")
+    username = session.get("user_id")
+
+    if not role or not username:
+        return jsonify({"error": "Unauthorized access"}), 401
+
+    user = {
+        "student": Students.query.filter_by(username=username).first(),
+        "teacher": Teachers.query.filter_by(username=username).first(),
+        "admin": Admin.query.filter_by(username=username).first()
+    }.get(role)
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Initialize unique_payment_account if missing
+    user.unique_payment_account = user.unique_payment_account or {}
+
+    # Clear the chat history
+    user.unique_payment_account["chatai"] = []
+    db.session.commit()
+
+    return jsonify({"message": "Chat history cleared successfully"}), 200
+
 

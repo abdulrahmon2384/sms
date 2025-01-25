@@ -1,13 +1,360 @@
-import random
-import string
-import time
-import hashlib
-
+import hashlib, os, json, string, random, time
 from flask import redirect, url_for, session, jsonify
 from flask_login import login_user
 from .. import db, bcrypt, bucket, B2_BUCKET_URL
 from sqlalchemy import text
 from ..models import *
+
+
+
+# this functiom return all you need to know about intelleva
+def About_Intelleva():
+    try:
+        intelleva_info = {
+            "app_name": "Intelleva",
+            "meaning": "Intelleva is a fusion of 'Intelligence' and 'Elevate,' symbolizing smart, upscale education solutions designed to raise educational standards.",
+            "description": (
+                "Intelleva is an advanced school management system designed to simplify administrative tasks while "
+                "offering luxurious and intelligent educational solutions. It provides a comprehensive platform for managing "
+                "schools efficiently, ensuring seamless communication and data management across various stakeholders."
+            ),
+            "key_features": [
+                "Student and teacher management",
+                "Attendance tracking",
+                "Performance evaluation",
+                "Fee management",
+                "Role-based access for Administrators, Teachers, and Students",
+                "Communication tools for announcements and notifications",
+                "Scalable design for multiple schools with unique IDs",
+                "Financial tracking for revenues, expenses, and budgets"
+            ],
+            "user_roles": {
+                "Administrator": (
+                    "Manages the entire school, including student enrollment, teacher assignments, fee tracking, and "
+                    "financial reports. Administrators oversee school operations, set class fees, and communicate "
+                    "important updates."
+                ),
+                "Teacher": (
+                    "Tracks student attendance and performance, provides grades and feedback, and manages their profile "
+                    "information. Teachers have access to classroom data and communication tools."
+                ),
+                "Student": (
+                    "Views their academic performance, attendance records, fee status, and class information. Students "
+                    "receive announcements and can update their profiles as needed."
+                )
+            },
+            "technical_stack": {
+                "Programming Language": "Python",
+                "Framework": "Flask",
+                "Database Service": "Aiven (PostgreSQL)",
+                "Cloud Storage": "Backblaze",
+                "Architecture": "MVC (Model-View-Controller) pattern for scalability and maintainability"
+            },
+            "database_structure": {
+                "type": "Hybrid model with shared and individual schemas",
+                "shared_schema": [
+                    "Schools table with unique school_id",
+                    "Users table with roles (Admin, Teacher, Student) linked to school_id",
+                    "Student Grades table for academic records"
+                ],
+                "individual_schema": [
+                    "Each school has its schema with tables for students, teachers, attendance, fees, and history"
+                ]
+            },
+            "ui_design": {
+                "navigation": "Preserves state of visited pages to prevent script re-execution and optimize performance",
+                "preloading": "Scripts and styles are preloaded for faster transitions",
+                "themes": "Dark and light mode themes using Tailwind CSS"
+            },
+            "unique_identifiers": {
+                "school_id": "Each school is assigned a unique ID to differentiate between similar school names",
+                "user_id": "Unique identifier assigned to each user across schools"
+            },
+            "assistant_integration": {
+                "purpose": "AI assistant responds dynamically to user queries based on role (Admin, Teacher, Student)",
+                "data_sources": [
+                    "General Intelleva knowledge",
+                    "School-specific dataset",
+                    "User-specific dataset"
+                ],
+                "response_behavior": (
+                    "Provides personalized responses based on user role and data. Ensures accurate and relevant responses "
+                    "by cross-referencing user context before replying."
+                )
+            }
+        }
+
+        return intelleva_info
+    except Exception as e:
+        return {"error": f"Failed to fetch Intelleva data: {str(e)}"}
+
+def get_school_data():
+    school = School_information.query.first()
+    if not school:
+        return None
+
+    school_data = {
+        "id": school.id,
+        "school_name": school.school_name,
+        "school_address": school.school_address,
+        "school_phone": school.school_phone,
+        "school_email": school.school_email,
+        "school_logo_link": school.school_logo_link,
+        "school_other_website": school.school_other_website,
+        "school_total_students": school.school_total_students,
+        "school_total_teachers": school.school_total_teachers,
+        "school_total_admin": school.school_total_admin,
+        "school_classes": school.school_classes or [],
+        "school_teachers": school.school_teachers or [],
+        "school_terms": school.school_terms or [],
+        "school_result_type": school.school_result_type or [],
+        "school_founded_year": school.school_founded_year,
+        "school_total_revenues": school.school_total_revenues or {},
+        "school_total_expenses": school.school_total_expenses or {},
+        "school_total_budget": school.school_total_budget or {},
+        "school_grades": school.school_grades or {},
+        "school_location": school.school_location,
+        "nationality": school.nationality,
+        "zipcode": school.zipcode
+    }
+    
+    return school_data
+
+def get_teacher_data(username):
+    teacher = Teachers.query.filter_by(username=username).first()
+    
+    if not teacher:
+        return None
+
+    return {
+        "username": teacher.username,
+        "firstname": teacher.firstname,
+        "lastname": teacher.lastname,
+        "dob": teacher.dob.strftime("%Y-%m-%d") if teacher.dob else None,
+        "address": teacher.address,
+        "email": teacher.email,
+        "phonenumber": teacher.phonenumber,
+        "gender": teacher.gender,
+        "qualification": teacher.qualification,
+        "years_of_experience": teacher.years_of_experience,
+        "certifications": teacher.certifications,
+        "teaching_specializations": teacher.teaching_specializations,
+        "languages_spoken": teacher.languages_spoken,
+        "emergency_contact": teacher.emergency_contact,
+        "notes": teacher.notes,
+        "hire_date": teacher.hire_date.strftime("%Y-%m-%d") if teacher.hire_date else None,
+        "salarys": teacher.salarys,
+        "subject_taught": teacher.subject_taught,
+        "bio": teacher.bio,
+        "marital_status": teacher.marital_status,
+        "attendance_count": teacher.attendance_count,
+        "role": teacher.role,
+        "image_link": teacher.image_link,
+     }
+
+def get_student_data(username):
+    student = Students.query.filter_by(username=username).first()
+    
+    if not student:
+        return None
+
+    student_data = {
+        "username": student.username,
+        "full_name": f"{student.firstname} {student.othername or ''} {student.lastname}".strip(),
+        "address": student.address,
+        "city": student.city,
+        "zipcode": student.zipcode,
+        "email": student.email,
+        "homephone": student.homephone,
+        "dob": student.dob.strftime("%Y-%m-%d") if student.dob else None,
+        "gender": student.gender,
+        "enroll_date": student.enroll_date.strftime("%Y-%m-%d") if student.enroll_date else None,
+        "previous_school": student.previous_school,
+        "medical_information": student.medical_information,
+        "parental_consent": student.parental_consent,
+        "languages_spoken": student.languages_spoken,
+        "image_link": student.image_link,
+        "role": student.role,
+        "others_expenses": student.others_expenses or {},
+        "unique_payment_account": student.unique_payment_account or {},
+        "attendance_count": student.attendance_count or {},
+    }
+    
+    return student_data
+
+def get_admin_data(username):
+    admin = Admin.query.filter_by(username=username).first()
+
+    if not admin:
+        return get_teacher_data(username)
+
+    return {
+        "username": admin.username,
+        "firstname": admin.firstname,
+        "lastname": admin.lastname,
+        "email": admin.email,
+        "phonenumber": admin.phonenumber,
+        "access": admin.access,
+        "role": admin.role,
+        "image_link": admin.image_link,
+    }
+
+
+
+
+
+
+# Fuction for guidiance about intelleva to the chatbot
+def intellva_ai_guidance_note() -> str:
+    try:
+        # Fetch Intelleva application information
+        intelleva_info =About_Intelleva()
+
+        # AI guidance note
+        ai_guidance_note = f"""
+            You are Intelleva AI, an intelligent assistant designed to help users as an Ai . 
+            Your primary role is to provide accurate information and assistance based on the 
+            features and capabilities of Intelleva, You can anser user question even if it is not related to intelleva
+            Intelleva is described as: {intelleva_info.get('description', 'N/A')}\n\n
+            Key Features of Intelleva include:\n
+            - {', '.join(intelleva_info.get('key_features', []))}\n\n
+            User roles and their functionalities:\n
+        """
+
+        # Add user role details dynamically
+        for role, description in intelleva_info.get("user_roles", {}).items():
+            ai_guidance_note += f"- {role}: {description}\n"
+
+        ai_guidance_note += f"""
+            Intelleva meanings: {intelleva_info.get("meaning", "what you suggest it might mean")}
+
+            Your responses should be based on the provided information about Intelleva if user asked anything about it else answer user normally
+            For any questions outside of Intelleva's scope, respond accordingly.
+        """
+
+        return ai_guidance_note
+
+    except Exception as e:
+        return  "..."
+
+def school_info_guidance_note() -> str:
+    try:
+        school = get_school_data()
+        
+        # Create AI Guidance Note
+        guidance_note = "This is the current school information available:\n\n"
+        guidance_note += f"""
+                School ID: {school['id']}\n
+                School Name: {school['school_name']}\n
+                Address: {school['school_address']}\n
+                Phone: {school['school_phone']}, Email: {school['school_email']}\n
+                Website: {school['school_other_website']}\n
+                Total Students: {school['school_total_students']},
+                Teachers: {school['school_total_teachers']}, 
+                Admins: {school['school_total_admin']}\n
+                Founded Year: {school['school_founded_year']}, Located in {school['school_location']}\n
+                Nationality: {school['nationality']}, ZIP Code: {school['zipcode']}\n
+                Classes Offered: {', '.join(school['school_classes'])}\n
+                Result Types: {', '.join(school['school_result_type'])}\n
+                Financial Overview (2024): Revenue - ${school['school_total_revenues']['2024']}, 
+                Expenses - ${school['school_total_expenses']['2024']}, Budget - ${school['school_total_budget']['2024']}\n
+                Teachers List: {', '.join([teacher['name'] + ' (' + teacher['subject'] + ')' for teacher in school['school_teachers']])}\n
+                ------------------------------------------------------------\n
+            """
+        guidance_note += """
+            Ensure to use this school information accurately when responding to user queries. 
+            For general queries not related to school operations, respond as per the AI's general knowledge.
+        """
+
+        return guidance_note
+    except Exception as e:
+        print(e)
+        return ""
+
+def user_info_guidance_note(role, username) -> str:
+
+    if not role and not username:
+        return ""
+
+    if role == "student":
+        student_info = get_student_data(username)
+        guidance_note = f"""
+            The following is Current user which is a student's profile information:\n\n
+            Username: {student_info['username']}\n
+            Full Name: {student_info['full_name']}\n
+            Address: {student_info['address']}, City: {student_info['city']}, ZIP Code: {student_info['zipcode']}\n
+            Email: {student_info['email']}, Home Phone: {student_info['homephone']}\n
+            Date of Birth: {student_info['dob']} (Age calculation required if needed)\n
+            Gender: {student_info['gender']}\n
+            Enrollment Date: {student_info['enroll_date']}\n
+            Previous School: {student_info['previous_school']}\n
+            Medical Information: {student_info['medical_information']}\n
+            Parental Consent Given: {student_info['parental_consent']}\n
+            Languages Spoken: {student_info['languages_spoken']}\n
+            Profile Image: {student_info['image_link']}\n
+            Role: {student_info['role'].capitalize()}\n\n
+            Financial Information:\n
+            - Other Expense: ${student_info['others_expenses']}\n
+            - Payment Account Number: {student_info['unique_payment_account']}\n
+            - Bank Name: {student_info['unique_payment_account']}\n\n
+            Attendance Record:\n
+            - {student_info['attendance_count']}\n
+            This information should be used accurately when responding to queries related to the student's profile, attendance, and financial details.
+        """
+        return guidance_note
+    
+    elif role == "teacher":
+        teacher_info = get_teacher_data(username)
+        guidance_note = f"""
+            The following is the Current user dat which is a teacher's profile information:\n\n
+            Username: {teacher_info['username']}\n
+            Full Name: {teacher_info['firstname']} {teacher_info['lastname']}\n
+            Date of Birth: {teacher_info['dob']} (Age calculation required if needed)\n
+            Address: {teacher_info['address']}\n
+            Email: {teacher_info['email']}, Phone: {teacher_info['phonenumber']}\n
+            Gender: {teacher_info['gender']}\n
+            Marital Status: {teacher_info['marital_status']}\n
+            Emergency Contact: {teacher_info['emergency_contact']}\n
+            Qualification: {teacher_info['qualification']}\n
+            Years of Experience: {teacher_info['years_of_experience']} years\n
+            Certifications: {teacher_info['certifications']}\n
+            Teaching Specializations: {teacher_info['teaching_specializations']}\n
+            Languages Spoken: {teacher_info['languages_spoken']}\n
+            Notes: {teacher_info['notes']}\n
+            Bio: {teacher_info['bio']}\n
+            Hire Date: {teacher_info['hire_date']}\n\n
+            Salary Information:\n
+            Salary: ${teacher_info['salarys']}\n
+            Subjects Taught:\n
+            - {', '.join(teacher_info['subject_taught'])}\n\n
+            Attendance Record:\n
+            {teacher_info['attendance_count']}\n
+            Profile Image Link: {teacher_info['image_link']}\n
+            Role: {teacher_info['role'].capitalize()}\n\n
+            This information should be used accurately when responding to queries related to the teacher's profile, 
+            salary, attendance, and professional details.
+        """
+        return guidance_note
+    
+    else:
+        admin_info = get_admin_data(username)
+        guidance_note = f"""
+            The following is the administrator's profile information:\n\n
+            Username: {admin_info['username']}\n
+            Full Name: {admin_info['firstname']} {admin_info['lastname']}\n
+            Email: {admin_info['email']}\n"
+            Phone Number: {admin_info['phonenumber']}\n
+            Access Granted: {'Yes' if admin_info['access'] else 'No'}\n
+            Role: {admin_info['role'].capitalize()}\n
+            Profile Image Link: {admin_info['image_link']}\n\n
+            This information should be used to provide accurate responses related to administrative tasks, 
+            system access, and profile management while ensuring confidentiality and security.
+        """
+
+        return guidance_note
+
+  
+
 
 
 # authenticate and login user
@@ -34,8 +381,10 @@ def authenticate_user(username, password, role):
     if user :
         if bcrypt.check_password_hash(user.key, password):
             login_user(user)  # Log the user in
+            session["user_id"] = username
             session["role"] = role
             session["login"] = True
+            session["note"] += (user_info_guidance_note(role, username))
             return jsonify({
                     "success": True,
                     "message": "Login successful.",
@@ -92,6 +441,8 @@ def check_and_set_search_path(school_id):
         # Set the search path if necessary
         db.session.execute(text("SET search_path TO :schoolID"), {"schoolID": school_id})
         session["schoolID"] = school_id
+        session["note"] = intellva_ai_guidance_note()
+        session["note"] += school_info_guidance_note()
         
         db.session.commit()
         return True
@@ -478,4 +829,19 @@ def upload_image_to_b2(image_data, image_name):
 
 
 
+
+
+# Return user data and input for chatAi
+def create_personalized_prompt(user_input):
+     gudiance_note = session.get("note")
+
+     # print(usegudiance_noter_data)
+     if not gudiance_note:
+         return f"User: {user_input}"
+     
+     prompt = f"{gudiance_note}\nUser: {user_input}\n \n"
+     prompt += """
+        Note: You are Intelleva AI, and your purpose is to assist users with their queries based on their role and relevant data. Ensure that you understand your role in providing context-aware, role-specific responses.
+        Note: Do not display the User: input. Also, treat \\n as a new line character; do not show it in your output text. Ensure that your response is always readable. """
+     return prompt
 

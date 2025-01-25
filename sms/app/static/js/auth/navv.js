@@ -75,12 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
         loadContent("communication");
       });
 
+
       // Redirect Communication link
       const intellevaAI = document.getElementById('intelleva-ai');
       intellevaAI.addEventListener('click', () => {
         navButtons.forEach(btn => btn.classList.remove('text-teal-600', 'dark:text-teal-400'));
         loadContent("AI");
       });
+
 
       const contentCache = {};
       let debounceTimer;
@@ -96,31 +98,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
+      const stateCache = {};
+      const loadedScripts = new Set();
+      const loadedStyles = new Set();
       
+      // Function to load page content with caching and state preservation
       const loadContent = (page) => {
+        if (stateCache[page]) {
+          restoreState(page);
+          return;
+        }
+      
         if (contentCache[page]) {
-          // Load from cache
-          mainContent.innerHTML = contentCache[page];
-          lucide.createIcons({ container: mainContent });
-          applyTransitionEffect();
-          executePageScripts(mainContent); // Execute page-specific scripts
+          updateContent(page, contentCache[page]);
           return;
         }
       
         fetch(`${userRole}/${page}`)
           .then(response => {
-            if (!response.ok) {
-              throw new Error(`Failed to load ${page}: ${response.statusText}`);
-            }
+            if (!response.ok) throw new Error(`Failed to load ${page}: ${response.statusText}`);
             return response.text();
           })
           .then(content => {
-            contentCache[page] = content; // Cache the content
-            mainContent.innerHTML = content;
-            lucide.createIcons({ container: mainContent });
-            applyTransitionEffect();
-            executePageScripts(mainContent); // Execute page-specific scripts
+            contentCache[page] = content;
+            updateContent(page, content);
           })
           .catch(error => {
             console.error(error);
@@ -128,56 +129,122 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       };
       
-      // Function to execute scripts in the loaded content
-      const executePageScripts = (container) => {
-        const scripts = container.querySelectorAll('script');
-        scripts.forEach((script) => {
-          const newScript = document.createElement('script');
-          if (script.src) {
-            // External script
-            newScript.src = script.src;
-            newScript.async = false; // Ensure execution order
-          } else {
-            // Inline script
-            newScript.textContent = script.textContent;
-          }
-          document.body.appendChild(newScript);
-          document.body.removeChild(newScript); // Remove after execution
+      // Function to update content while preserving state
+      const updateContent = (page, content) => {
+        // Convert the HTML content string to a DOM element
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = content;
+        
+        mainContent.innerHTML = tempContainer.innerHTML; // Insert the parsed HTML into main content
+        lucide.createIcons({ container: mainContent });
+        applyTransitionEffect();
+        
+        // Wait for all dynamic content to be fully loaded before saving the state
+        loadScriptsAndStyles(tempContainer).then(() => {
+          storeState(page);
         });
       };
-  
-      // Preload adjacent pages
+      
+      // Store the current page state before navigation
+      const storeState = (page) => {
+        stateCache[page] = mainContent.innerHTML;
+      };
+      
+      // Restore a previously visited page from stateCache
+      const restoreState = (page) => {
+        mainContent.innerHTML = stateCache[page];
+        lucide.createIcons({ container: mainContent });
+        applyTransitionEffect();
+      };
+      
+      // Preload scripts and styles for smoother navigation
       const preloadContent = () => {
         const preloadPages = userRole.toLowerCase() === "student"
           ? ["dashboard", "attendance", "grade", "class", "fees", "profile", "communication", "AI"]
           : userRole.toLowerCase() === "teacher"
           ? ["dashboard", "attendance", "grades", "class", "finance", "profile", "communication", "AI"]
           : ["dashboard", "students", "teacher", "classes", "school", "finance", "profile", "communication", "AI"];
-  
+      
         preloadPages.forEach((page) => {
-          fetch(`${userRole}/${page}`)
-            .then((response) => response.text())
-            .then((content) => {
-              contentCache[page] = content; // Cache preloaded content
-            })
-            .catch((error) => console.error(`Error preloading ${page}:`, error));
+          if (!contentCache[page]) {
+            fetch(`${userRole}/${page}`)
+              .then(response => response.text())
+              .then(content => {
+                contentCache[page] = content;
+                const tempContainer = document.createElement('div');
+                tempContainer.innerHTML = content;
+              })
+              .catch(error => console.error(`Error preloading ${page}:`, error));
+          }
+        });
+      };
+      
+
+      // Preload and execute page-specific scripts and styles
+      const preloadPageScripts = (container) => {
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach((script) => {
+          if (script.src && !loadedScripts.has(script.src)) {
+            const newScript = document.createElement("script");
+            newScript.src = script.src;
+            newScript.defer = true;
+            document.body.appendChild(newScript);
+            loadedScripts.add(script.src);
+          }
+        });
+      
+        const styles = container.querySelectorAll("link[rel='stylesheet']");
+        styles.forEach((style) => {
+          if (!loadedStyles.has(style.href)) {
+            const newStyle = document.createElement("link");
+            newStyle.rel = "stylesheet";
+            newStyle.href = style.href;
+            document.head.appendChild(newStyle);
+            loadedStyles.add(style.href);
+          }
+        });
+      };
+    
+      
+      // Wait for all scripts to load before storing state
+      const loadScriptsAndStyles = (container) => {
+        return new Promise((resolve) => {
+          const scripts = container.querySelectorAll('script');
+          const scriptPromises = Array.from(scripts).map(script => {
+            return new Promise((scriptResolve) => {
+              const newScript = document.createElement('script');
+              if (script.src) {
+                newScript.src = script.src;
+                newScript.onload = () => scriptResolve();
+              } else {
+                newScript.textContent = script.textContent;
+                newScript.onload = () => scriptResolve();
+              }
+              document.body.appendChild(newScript);
+            });
+          });
+      
+          // Ensure all scripts are loaded before resolving
+          Promise.all(scriptPromises).then(resolve);
         });
       };
   
-      // Debounce click events
+      
+      // Debounce click event for smooth navigation
       navButtons.forEach(button => {
         button.addEventListener('click', () => {
           clearTimeout(debounceTimer);
           debounceTimer = setTimeout(() => {
             navButtons.forEach(btn => btn.classList.remove('text-teal-600', 'dark:text-teal-400'));
             button.classList.add('text-teal-600', 'dark:text-teal-400');
-  
+      
             const page = button.dataset.page;
             loadContent(page);
-          }, 300); // Adjust debounce delay as needed
+          }, 300);
         });
       });
-  
+      
+      
       // Load initial content and preload other pages
       loadContent('dashboard');
       preloadContent();

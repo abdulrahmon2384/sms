@@ -1,4 +1,4 @@
-from flask import Flask, session, redirect
+from flask import Flask, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -6,10 +6,14 @@ from b2sdk.v2 import B2Api, InMemoryAccountInfo
 from dotenv import load_dotenv
 import os
 from sqlalchemy import text
+from sqlalchemy.orm import scoped_session
 
 
 # Load environment variables from the .env file
 load_dotenv()
+
+
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 
 ## Initialize Flask App
@@ -17,7 +21,6 @@ app = Flask(__name__, template_folder='templates')
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
 
 
 # Backblaze B2 Credentials
@@ -48,6 +51,10 @@ app.register_blueprint(routes_bp)
 app.register_blueprint(api_bp)
 
 
+def is_schema_set(session: scoped_session) -> bool:
+    result = session.execute(text("SELECT current_schema();")).fetchone()
+    current_schema = result[0] if result else None
+    return current_schema is not None and current_schema != 'public'
 
 
 @login_manager.user_loader
@@ -58,12 +65,14 @@ def load_user(user_id):
     from .models.teacher_model import Teachers
 
     user_models = [Admin, Teachers, Students]
+    if not is_schema_set(db.session):
+        return redirect(url_for("routes.auth.select_school"))
+    
     for model in user_models:
         user = model.query.get(user_id)
         if user:
              return user
     return None
-
 
 
 
@@ -78,23 +87,28 @@ def set_school_schema():
         schoolID = schoolChoosed
         db.session.execute(text("SET search_path TO :schoolID"), {"schoolID": schoolID})
         db.session.commit()
+    else:
+        return redirect(url_for("routes.auth.select_school"))
 
-    # Redirect user to dashboard ir logged else login page
     if alreadyLogged:
         login_manager.login_view = 'dashboard'
+
     else:
         login_manager.login_view = 'login'  
-    
-
-
-
 
 
 
 # redirect unauthorize user to login page 
 @login_manager.unauthorized_handler
 def unauthorized():
-    # Redirect to the login page
+    schoolChoosed = session.get("schoolID")
+    alreadyLogged = session.get("login")
+
+    if alreadyLogged:
+        redirect("/dashboard")
+    elif not schoolChoosed:
+        redirect('/choose-school')
+
     return redirect('/login')
 
 
