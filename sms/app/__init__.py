@@ -4,9 +4,10 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from b2sdk.v2 import B2Api, InMemoryAccountInfo
 from dotenv import load_dotenv
-import os
+import os, zlib
 from sqlalchemy import text
 from sqlalchemy.orm import scoped_session
+from cryptography.fernet import Fernet
 
 
 # Load environment variables from the .env file
@@ -28,6 +29,11 @@ B2_ACCOUNT_ID = os.getenv("B2_ACCOUNT_ID")
 B2_APP_KEY = os.getenv("B2_APP_KEY")
 B2_BUCKET_NAME = os.getenv("B2_BUCKET_NAME")
 B2_BUCKET_URL = os.getenv("B2_BUCKET_URL")
+
+
+# Get the Fernet key
+key = os.getenv("FERNET_KEY")
+cipher = Fernet(key.encode())
 
 
 # Initialize Backblaze B2 API
@@ -75,7 +81,6 @@ def load_user(user_id):
     return None
 
 
-
 # Function to dynamically set the school schema for each request
 @app.before_request
 def set_school_schema():
@@ -88,7 +93,7 @@ def set_school_schema():
         db.session.execute(text("SET search_path TO :schoolID"), {"schoolID": schoolID})
         db.session.commit()
     else:
-        return redirect(url_for("routes.auth.select_school"))
+        login_manager.login_view = 'select_school'
 
     if alreadyLogged:
         login_manager.login_view = 'dashboard'

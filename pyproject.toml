@@ -19,6 +19,7 @@ psycopg2-binary = "^2.9.10"
 b2sdk = "^2.7.0"
 python-dotenv = "^1.0.1"
 faker = "^33.1.0"
+cryptography = "^44.0.0"
 
 
 [build-system]

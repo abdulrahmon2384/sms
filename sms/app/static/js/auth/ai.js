@@ -16,29 +16,58 @@ userInput.addEventListener('input', () => {
 
 function addMessage(message, type) {
     const messageContainer = document.createElement('div');
-    messageContainer.classList.add('flex', 'space-x-4', type === 'user' ? 'justify-end' : 'justify-start');
-    
-    const messageBubble = document.createElement('div');
-    messageBubble.classList.add('flex', 'flex-col', 'max-w-xs');
-    messageBubble.innerHTML = `<span class="bg-${type === 'user' ? 'teal-400' : 'black'} text-white p-2 rounded-lg shadow-lg text-sm">${message}</span>`;
-    
-    messageContainer.appendChild(messageBubble);
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    messageContainer.innerHTML = `
+        <div class="flex gap-4 ${type === 'user' ? 'flex-row-reverse' : ''}">
+            ${type !== 'user' ? `
+                <div class="shrink-0 h-8 w-8 bg-teal-400 rounded-full flex items-center justify-center">
+                    <i data-lucide="bot" class="h-5 w-5 text-white"></i>
+                </div>
+            ` : ''}
+            
+            <div class="flex flex-col ${type === 'user' ? 'items-end' : 'items-start'} max-w-[80%]">
+                <div class="${type === 'user' ? 'bg-teal-400 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'} px-4 py-3 rounded-xl shadow-sm transition-all duration-200">
+                    ${message}
+                    <div class="mt-1 text-xs ${type === 'user' ? 'text-teal-100' : 'text-gray-500 dark:text-gray-400'}">${time}</div>
+                </div>
+            </div>
+
+            ${type === 'user' ? `
+                <div class="shrink-0 h-8 w-8 bg-gray-600 rounded-full flex items-center justify-center">
+                    <i data-lucide="user" class="h-5 w-5 text-white"></i>
+                </div>
+            ` : ''}
+        </div>
+    `;
+
     chatArea.appendChild(messageContainer);
-    chatArea.scrollTop = chatArea.scrollHeight; // Scroll to the latest message
+    
+    // Auto-scroll to bottom
+    const scrollToBottom = () => {
+        chatArea.scrollTop = chatArea.scrollHeight;
+        messageContainer.scrollIntoView({ behavior: 'smooth' });
+    };
+    
+    // Use requestAnimationFrame for smooth scroll
+    requestAnimationFrame(scrollToBottom);
+    
+    // Refresh Lucide icons
+    if (window.lucide) {
+        lucide.createIcons();
+    }
 }
 
 
 async function loadChatHistory() {
     try {
-        console.log("im inside loadchatHistory")
         const response = await fetch(CHAT_API_URL);
         const data = await response.json();
 
         // Check if there's existing chat data
-        if (data && data.chat && data.chat.length > 0) {
+        if (data.chat && data.chat.length > 0) {
             data.chat.forEach(message => {
-                console.log(message)
-                addMessage(message.text, message.type);
+                addMessage(message.message, message.type);
             });
         } else {
             // Welcome message if no chat history
@@ -66,12 +95,12 @@ sendButton.addEventListener('click', async () => {
                     body: JSON.stringify({ message: userMessage }),
                 }).then(res => res.json()),
 
-                storeChat(userMessage) // Store only the user message initially
+                // storeChat(userMessage) // Store only the user message initially
             ]);
 
             if (aiResponse && aiResponse.response) {
                 addMessage(aiResponse.response, 'ai');
-                await storeChat(null, aiResponse.response);  // Store AI response separately
+                await storeChat(userMessage, aiResponse.response);  // Store AI response separately
             }
         } catch (error) {
             console.error("Error communicating with AI API:", error);

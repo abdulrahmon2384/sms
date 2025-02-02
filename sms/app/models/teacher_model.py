@@ -34,6 +34,7 @@ class Teachers(db.Model, UserMixin):
     role = db.Column(db.String(50), default='Teacher')
     key = db.Column(db.String(200), nullable=True)
     access = db.Column(db.Boolean, default=False)
+    others = db.Column(JSON, default={})
     image_link = db.Column(db.String(200), default='default.png')
 
     class_teacher = db.relationship("Classes", backref="teacher", lazy="dynamic")

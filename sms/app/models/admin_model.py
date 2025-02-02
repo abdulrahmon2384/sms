@@ -13,6 +13,7 @@ class Admin(db.Model, UserMixin):
     access = db.Column(db.Boolean, nullable=True)
     key = db.Column(db.String(200), nullable=True)
     role = db.Column(db.String(50), default="Admin")
+    others = db.Column(JSON, default={})
     image_link = db.Column(db.String(100),
                            default='default.png')
 

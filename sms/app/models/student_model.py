@@ -66,8 +66,10 @@ class Students(db.Model, UserMixin):
     fee = db.relationship("Student_fee", backref='student', lazy='dynamic')
     history = db.relationship("Student_history",backref='student',lazy='dynamic')
 
+
     attendance_count = db.Column(JSON, default={})
     years = db.Column(JSON, default={})
+    others = db.Column(JSON, default={})
 	
     def __repr__(self):
         return f"{self.lastname} {self.firstname}"

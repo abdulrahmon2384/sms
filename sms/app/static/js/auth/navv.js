@@ -1,340 +1,296 @@
-// Ensure the DOM is fully loaded before execution
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.readyState === 'complete') {
-      initializeApp();
-    } else {
-      window.addEventListener('load', initializeApp);
+  initializeApp();
+});
+
+function initializeApp() {
+  fetchUserRole().then(Data => {
+    const userRole = Data.role;
+    if (!userRole) return;
+
+    // Initialize all cache stores first
+    const stateCache = new Map();
+    const loadedScripts = new Set();
+    const contentCache = new Map();
+    const mainContent = document.querySelector('main');
+
+    // Initialize UI components
+    lucide.createIcons();
+    initializeTheme(document.getElementById('themeToggle'));
+    initializeProfileDropdown(Data);
+    populateNavigation(userRole);
+
+    // Set up navigation with all required parameters
+    setupNavigation({
+      userRole,
+      mainContent,
+      stateCache,
+      loadedScripts,
+      contentCache
+    });
+
+    // Initial load and preload
+    loadContent({
+      page: 'dashboard',
+      userRole,
+      mainContent,
+      stateCache,
+      loadedScripts,
+      contentCache
+    });
+    preloadContent(userRole, contentCache);
+  });
+}
+
+// Profile dropdown initialization with data
+function initializeProfileDropdown(userData) {
+  const profileButton = document.getElementById('profileDropdown');
+  const dropdownMenu = document.getElementById('dropdownMenu');
+  
+  document.querySelector("#profileDropdown img").src = userData.image_link;
+  document.querySelector("#fullname").textContent = userData.name;
+
+  profileButton.addEventListener('click', (event) => {
+    dropdownMenu.classList.toggle('hidden');
+    event.stopPropagation();
+  });
+
+  document.addEventListener('click', () => dropdownMenu.classList.add('hidden'));
+}
+
+// Navigation setup with proper parameter handling
+function setupNavigation({ userRole, mainContent, stateCache, loadedScripts, contentCache }) {
+  const navButtons = document.querySelectorAll('nav button');
+  let currentPage = 'dashboard';
+
+  // Set initial active state
+  document.querySelector(`[data-page="dashboard"]`).classList.add('text-teal-600', 'dark:text-teal-400');
+
+  // Main navigation handler
+  navButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const page = button.dataset.page;
+      if (currentPage === page) return;
+
+      // Update button states
+      navButtons.forEach(btn => btn.classList.remove('text-teal-600', 'dark:text-teal-400'));
+      button.classList.add('text-teal-600', 'dark:text-teal-400');
+
+      // Load content with all required parameters
+      loadContent({
+        page,
+        userRole,
+        mainContent,
+        stateCache,
+        loadedScripts,
+        contentCache
+      });
+      
+      currentPage = page;
+    });
+  });
+
+  // Special AI button handler
+  document.getElementById('intelleva-ai')?.addEventListener('click', () => {
+    loadContent({
+      page: 'AI',
+      userRole,
+      mainContent,
+      stateCache,
+      loadedScripts,
+      contentCache
+    });
+  });
+}
+
+// Updated loadContent with parameter object destructuring
+async function loadContent({ page, userRole, mainContent, stateCache, loadedScripts, contentCache }) {
+  try {
+    if (stateCache.has(page)) {
+      showPage(page, mainContent, stateCache);
+      return;
+    }
+
+    const content = await fetchContent(page, userRole, contentCache);
+    const pageElement = createPageElement(content, mainContent);
+    await loadScripts(pageElement, loadedScripts);
+    
+    stateCache.set(page, pageElement);
+    showPage(page, mainContent, stateCache);
+  } catch (error) {
+    mainContent.innerHTML = `<p class="text-center text-red-500">${error.message}</p>`;
+  }
+}
+
+
+
+
+// fetchUserRole.js
+async function fetchUserRole() {
+  try {
+    const response = await fetch('/api/current_user_role', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'credentials': 'include' // Add this line
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success && data.role) {
+        return data;
+      }
+    }
+
+    window.location.href = "/login";
+    return null;
+  } catch (error) {
+    console.error('Error fetching user role:', error);
+    window.location.href = "/login";
+    return null;
+  }
+}
+
+// populateNavigation.js
+function populateNavigation(userRole) {
+  const navigationConfig = {
+    student: [
+      { page: "dashboard", icon: "layout-dashboard", label: "Dashboard" },
+      { page: "grade", icon: "trending-up", label: "Grades" },
+      { page: "attendance", icon: "calendar-check", label: "Attendance" },
+      { page: "fees", icon: "dollar-sign", label: "Fees" },
+      { page: "class", icon: "book-open", label: "Class" },
+      { page: "profile", icon: "user-circle", label: "Profile" }
+    ],
+    teacher: [
+      { page: "dashboard", icon: "layout-dashboard", label: "Dashboard" },
+      { page: "grades", icon: "trending-up", label: "Grades" },
+      { page: "attendance", icon: "calendar-check", label: "Attendance" },
+      { page: "finance", icon: "dollar-sign", label: "Finance" },
+      { page: "class", icon: "book-open", label: "Classes" },
+      { page: "profile", icon: "user-circle", label: "Profile" }
+    ],
+    admin: [
+      { page: "dashboard", icon: "layout-dashboard", label: "Dashboard" },
+      { page: "students", icon: "user", label: "Students" },
+      { page: "teachers", icon: "user-check", label: "Teachers" },
+      { page: "classes", icon: "book-open", label: "Classes" },
+      { page: "finance", icon: "dollar-sign", label: "Finance" },
+      { page: "schools", icon: "home", label: "Schools" },
+      { page: "profile", icon: "user-circle", label: "Profile" }
+    ]
+  };
+
+  const navContainer = document.getElementById("nav");
+  navContainer.innerHTML = '';
+  
+  const navBar = document.createElement('nav');
+  navBar.className = 'fixed bottom-0 left-0 right-0 flex justify-around border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 py-1';
+
+  navigationConfig[userRole]?.forEach(({ page, icon, label }) => {
+    const button = document.createElement("button");
+    button.className = "flex flex-col items-center p-1 text-gray-600 dark:text-gray-400";
+    button.dataset.page = page;
+    button.innerHTML = `
+      <i data-lucide="${icon}" class="h-5 w-5"></i>
+      <span class="text-xs mt-1">${label}</span>
+    `;
+    navBar.appendChild(button);
+  });
+
+  navContainer.appendChild(navBar);
+  lucide.createIcons({ container: navBar });
+}
+
+// preloadContent.js
+function preloadContent(userRole, contentCache) {
+  const pagesToPreload = getPreloadPages(userRole);
+  
+  pagesToPreload.forEach(async (page) => {
+    if (!contentCache.has(page)) {
+      try {
+        const response = await fetch(`${userRole}/${page}`);
+        if (response.ok) {
+          const content = await response.text();
+          contentCache.set(page, content);
+        }
+      } catch (error) {
+        console.error(`Error preloading ${page}:`, error);
+      }
     }
   });
-  
-  // Function to initialize the app
-  function initializeApp() {
-    // Fetch the user role asynchronously
-    fetchUserRole().then(userRole => {
-      if (!userRole) return; // Stop execution if user role is not found
-  
-      lucide.createIcons();
-      const themeToggle = document.getElementById('themeToggle');
-      const htmlElement = document.documentElement;
-  
-      const profileButton = document.getElementById('profileDropdown');
-      const dropdownMenu = document.getElementById('dropdownMenu');
-      populateNavigation(userRole.trim());
-  
-      // Function to hide dropdown
-      const hideDropdown = (event) => {
-        if (!dropdownMenu.contains(event.target) && !profileButton.contains(event.target)) {
-          dropdownMenu.classList.add('hidden');
-        }
-      };
-  
-      // Event listener for profile button
-      profileButton.addEventListener('click', (event) => {
-        dropdownMenu.classList.remove('hidden');
-        event.stopPropagation(); // Prevent event from triggering the document click listener
-      });
-  
-      // Event listener for clicks outside the dropdown
-      document.addEventListener('click', hideDropdown);
-      dropdownMenu.classList.add('hidden');
-  
+}
 
+// Helpers.js
+function getPreloadPages(userRole) {
+  const role = userRole.toLowerCase();
+  if (role === "student") {
+    return ["dashboard", "attendance", "grade", "class", "fees", "profile", "communication", "AI"];
+  }
+  if (role === "teacher") {
+    return ["dashboard", "attendance", "grades", "class", "finance", "profile", "communication", "AI"];
+  }
+  return ["dashboard", "students", "teacher", "classes", "school", "finance", "profile", "communication", "AI"];
+}
 
-
-
-      const rootElement = document.documentElement;
-      const savedTheme = localStorage.getItem("theme");
-
-      if (savedTheme === "dark") {
-            rootElement.classList.add("dark");
-      } else if (savedTheme === "light") {
-            rootElement.classList.remove("dark");
-      }
-    
-      // Toggle theme on button click
-      themeToggle.addEventListener("click", () => {
-            if (rootElement.classList.contains("dark")) {
-                rootElement.classList.remove("dark");
-                localStorage.setItem("theme", "light"); // Save preference as light
-            } else {
-                rootElement.classList.add("dark");
-                localStorage.setItem("theme", "dark"); // Save preference as dark
-            }
-      });
-
-
-
-      
-      const navButtons = document.querySelectorAll('nav button');
-      const mainContent = document.querySelector('main');
-  
-      // Redirect Communication link
-      const communication = document.getElementById('communication');
-      communication.addEventListener('click', () => {
-        navButtons.forEach(btn => btn.classList.remove('text-teal-600', 'dark:text-teal-400'));
-        loadContent("communication");
-      });
-
-
-      // Redirect Communication link
-      const intellevaAI = document.getElementById('intelleva-ai');
-      intellevaAI.addEventListener('click', () => {
-        navButtons.forEach(btn => btn.classList.remove('text-teal-600', 'dark:text-teal-400'));
-        loadContent("AI");
-      });
-
-
-      const contentCache = {};
-      let debounceTimer;
-  
-      // Function to add transition effect
-      const applyTransitionEffect = () => {
-        mainContent.classList.add('fade-in');
-        mainContent.addEventListener('animationend', () => {
-          mainContent.classList.remove('fade-in');
-        }, { once: true });
-      };
-  
-
-
-
-      const stateCache = {};
-      const loadedScripts = new Set();
-      const loadedStyles = new Set();
-      
-      // Function to load page content with caching and state preservation
-      const loadContent = (page) => {
-        if (stateCache[page]) {
-          restoreState(page);
-          return;
-        }
-      
-        if (contentCache[page]) {
-          updateContent(page, contentCache[page]);
-          return;
-        }
-      
-        fetch(`${userRole}/${page}`)
-          .then(response => {
-            if (!response.ok) throw new Error(`Failed to load ${page}: ${response.statusText}`);
-            return response.text();
-          })
-          .then(content => {
-            contentCache[page] = content;
-            updateContent(page, content);
-          })
-          .catch(error => {
-            console.error(error);
-            mainContent.innerHTML = `<p class="text-center text-red-500">Failed to load content. Please try again.</p>`;
-          });
-      };
-      
-      // Function to update content while preserving state
-      const updateContent = (page, content) => {
-        // Convert the HTML content string to a DOM element
-        const tempContainer = document.createElement('div');
-        tempContainer.innerHTML = content;
-        
-        mainContent.innerHTML = tempContainer.innerHTML; // Insert the parsed HTML into main content
-        lucide.createIcons({ container: mainContent });
-        applyTransitionEffect();
-        
-        // Wait for all dynamic content to be fully loaded before saving the state
-        loadScriptsAndStyles(tempContainer).then(() => {
-          storeState(page);
-        });
-      };
-      
-      // Store the current page state before navigation
-      const storeState = (page) => {
-        stateCache[page] = mainContent.innerHTML;
-      };
-      
-      // Restore a previously visited page from stateCache
-      const restoreState = (page) => {
-        mainContent.innerHTML = stateCache[page];
-        lucide.createIcons({ container: mainContent });
-        applyTransitionEffect();
-      };
-      
-      // Preload scripts and styles for smoother navigation
-      const preloadContent = () => {
-        const preloadPages = userRole.toLowerCase() === "student"
-          ? ["dashboard", "attendance", "grade", "class", "fees", "profile", "communication", "AI"]
-          : userRole.toLowerCase() === "teacher"
-          ? ["dashboard", "attendance", "grades", "class", "finance", "profile", "communication", "AI"]
-          : ["dashboard", "students", "teacher", "classes", "school", "finance", "profile", "communication", "AI"];
-      
-        preloadPages.forEach((page) => {
-          if (!contentCache[page]) {
-            fetch(`${userRole}/${page}`)
-              .then(response => response.text())
-              .then(content => {
-                contentCache[page] = content;
-                const tempContainer = document.createElement('div');
-                tempContainer.innerHTML = content;
-              })
-              .catch(error => console.error(`Error preloading ${page}:`, error));
-          }
-        });
-      };
-      
-
-      // Preload and execute page-specific scripts and styles
-      const preloadPageScripts = (container) => {
-        const scripts = container.querySelectorAll("script");
-        scripts.forEach((script) => {
-          if (script.src && !loadedScripts.has(script.src)) {
-            const newScript = document.createElement("script");
-            newScript.src = script.src;
-            newScript.defer = true;
-            document.body.appendChild(newScript);
-            loadedScripts.add(script.src);
-          }
-        });
-      
-        const styles = container.querySelectorAll("link[rel='stylesheet']");
-        styles.forEach((style) => {
-          if (!loadedStyles.has(style.href)) {
-            const newStyle = document.createElement("link");
-            newStyle.rel = "stylesheet";
-            newStyle.href = style.href;
-            document.head.appendChild(newStyle);
-            loadedStyles.add(style.href);
-          }
-        });
-      };
-    
-      
-      // Wait for all scripts to load before storing state
-      const loadScriptsAndStyles = (container) => {
-        return new Promise((resolve) => {
-          const scripts = container.querySelectorAll('script');
-          const scriptPromises = Array.from(scripts).map(script => {
-            return new Promise((scriptResolve) => {
-              const newScript = document.createElement('script');
-              if (script.src) {
-                newScript.src = script.src;
-                newScript.onload = () => scriptResolve();
-              } else {
-                newScript.textContent = script.textContent;
-                newScript.onload = () => scriptResolve();
-              }
-              document.body.appendChild(newScript);
-            });
-          });
-      
-          // Ensure all scripts are loaded before resolving
-          Promise.all(scriptPromises).then(resolve);
-        });
-      };
-  
-      
-      // Debounce click event for smooth navigation
-      navButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          clearTimeout(debounceTimer);
-          debounceTimer = setTimeout(() => {
-            navButtons.forEach(btn => btn.classList.remove('text-teal-600', 'dark:text-teal-400'));
-            button.classList.add('text-teal-600', 'dark:text-teal-400');
-      
-            const page = button.dataset.page;
-            loadContent(page);
-          }, 300);
-        });
-      });
-      
-      
-      // Load initial content and preload other pages
-      loadContent('dashboard');
-      preloadContent();
-  
-      // Query the button with the specific data attribute
-      const button = document.querySelector('button[data-page="dashboard"]');
-      if (button) {
-        button.classList.add('text-teal-600', 'dark:text-teal-400');
-      }
-    });
+async function fetchContent(page, userRole, contentCache) {
+  if (contentCache.has(page)) {
+    return contentCache.get(page);
   }
   
-  // Async function to fetch the user role
-  async function fetchUserRole() {
-    try {
-      const response = await fetch('/api/current_user_role', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  const response = await fetch(`${userRole}/${page}`);
+  if (!response.ok) throw new Error(`Failed to load ${page}: ${response.statusText}`);
   
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.role) {
-          return data.role; // Return the role directly
-        }
-      }
+  const content = await response.text();
+  contentCache.set(page, content);
+  return content;
+}
+
+function createPageElement(content, mainContent) {
+  const pageElement = document.createElement('div');
+  pageElement.style.display = 'none';
+  pageElement.innerHTML = content;
+  mainContent.appendChild(pageElement);
+  return pageElement;
+}
+
+async function loadScripts(container, loadedScripts) {
+  const scripts = Array.from(container.querySelectorAll('script'));
   
-      // Redirect to login page if role is not found or response isn't successful
-      window.location.href = "/login";
-      return null;
-    } catch (error) {
-      console.error('Error fetching user role:', error);
-      // Redirect to login in case of error
-      window.location.href = "/login";
-      return null;
+  for (const script of scripts) {
+    if (script.src && loadedScripts.has(script.src)) {
+      script.remove();
+      continue;
     }
-  }
-  
-  // Function to populate navigation
-  function populateNavigation(userRole) {
-    const navigationButtons = {
-        student: [
-          { page: "dashboard", icon: "layout-dashboard", label: "Dashboard", textClass: "text-teal-600 dark:text-teal-400" },
-          { page: "grade", icon: "trending-up", label: "Grades", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "attendance", icon: "calendar-check", label: "Attendance", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "fees", icon: "dollar-sign", label: "Fees", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "class", icon: "book-open", label: "Class", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "profile", icon: "user-circle", label: "Profile", textClass: "text-gray-600 dark:text-gray-400" }
-        ],
-        teacher: [
-          { page: "dashboard", icon: "layout-dashboard", label: "Dashboard", textClass: "text-teal-600 dark:text-teal-400" },
-          { page: "grades", icon: "trending-up", label: "Grades", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "attendance", icon: "calendar-check", label: "Attendance", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "finance", icon: "dollar-sign", label: "Finance", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "class", icon: "book-open", label: "Classes", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "profile", icon: "user-circle", label: "Profile", textClass: "text-gray-600 dark:text-gray-400" }
-        ],
-        admin: [
-          { page: "dashboard", icon: "layout-dashboard", label: "Dashboard", textClass: "text-teal-600 dark:text-teal-400" },
-          { page: "students", icon: "user", label: "Students", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "teachers", icon: "user-check", label: "Teachers", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "classes", icon: "book-open", label: "Classes", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "finance", icon: "dollar-sign", label: "Finance", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "schools", icon: "home", label: "Schools", textClass: "text-gray-600 dark:text-gray-400" },
-          { page: "profile", icon: "user-circle", label: "Profile", textClass: "text-gray-600 dark:text-gray-400" }
-        ]
-      };
-  
-    const navContainer = document.getElementById("nav");
-    navContainer.innerHTML = '';
-  
-    if (navigationButtons[userRole]) {
-      const navBar = document.createElement('nav');
-      navBar.classList.add('fixed', 'bottom-0', 'left-0', 'right-0', 'flex', 'justify-around', 'border-t', 'border-gray-200', 'bg-white', 'dark:border-gray-800', 'dark:bg-gray-900', 'py-1');
-  
-      navigationButtons[userRole].forEach(button => {
-        const buttonElement = document.createElement("button");
-        buttonElement.classList.add("flex", "flex-col", "items-center", "p-1");
-        buttonElement.setAttribute("data-page", button.page);
-        buttonElement.innerHTML = `
-          <i data-lucide="${button.icon}" class="h-5 w-5"></i>
-          <span class="text-xs mt-1">${button.label}</span>
-        `;
-        navBar.appendChild(buttonElement);
-      });
-  
-      navContainer.appendChild(navBar);
+
+    const newScript = document.createElement('script');
+    if (script.src) {
+      newScript.src = script.src;
+      loadedScripts.add(script.src);
     } else {
-      console.error("Invalid user role:", userRole);
+      newScript.textContent = script.textContent;
     }
+    
+    script.replaceWith(newScript);
+    await new Promise(resolve => (newScript.onload = resolve));
   }
+}
+
+function showPage(page, mainContent, stateCache) {
+  Array.from(mainContent.children).forEach(child => {
+    child.style.display = child === stateCache.get(page) ? 'block' : 'none';
+  });
+  lucide.createIcons({ container: stateCache.get(page) });
+}
+
+// themeManagement.js
+function initializeTheme(themeToggle) {
+  const rootElement = document.documentElement;
+  const savedTheme = localStorage.getItem("theme") || "light";
+
+  rootElement.classList.toggle('dark', savedTheme === "dark");
+  themeToggle.addEventListener("click", () => {
+    const isDark = rootElement.classList.toggle('dark');
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  });
+}

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, session, request
+from flask import Blueprint, render_template, redirect, url_for, session,make_response
 from flask_login import logout_user
 
 
@@ -37,7 +37,16 @@ def register_school():
 def login():
       school_choosed = session.get("schoolID")
       if school_choosed:
+            response = make_response("Logged in successfully")
+            response.set_cookie(
+                'session', 'your-generated-token',
+                httponly=True,
+                secure=True,
+                samesite='Lax',
+                max_age=30 * 24 * 60 * 60  # 30 days
+            )
             return render_template("auth/login.html")
+      
       return redirect(url_for("routes.auth.select_school"))
 
 
@@ -45,14 +54,23 @@ def login():
 # Logout route
 @auth_bp.route('/logout')
 def logout():
-	logout_user()
-	session["login"] = False
-	return redirect(url_for('routes.auth.login'))
+    logout_user()
+    schoolid = session.get("schoolID")
+    session.clear()
+    session["schoolID"] = schoolid
+    return redirect(url_for('routes.auth.login'))
 
 
 # Logout route
 @auth_bp.route('/intelleva')
 def dashboard():
-	return render_template('nav.html')
+    school_choosed = session.get("schoolID")
+    if not school_choosed:
+        return redirect(url_for("routes.auth.select_school"))
+    if not session.get("login"):
+        return redirect(url_for("routes.auth.login"))
+    return render_template('nav.html')
+    
+         
 
 

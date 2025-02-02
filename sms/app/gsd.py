@@ -1,4 +1,4 @@
-import random, uuid
+import random, uuid, sys, time, threading
 from random import choice, sample
 from datetime import datetime, timedelta
 from .models.admin_model import School_information, Admin, Announcements, Events
@@ -442,8 +442,7 @@ def generate_fake_students(n, classes):
 
         class_.class_numberOfStudent = temp
         school_info.school_total_students += 1
-        print(class_.class_numberOfStudent, gender, class_.id)
-		
+        
         with app.app_context():
             db.session.commit()
 
@@ -586,108 +585,121 @@ def generate_fake_attendance(model, persons, terms, role='student'):
 	return attendance_list, temp
 
 
-with app.app_context():
-	school_info = generate_fake_school_info(CURRENT_YEAR[0], 
-											terms, class_, 
-											result_types, 
-											EXPENSES, BUDGET)
 
 
-	db.session.add(school_info)
-	db.session.commit()
 
-	
-	admins = generate_fake_admins(2)
-	db.session.add_all(admins)
-	db.session.commit()
-	
-	
-	teachers = generate_fake_teachers(10)
-	db.session.add_all(teachers)
-	db.session.commit()
-	
-	
-	teachers = generate_fake_teachers(2, "head teacher")
-	db.session.add_all(teachers)
-	db.session.commit()
-	
-	
-	teachers = Teachers.query.all()
-	class_names = [
-	'KG1', "KG2", 'PRIMARY1', 'PRIMARY2', 'PRIMARY3', 'PRIMARY4',
-	'PRIMARY5', 'PRIMARY6'
-	]
-	classes = generate_fake_classes(teachers, class_names)
-	db.session.add_all(classes)
-	db.session.commit()
-	
-	
-	classes = Classes.query.all()
+def animate_dots():
+    """Function to animate dots while the database setup is running."""
+    animation = ["   ", ".  ", ".. ", "..."]
+    idx = 0
+    while not stop_animation_event.is_set():
+        sys.stdout.write(f"\rCreating school database{animation[idx]}")
+        sys.stdout.flush()
+        idx = (idx + 1) % len(animation)
+        time.sleep(0.5)
 
-	for _ in range(10):
-		students = generate_fake_students(10, classes)
-		db.session.add_all(students)
-		db.session.commit()
-	
-	
-	students = Students.query.all()
-	
-	years = ["2023/2024"]
-	results = generate_fake_results(students, terms, result_types, CURRENT_YEAR[0])
-	db.session.add_all(results)
-	db.session.commit()
-	
-	
-	students_fee, amount = generate_fake_student_fees(students, CURRENT_YEAR, terms)
-	school_info.school_total_revenues = {CURRENT_YEAR[0]: amount}
-	db.session.add_all(students_fee)
-	db.session.commit()
-	
-	
-	term = {
-	'first term': [datetime(2023, 1, 1),
-			   datetime(2023, 3, 31)],
-	'second term': [datetime(2023, 4, 1),
-				datetime(2023, 7, 31)],
-	'third term': [datetime(2023, 8, 1),
-			   datetime(2023, 11, 30)],
-	}
-	students_attendance, attendance = generate_fake_attendance(Student_attendance, students,
-										   term)
-	school_info.school_classes["classes_attendance"] = attendance.get("class")
-	db.session.add_all(students_attendance)
-	db.session.commit()
-	
-	
-	teachrs_attendance, attendance = generate_fake_attendance(Teacher_attendance, teachers,
-										  term, 'teacher')
-	school_info.school_teachers = attendance
-	db.session.add_all(teachrs_attendance)
-	db.session.commit()
-	
-	
-	evens_data = add_events_to_database(events)
-	db.session.add_all(evens_data)
-	db.session.commit()
-	
-	
-	annoucements = write_announcements_to_db(annoucement)
-	db.session.add_all(annoucements)
-	db.session.commit()
+def setup_database():
+    """Function to run the actual database operations with progress updates."""
+    with app.app_context():
+        print("\nCreating school information dataset...")
+        school_info = generate_fake_school_info(CURRENT_YEAR[0], terms, class_, result_types, EXPENSES, BUDGET)
+        db.session.add(school_info)
+        db.session.commit()
+        print("School information dataset created successfully.")
 
-	
-	students = Students.query.all()
-	term = {
-	'first term': [datetime(2024, 1, 1),
-			   datetime(2024, 3, 31)],
-	'second term': [datetime(2024, 4, 1),
-				datetime(2024, 7, 31)],
-	'third term': [datetime(2024, 8, 1),
-			   datetime(2024, 11, 30)],
-	}
-	
-	print("Current school temp Databse created Successfully .......")
+        print("\nCreating admin dataset...")
+        admins = generate_fake_admins(2)
+        db.session.add_all(admins)
+        db.session.commit()
+        print("Admin dataset created successfully.")
 
+        print("\nCreating teachers dataset...")
+        teachers = generate_fake_teachers(10)
+        db.session.add_all(teachers)
+        db.session.commit()
+        print("Teachers dataset created successfully.")
+
+        print("\nCreating head teachers dataset...")
+        head_teachers = generate_fake_teachers(2, "head teacher")
+        db.session.add_all(head_teachers)
+        db.session.commit()
+        print("Head teachers dataset created successfully.")
+
+        print("\nCreating class dataset...")
+        teachers = Teachers.query.all()
+        class_names = ['KG1', "KG2", 'PRIMARY1', 'PRIMARY2', 'PRIMARY3', 'PRIMARY4', 'PRIMARY5', 'PRIMARY6']
+        classes = generate_fake_classes(teachers, class_names)
+        db.session.add_all(classes)
+        db.session.commit()
+        print("Class dataset created successfully.")
+
+        print("\nCreating students dataset...")
+        classes = Classes.query.all()
+        for _ in range(10):
+            students = generate_fake_students(10, classes)
+            db.session.add_all(students)
+            db.session.commit()
+        print("Students dataset created successfully.")
+
+        print("\nCreating results dataset...")
+        students = Students.query.all()
+        years = ["2023/2024"]
+        results = generate_fake_results(students, terms, result_types, CURRENT_YEAR[0])
+        db.session.add_all(results)
+        db.session.commit()
+        print("Results dataset created successfully.")
+
+        print("\nCreating student fees dataset...")
+        students_fee, amount = generate_fake_student_fees(students, CURRENT_YEAR, terms)
+        school_info.school_total_revenues = {CURRENT_YEAR[0]: amount}
+        db.session.add_all(students_fee)
+        db.session.commit()
+        print("Student fees dataset created successfully.")
+
+        print("\nCreating student attendance dataset...")
+        term = {
+            'first term': [datetime(2023, 1, 1), datetime(2023, 3, 31)],
+            'second term': [datetime(2023, 4, 1), datetime(2023, 7, 31)],
+            'third term': [datetime(2023, 8, 1), datetime(2023, 11, 30)],
+        }
+        students_attendance, attendance = generate_fake_attendance(Student_attendance, students, term)
+        school_info.school_classes["classes_attendance"] = attendance.get("class")
+        db.session.add_all(students_attendance)
+        db.session.commit()
+        print("Student attendance dataset created successfully.")
+
+        print("\nCreating teacher attendance dataset...")
+        teachers_attendance, attendance = generate_fake_attendance(Teacher_attendance, teachers, term, 'teacher')
+        school_info.school_teachers = attendance
+        db.session.add_all(teachers_attendance)
+        db.session.commit()
+        print("Teacher attendance dataset created successfully.")
+
+        print("\nCreating events dataset...")
+        events_data = add_events_to_database(events)
+        db.session.add_all(events_data)
+        db.session.commit()
+        print("Events dataset created successfully.")
+
+        print("\nCreating announcements dataset...")
+        announcements = write_announcements_to_db(annoucement)
+        db.session.add_all(announcements)
+        db.session.commit()
+        print("Announcements dataset created successfully.")
+
+        print("\nDatabase setup completed successfully!")
+
+
+stop_animation_event = threading.Event()
+animation_thread = threading.Thread(target=animate_dots)
+animation_thread.start()
+
+try:
+        setup_database()
+finally:
+        stop_animation_event.set()  # Stop animation
+        animation_thread.join()  # Ensure the animation thread stops
+        sys.stdout.write("\rDatabase creation completed successfully!      \n")
 	
 
 

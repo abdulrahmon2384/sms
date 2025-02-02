@@ -1,4 +1,7 @@
 
+
+
+
 // Temporay dataset
 const data = {
     "profile": {
@@ -563,10 +566,6 @@ tabs.forEach(tab => {
 
 }
 
-
-
-
 // Calling witg the Fake dataset
 loadDashboardData(data)
 updateDashboard(data)
-
