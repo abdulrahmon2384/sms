@@ -1,3 +1,232 @@
-<div>
-    Welcome to Performance
+
+<div class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Student Header Section -->
+        <div class="mb-8 space-y-6">
+            <!-- Student Profile Section -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center space-x-5">
+        <!-- Avatar with Gradient -->
+        <div class="w-20 h-20 bg-gradient-to-br from-teal-500 to-blue-500 dark:from-teal-600 dark:to-blue-600 text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-lg">
+            JD
+        </div>
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-teal-400" id="studentName">John Doe</h2>
+            <p class="text-sm text-gray-600 dark:text-gray-400" id="studentId">Student ID: 12345</p>
+        </div>
+    </div>
+    <!-- Action Buttons -->
+    <div class="w-full sm:w-auto flex gap-4">
+        <button class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-gray-100 to-gray-300 dark:from-gray-700 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-lg shadow-md hover:from-gray-200 hover:to-gray-400 dark:hover:from-gray-600 dark:hover:to-gray-800 transition-all text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <i class="fas fa-file-download mr-2"></i> Export Report
+        </button>
+        <button class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-teal-600 to-blue-500 text-white rounded-lg shadow-md hover:from-teal-500 hover:to-blue-400 transition-all text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <i class="fas fa-user-edit mr-2"></i> Request Review
+        </button>
+    </div>
 </div>
+
+<!-- Filters Section -->
+<div class="flex flex-col sm:flex-row gap-4 mt-6 p-5 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+    <select id="yearSelect" class="w-full sm:w-48 px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm text-gray-800 dark:text-gray-200 transition-all">
+        <option value="">ð Select Academic Year</option>
+    </select>
+    <select id="termSelect" class="w-full sm:w-48 px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm text-gray-800 dark:text-gray-200 transition-all">
+        <option value="">ð Select Term</option>
+    </select>
+</div>
+
+            <!-- Advanced Stats Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- GPA Card -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 relative overflow-hidden">
+        <div class="absolute top-3 right-3 text-gray-300 dark:text-gray-600">
+            <i class="fas fa-graduation-cap text-2xl"></i> <!-- GPA Icon -->
+        </div>
+        <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Cumulative GPA</p>
+        <div class="flex items-center justify-between">
+            <p class="text-4xl font-extrabold text-teal-600 dark:text-teal-400" id="gpa">3.9</p>
+            <span class="px-3 py-1 bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400 text-xs rounded-md shadow">+2.3%</span>
+        </div>
+    </div>
+
+    <!-- Class Rank Card -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 relative overflow-hidden">
+        <div class="absolute top-3 right-3 text-gray-300 dark:text-gray-600">
+            <i class="fas fa-chart-line text-2xl"></i> <!-- Rank Icon -->
+        </div>
+        <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Class Rank</p>
+        <div class="flex items-center justify-between">
+            <p class="text-4xl font-extrabold text-teal-600 dark:text-teal-400" id="classRank">5th</p>
+            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs rounded-md shadow">â 2 ranks</span>
+        </div>
+    </div>
+
+    <!-- Attendance Card -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 relative overflow-hidden">
+        <div class="absolute top-3 right-3 text-gray-300 dark:text-gray-600">
+            <i class="fas fa-calendar-check text-2xl"></i> <!-- Attendance Icon -->
+        </div>
+        <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Attendance</p>
+        <div class="flex items-center justify-between">
+            <p class="text-4xl font-extrabold text-teal-600 dark:text-teal-400" id="p-attendance">98.6%</p>
+            <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 text-xs rounded-md shadow">Perfect Month</span>
+        </div>
+    </div>
+
+    <!-- Credits Earned Card -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 relative overflow-hidden">
+        <div class="absolute top-3 right-3 text-gray-300 dark:text-gray-600">
+            <i class="fas fa-book-open text-2xl"></i> <!-- Credits Icon -->
+        </div>
+        <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Credits Earned</p>
+        <div class="flex items-center justify-between">
+            <p class="text-4xl font-extrabold text-teal-600 dark:text-teal-400" id="credits">128</p>
+            <span class="px-3 py-1 bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 text-xs rounded-md shadow">92% Progress</span>
+        </div>
+    </div>
+</di>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+            <!-- Tab Navigation -->
+            <div class="border-b border-gray-200 dark:border-gray-700">
+                <div class="flex flex-wrap gap-2 px-6 pt-4">
+                    <button data-tab="overview" class="tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-teal-600 dark:text-teal-400 border-b-2 border-teal-500">
+                        Overview
+                    </button>
+                    <button data-tab="subjects" class="tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-300">
+                        Subjects
+                    </button>
+                    <button data-tab="progress" class="tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-300">
+                        Progress
+                    </button>
+                    <button data-tab="feedback" class="tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-300">
+                        Feedback
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="p-6">
+                <!-- Overview Tab -->
+                <div id="overviewTab" class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Academic Performance Breakdown</h3>
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-4">
+                            <canvas id="subjectsChart" class="max-h-[400px]"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Strengths Section -->
+                        <div class="relative bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-full h-32 bg-teal-500 rounded-b-full"></div>
+                            <h3 class="relative text-lg font-semibold text-teal-600 mb-4 z-10">Key Strengths</h3>
+                            <div id="strengths" class="relative flex flex-wrap gap-2 z-10">
+                                <!-- Dynamic Content Here -->
+                            </div>
+                        </div>
+                    
+                        <!-- Improvement Areas Section -->
+                        <div class="relative bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-full h-32 bg-teal-500 rounded-b-full"></div>
+                            <h3 class="relative text-lg font-semibold text-teal-600 mb-4 z-10">Improvement Areas</h3>
+                            <div id="areasForImprovement" class="relative flex flex-wrap gap-2 z-10">
+                                <!-- Dynamic Content Here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subjects Tab -->
+<div id="subjectsTab" class="hidden space-y-6">
+    <!-- Styled Heading -->
+    <h3 class="text-2xl font-semibold text-teal-600 border-b-4 border-teal-500 pb-2">Subject Performance Details</h3>
+
+    <!-- Responsive Table Wrapper -->
+    <div class="overflow-hidden rounded-xl shadow-lg border border-gray-300 dark:border-gray-700">
+        <table class="w-full text-left text-sm border-collapse">
+            <!-- Table Head -->
+            <thead class="bg-gradient-to-r from-teal-500 to-teal-700 text-white">
+                <tr>
+                    <th class="px-6 py-4">Subject</th>
+                    <th class="px-6 py-4">Grade</th>
+                    <th class="px-6 py-4">Instructor</th>
+                    <th class="px-6 py-4">Assessments</th>
+                </tr>
+            </thead>
+
+            <!-- Table Body -->
+            <tbody id="subjectDetails" class="bg-gray-50 dark:bg-gray-800 divide-y divide-gray-300 dark:divide-gray-700">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+                <!-- Progress Tab -->
+<div id="progressTab" class="hidden space-y-8">
+    <!-- Academic Progress Timeline -->
+    <div class="relative bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl shadow-lg overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-teal-500 to-teal-700 rounded-b-full"></div>
+        <h3 class="relative text-xl font-semibold text-white text-center py-4 z-10">Academic Progress Timeline</h3>
+        <div class="relative z-10">
+            <canvas id="progressChart" class="w-full max-h-[400px]"></canvas>
+        </div>
+    </div>
+
+    <!-- Class Comparison Analysis -->
+    <div class="relative bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl shadow-lg overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-teal-500 to-teal-700 rounded-b-full"></div>
+        <h3 class="relative text-xl font-semibold text-white text-center py-4 z-10">Class Comparison Analysis</h3>
+        <div class="relative z-10">
+            <canvas id="comparisonChart" class="w-full max-h-[400px]"></canvas>
+        </div>
+    </div>
+</div>
+
+                <!-- Feedback Tab -->
+<div id="feedbackTab" class="hidden space-y-8">
+    
+    <!-- Instructor Feedback Section -->
+    <div class="relative bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl shadow-lg overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-teal-500 to-teal-700 rounded-b-full"></div>
+        <h3 class="relative text-xl font-semibold text-white text-center py-4 z-10">Instructor Feedback</h3>
+        <div id="teacherComments" class="relative z-10 space-y-4 mt-6"></div>
+    </div>
+
+    <!-- Upcoming Evaluations Table -->
+    <div class="relative bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl shadow-lg overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-teal-500 to-teal-700 rounded-b-full"></div>
+        <h3 class="relative text-xl font-semibold text-white text-center py-4 z-10">Upcoming Evaluations</h3>
+
+        <div class="relative z-10 overflow-x-auto rounded-lg border border-gray-300 dark:border-gray-700 mt-6">
+            <table class="w-full text-left text-sm border-collapse">
+                <thead class="bg-gradient-to-r from-teal-500 to-teal-700 text-white">
+                    <tr>
+                        <th class="px-6 py-4">Subject</th>
+                        <th class="px-6 py-4">Date</th>
+                        <th class="px-6 py-4">Type</th>
+                        <th class="px-6 py-4">Preparation Status</th>
+                    </tr>
+                </thead>
+                <tbody id="upcomingAssessments" class="bg-gray-50 dark:bg-gray-800 divide-y divide-gray-300 dark:divide-gray-700">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/student/performance.js') }}" defer></script>
+
+</div>
+
+
+
+
+
+
