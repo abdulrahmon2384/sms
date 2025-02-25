@@ -10,6 +10,7 @@ GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini
 
 
 
+
 # Create a Blueprint with the proper URL prefix
 auth_api_bp = Blueprint("auth_api", __name__)
 

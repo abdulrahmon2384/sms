@@ -1,63 +1,185 @@
-document.addEventListener('DOMContentLoaded', () => {
-  initializeApp();
-});
+// Global variables
+const chartInstances = new Map();
+let AttendanceTabButtons = false;
+let PerformanceTabButtons = false;
+let tabButtons = null;
+let Data = {};
+let studentAttendanceChart, studentPunctualityChart;
 
-function initializeApp() {
-  fetchUserRole().then(Data => {
-    const userRole = Data.role;
-    if (!userRole) return;
 
-    // Initialize all cache stores first
-    const stateCache = new Map();
-    const loadedScripts = new Set();
-    const contentCache = new Map();
-    const mainContent = document.querySelector('main');
 
-    // Initialize UI components
-    lucide.createIcons();
-    initializeTheme(document.getElementById('themeToggle'));
-    initializeProfileDropdown(Data);
-    populateNavigation(userRole);
 
-    // Set up navigation with all required parameters
-    setupNavigation({
-      userRole,
-      mainContent,
-      stateCache,
-      loadedScripts,
-      contentCache
-    });
 
-    // Initial load and preload
-    loadContent({
-      page: 'dashboard',
-      userRole,
-      mainContent,
-      stateCache,
-      loadedScripts,
-      contentCache
-    });
-    preloadContent(userRole, contentCache);
+
+
+// Reuseable functions 
+function switchTab(event, tabContents) {
+  const selectedTab = event.target.getAttribute("data-tab");
+
+  // Remove active styles from all buttons
+  tabButtons.forEach(button => {
+      button.classList.remove("text-teal-600", "dark:text-teal-400", "border-teal-500");
+      button.classList.add("text-gray-600", "dark:text-gray-400", "hover:text-teal-600", "dark:hover:text-teal-300");
+      button.classList.remove("border-b-2");
+  });
+
+  // Hide all tab contents
+  Object.values(tabContents).forEach(content => {
+      content.classList.add("hidden");
+  });
+
+  // Show the selected tab content and highlight the active button
+  if (tabContents[selectedTab]) {
+      tabContents[selectedTab].classList.remove("hidden");
+  }
+
+  // Add active styles to the clicked button
+  event.target.classList.add("text-teal-600", "dark:text-teal-400", "border-teal-500", "border-b-2");
+  event.target.classList.remove("text-gray-600", "dark:text-gray-400", "hover:text-teal-600", "dark:hover:text-teal-300");
+};
+
+
+
+function populateSelectElements(data, mappings) {
+  Object.entries(mappings).forEach(([key, selectIds]) => {
+      // Ensure selectIds is always treated as an array
+      const ids = Array.isArray(selectIds) ? selectIds : [selectIds];
+
+      ids.forEach(selectId => {
+          const selectElement = document.getElementById(selectId);
+          if (!selectElement) return; // Skip if the element doesn't exist
+
+          if (key === "currentYear") {
+              // Populate the currentYear dropdown with only the current year
+              selectElement.innerHTML = `<option value="${data.currentYear}" selected>${data.currentYear}</option>`;
+          } else if (key === "schoolTerms") {
+            if (selectId.includes("Timetravel")) {
+              // For timetravel selects: add a default "Select" option and no term is pre-selected
+              selectElement.innerHTML = `<option value="" selected>Select</option>` +
+                data.schoolTerms
+                  .map(term => `<option value="${term.name}">${term.name}</option>`)
+                  .join("");
+            } else {
+              // For other selects: mark the current term as selected
+              selectElement.innerHTML = data.schoolTerms
+                .map(term => `<option value="${term.name}" ${term.name === data.currentTerm ? 'selected' : ''}>${term.name}</option>`)
+                .join("");
+            }
+
+          } else if (key === "userYears") {
+              // Populate all userYears dropdowns but exclude currentYear
+              selectElement.innerHTML = data.userYears
+                  .filter(year => year !== data.currentYear)
+                  .map(year => `<option value="${year}">${year}</option>`)
+                  .join("");
+          }
+      });
   });
 }
 
-// Profile dropdown initialization with data
-function initializeProfileDropdown(userData) {
+function handleTabButtons(pagename, tabContents, tabButtonId) {
+  // If the handler is already initialized, exit the function
+  if (PerformanceTabButtons && AttendanceTabButtons) {
+      console.log("Handler is already initialized.");
+      return;
+  }
+
+  tabButtons = document.querySelectorAll(tabButtonId);
+
+  if (!tabButtons || tabButtons.length === 0) {
+      console.error("No tab buttons found!"); // Show an error
+      return;
+  }
+
+  tabButtons.forEach(button => {
+    button.addEventListener("click", (event) => switchTab(event, tabContents));
+    });;
+
+  if (pagename === "studentAttendance"){
+    AttendanceTabButtons = true;
+  } else if (pagename === "studentPerformance"){
+    PerformanceTabButtons = true;
+  }
+}
+
+function addEventListenerOnce(elementId, eventType, callback) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+
+  if (!element.dataset.listenerAdded) {  // Check if listener is already added
+      element.addEventListener(eventType, callback);
+      element.dataset.listenerAdded = "true"; // Mark as added
+  }
+}
+
+// Function to animate counters
+function animateCounter(id, target) {
+  let element = document.getElementById(id);
+  let count = 0;
+  let speed = Math.max(20, 2000 / target); // Adjust speed based on number size
+
+  function updateCounter() {
+      if (count < target) {
+          count += Math.ceil(target / 100);
+          element.textContent = count;
+          requestAnimationFrame(updateCounter);
+      } else {
+          element.textContent = target;
+      }
+  }
+
+  updateCounter();
+}
+// end of Reuseable functions
+
+
+
+
+
+function updatElementIdContent(data) {
+  Object.entries(data).forEach(([id, value]) => {
+      let element = document.getElementById(id);
+      if (element && value !== null && value !== undefined) {
+          // Check if the element is an image (or any element that requires src update)
+          if (element.tagName === "IMG") {
+              element.src = value;
+          } else {
+              element.textContent = value;
+          }
+      }
+  });
+}
+
+
+// Profile dropdown initialization
+function initializeProfileDropdown() {
   const profileButton = document.getElementById('profileDropdown');
   const dropdownMenu = document.getElementById('dropdownMenu');
   
-  document.querySelector("#profileDropdown img").src = userData.image_link;
-  document.querySelector("#fullname").textContent = userData.name;
+  
+  updatElementIdContent(
+    {
+      firstname: Data.firstname,
+      IMG: Data.IMG
+    }
+  )
 
-  profileButton.addEventListener('click', (event) => {
+
+  const clickHandler = (event) => {
     dropdownMenu.classList.toggle('hidden');
     event.stopPropagation();
-  });
+  };
 
+  profileButton.addEventListener('click', clickHandler);
   document.addEventListener('click', () => dropdownMenu.classList.add('hidden'));
+
+  // Cleanup reference
+  return () => {
+    profileButton.removeEventListener('click', clickHandler);
+  };
 }
 
-// Navigation setup with proper parameter handling
+// Navigation setup
 function setupNavigation({ userRole, mainContent, stateCache, loadedScripts, contentCache }) {
   const navButtons = document.querySelectorAll('nav button');
   let currentPage = 'dashboard';
@@ -65,50 +187,71 @@ function setupNavigation({ userRole, mainContent, stateCache, loadedScripts, con
   // Set initial active state
   document.querySelector(`[data-page="dashboard"]`).classList.add('text-teal-600', 'dark:text-teal-400');
 
-  // Main navigation handler
-navButtons.forEach(button => {
-  button.addEventListener('click', () => {
+  const clickHandlers = new Map();
+
+  navButtons.forEach(button => {
+    const handler = () => {
       const page = button.dataset.page;
       if (currentPage === page) return;
 
-      // Update button states - Reset all buttons
+      // Cleanup previous page resources
+      // cleanupPageResources(currentPage);
+
+      // Update button states
       navButtons.forEach(btn => {
-          btn.classList.remove('text-teal-600', 'dark:text-teal-400', 'bg-teal-100', 'dark:bg-teal-900');
+        btn.classList.remove('text-teal-600', 'dark:text-teal-400', 'bg-teal-100', 'dark:bg-teal-900');
       });
 
-      // Highlight the active button
       button.classList.add('text-teal-600', 'dark:text-teal-400', 'bg-teal-100', 'dark:bg-teal-900');
 
-      // Load content with all required parameters
       loadContent({
-          page,
-          userRole,
-          mainContent,
-          stateCache,
-          loadedScripts,
-          contentCache
+        page,
+        userRole,
+        mainContent,
+        stateCache,
+        loadedScripts,
+        contentCache
       });
 
       currentPage = page;
+    };
+
+    button.addEventListener('click', handler);
+    clickHandlers.set(button, handler);
   });
-});
-
-
 
   // Special AI button handler
-  document.getElementById('intelleva-ai')?.addEventListener('click', () => {
-    loadContent({
-      page: 'AI',
-      userRole,
-      mainContent,
-      stateCache,
-      loadedScripts,
-      contentCache
+  const aiButton = document.getElementById('intelleva-ai');
+  if (aiButton) {
+    const aiHandler = () => {
+      cleanupPageResources(currentPage);
+      loadContent({
+        page: 'AI',
+        userRole,
+        mainContent,
+        stateCache,
+        loadedScripts,
+        contentCache
+      });
+      currentPage = 'AI';
+    };
+    aiButton.addEventListener('click', aiHandler);
+    clickHandlers.set(aiButton, aiHandler);
+  }
+
+  // Cleanup function
+  return () => {
+    navButtons.forEach(button => {
+      button.removeEventListener('click', clickHandlers.get(button));
     });
-  });
+    if (aiButton) {
+      aiButton.removeEventListener('click', clickHandlers.get(aiButton));
+    }
+  };
 }
 
-// Updated loadContent with parameter object destructuring
+
+// Load content with cleanup
 async function loadContent({ page, userRole, mainContent, stateCache, loadedScripts, contentCache }) {
   try {
     if (stateCache.has(page)) {
@@ -120,6 +263,12 @@ async function loadContent({ page, userRole, mainContent, stateCache, loadedScri
     const pageElement = createPageElement(content, mainContent);
     await loadScripts(pageElement, loadedScripts);
     
+    // Track chart instances
+    const charts = Array.from(pageElement.querySelectorAll('canvas'))
+      .map(canvas => Chart.getChart(canvas))
+      .filter(chart => chart);
+    chartInstances.set(page, charts);
+
     stateCache.set(page, pageElement);
     showPage(page, mainContent, stateCache);
   } catch (error) {
@@ -128,34 +277,27 @@ async function loadContent({ page, userRole, mainContent, stateCache, loadedScri
 }
 
 
-
-
 // fetchUserRole.js
-async function fetchUserRole() {
-  try {
-    const response = await fetch('/api/current_user_role', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'credentials': 'include' // Add this line
-      },
-    });
+function fetchUserRole() {
+  return {
+    success: true,
+    role: "student",
+    firstname: "Abdulrahmon",
+    lastname: "Otubu",
+    currentTerm: "Second Term",
+    teacher: "Ms. Smith",
+    grade: "Ss2",
+    currentYear: "2024-2025",
+    userID: "Abdul2384",
+    IMG: "https://f005.backblazeb2.com/file/School-management-system/default.png",
+    schoolTerms : [
+      { name: "First Term"},
+      { name: "Second Term"},
+      { name: "Third Term"},
+      ],
+    userYears: ["2022-2023", "2023-2024", "2024-2025", "2025-2026"]
+  }};
 
-    if (response.ok) {
-      const data = await response.json();
-      if (data.success && data.role) {
-        return data;
-      }
-    }
-
-    window.location.href = "/login";
-    return null;
-  } catch (error) {
-    console.error('Error fetching user role:', error);
-    window.location.href = "/login";
-    return null;
-  }
-}
 
 function populateNavigation(userRole) {
   const navigationConfig = {
@@ -186,12 +328,10 @@ function populateNavigation(userRole) {
   const navContainer = document.getElementById("nav");
   navContainer.innerHTML = '';
 
-  // Create Navigation Bar
   const navBar = document.createElement('nav');
   navBar.className =
     'fixed bottom-2 left-2 right-2 flex justify-around bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-md border border-gray-200 dark:border-gray-800 py-2 rounded-xl transition-all duration-300';
 
-  // Generate Navigation Items
   navigationConfig[userRole]?.forEach(({ page, icon, label }) => {
     const button = document.createElement("button");
     button.className = 
@@ -293,14 +433,64 @@ function showPage(page, mainContent, stateCache) {
   lucide.createIcons({ container: stateCache.get(page) });
 }
 
-// themeManagement.js
+// Theme management
 function initializeTheme(themeToggle) {
   const rootElement = document.documentElement;
   const savedTheme = localStorage.getItem("theme") || "light";
 
   rootElement.classList.toggle('dark', savedTheme === "dark");
-  themeToggle.addEventListener("click", () => {
+  const clickHandler = () => {
     const isDark = rootElement.classList.toggle('dark');
     localStorage.setItem("theme", isDark ? "dark" : "light");
-  });
+  };
+  themeToggle.addEventListener("click", clickHandler);
+
+  // Cleanup reference
+  return () => {
+    themeToggle.removeEventListener("click", clickHandler);
+  };
 }
+
+
+function initializeNavApp() {
+  Data = fetchUserRole()
+  const userRole = Data.role;
+  if (!userRole) return;
+
+  // Initialize all cache stores
+  const stateCache = new Map();
+  const loadedScripts = new Set();
+  const contentCache = new Map();
+  const mainContent = document.querySelector('main');
+
+  // Initialize UI components
+  lucide.createIcons();
+  initializeTheme(document.getElementById('themeToggle'));
+  initializeProfileDropdown();
+  populateNavigation(userRole);
+
+  // Set up navigation
+  setupNavigation({
+    userRole,
+    mainContent,
+    stateCache,
+    loadedScripts,
+    contentCache
+  });
+
+  // Initial load and preload
+  loadContent({
+    page: 'dashboard',
+    userRole,
+    mainContent,
+    stateCache,
+    loadedScripts,
+    contentCache
+  });
+  preloadContent(userRole, contentCache);
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  initializeNavApp();
+});

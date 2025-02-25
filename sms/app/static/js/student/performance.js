@@ -1,41 +1,10 @@
-    // Chart instances
-    let subjectsChart, progressChart, comparisonChart;
+// Chart instances
+let subjectsChart, progressChart, comparisonChart, performanceTimeTravelchart;
     
-    // DOM Elements
-    const domElements = {
-        studentName: document.getElementById('studentName'),
-        studentId: document.getElementById('studentId'),
-        yearSelect: document.getElementById('yearSelect'),
-        termSelect: document.getElementById('termSelect'),
-        gpa: document.getElementById('gpa'),
-        classRank: document.getElementById('classRank'),
-        attendance: document.getElementById('p-attendance'),
-        credits: document.getElementById('credits'),
-        strengths: document.getElementById('strengths'),
-        areasForImprovement: document.getElementById('areasForImprovement'),
-        subjectDetails: document.getElementById('subjectDetails'),
-        teacherComments: document.getElementById('teacherComments'),
-        upcomingAssessments: document.getElementById('upcomingAssessments')
-    };
 
-    // Fetch student information
-    async function fetchStudentInfo() {
-        return new Promise(resolve => {
-            setTimeout(() => resolve({
-                name: "John Doe",
-                id: "STU-2024-12345",
-                years: ["2023-2024", "2022-2023", "2021-2022"],
-                terms: ["Spring", "Fall", "Summer"],
-                currentYear: "2023-2024",
-                currentTerm: "Spring"
-            }), 500);
-        });
-    }
-
-    // Fetch performance data
-    async function fetchPerformance(year, term) {
-        return new Promise(resolve => {
-            setTimeout(() => resolve({
+// Fetch performance data
+function fetchPerformance(year, term) {
+        return {
                 gpa: 3.89,
                 classRank: "12/450",
                 attendance: "98.6",
@@ -58,127 +27,129 @@
                     student: [92, 88, 95, 85],
                     average: [84, 79, 88, 78]
                 }
-            }), 500);
-        });
+            }
+    };
+
+// Populate student information
+function populateStudentInfo() {
+        updatElementIdContent(
+            {  
+                performanceStudentName: Data.firstname + " " + Data.lastname,
+                performanceProfilePic: Data.IMG,
+                performanceStudentId: Data.userID,
+                performanceStudentGrade: Data.grade
+            }
+        )
+        
     }
 
-
-    // Populate student information
-    function populateStudentInfo(data) {
-        domElements.studentName.textContent = data.name;
-        domElements.studentId.textContent = `Student ID: ${data.id}`;
-        
-        // Populate year select
-        domElements.yearSelect.innerHTML = data.years
-            .map(year => `<option ${year === data.currentYear ? 'selected' : ''}>${year}</option>`);
-        
-        // Populate term select
-        domElements.termSelect.innerHTML = data.terms
-            .map(term => `<option ${term === data.currentTerm ? 'selected' : ''}>${term}</option>`);
-    }
-
-    // Update performance data
-    function updatePerformanceData(data) {
+// Update performance data
+function updatePerformanceData(data) {
         domElements.classRank.textContent = data.classRank;
         domElements.attendance.textContent = data.attendance;
         animateCounter("gpa", data.gpa);
         animateCounter("credits", data.credits);
 
         // Function to create styled badges
-const createBadge = (text, type = "default") => {
-    const colors = {
-        default: "bg-teal-500 text-white",
-        warning: "bg-yellow-500 text-white"
-    };
-    return `<span class="px-3 py-1 rounded-full text-sm font-medium ${colors[type]} shadow-md">${text}</span>`;
-};
+        const createBadge = (text, type = "default") => {
+        const colors = {
+                default: "bg-teal-500 text-white",
+                warning: "bg-yellow-500 text-white"
+            };
+        return `<span class="px-3 py-1 rounded-full text-sm font-medium ${colors[type]} shadow-md">${text}</span>`;
+        };
 
-// Populate strengths
-domElements.strengths.innerHTML = data.strengths
-    .map(strength => createBadge(strength, "default"))
-    .join('');
+        // Populate strengths
+        domElements.strengths.innerHTML = data.strengths
+            .map(strength => createBadge(strength, "default"))
+        .join('');
 
-// Populate improvement areas
-domElements.areasForImprovement.innerHTML = data.areasForImprovement
-    .map(area => createBadge(area, "warning"))
-    .join('');
+        // Populate improvement areas
+        domElements.areasForImprovement.innerHTML = data.areasForImprovement
+            .map(area => createBadge(area, "warning"))
+        .join('');
 
-// Function to generate table rows with styling
-const createTableRow = (subject) => {
-    return `
-        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-            <td class="px-6 py-4 font-medium text-gray-800 dark:text-gray-200">${subject.name}</td>
-            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${subject.grade}</td>
-            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${subject.teacher}</td>
-            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${subject.assessments}</td>
-        </tr>
-    `;
-};
+        // Function to generate table rows with styling
+        const createTableRow = (subject) => {
+            return `
+            <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                <td class="px-6 py-4 font-medium text-gray-800 dark:text-gray-200">${subject.name}</td>
+                <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${subject.grade}</td>
+                <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${subject.teacher}</td>
+                <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${subject.assessments}</td>
+            </tr>
+        `;
+        };
 
-// Populate subject details dynamically
-domElements.subjectDetails.innerHTML = data.subjects.map(createTableRow).join('');
+        // Populate subject details dynamically
+        domElements.subjectDetails.innerHTML = data.subjects.map(createTableRow).join('');
 
 
         // Function to create teacher comment cards
-const createCommentCard = (comment) => {
-    return `
-        <div class="flex items-start gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border-l-4 border-teal-500">
-            <div class="flex-shrink-0">
-                <span class="inline-block w-12 h-12 bg-teal-500 text-white font-bold flex items-center justify-center rounded-full">
-                    ${comment.subject.charAt(0)}
-                </span>
+        const createCommentCard = (comment) => {
+            return `
+                <div class="flex items-start gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border-l-4 border-teal-500">
+                <div class="flex-shrink-0">
+                    <span class="inline-block w-12 h-12 bg-teal-500 text-white font-bold flex items-center justify-center rounded-full">
+                        ${comment.subject.charAt(0)}
+                    </span>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200">${comment.subject}</h4>
+                    <p class="text-gray-600 dark:text-gray-400 italic">"${comment.text}"</p>
+                </div>
             </div>
-            <div>
-                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200">${comment.subject}</h4>
-                <p class="text-gray-600 dark:text-gray-400 italic">"${comment.text}"</p>
-            </div>
-        </div>
-    `;
-};
-
-// Update teacher comments section
-domElements.teacherComments.innerHTML = data.comments.map(createCommentCard).join('');
-
-// Function to create upcoming evaluation rows with status badges
-const createAssessmentRow = (assessment) => {
-    const statusColors = {
-        "Pending": "bg-yellow-500",
-        "Completed": "bg-green-500",
-        "Missed": "bg-red-500"
+        `;
     };
-    return `
-        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-            <td class="px-6 py-4 font-medium text-gray-800 dark:text-gray-200">${assessment.subject}</td>
-            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${assessment.date}</td>
-            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${assessment.type}</td>
-            <td class="px-6 py-4">
-                <span class="px-3 py-1 rounded-full text-white text-xs font-bold ${statusColors[assessment.status] || 'bg-gray-500'}">
-                    ${assessment.status}
-                </span>
-            </td>
-        </tr>
-    `;
-};
 
-// Update upcoming assessments table
-domElements.upcomingAssessments.innerHTML = data.assessments.map(createAssessmentRow).join('');
+    // Update teacher comments section
+    domElements.teacherComments.innerHTML = data.comments.map(createCommentCard).join('');
 
-        // Update charts
-        updateCharts(data);
+    // Function to create upcoming evaluation rows with status badges
+    const createAssessmentRow = (assessment) => {
+        const statusColors = {
+            "Pending": "bg-yellow-500",
+            "Completed": "bg-green-500",
+            "Missed": "bg-red-500"
+        };
+        return `
+            <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                <td class="px-6 py-4 font-medium text-gray-800 dark:text-gray-200">${assessment.subject}</td>
+                <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${assessment.date}</td>
+                <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${assessment.type}</td>
+                <td class="px-6 py-4">
+                    <span class="px-3 py-1 rounded-full text-white text-xs font-bold ${statusColors[assessment.status] || 'bg-gray-500'}">
+                        ${assessment.status}
+                    </span>
+                </td>
+            </tr>
+        `;
+    };
+
+    // Update upcoming assessments table
+    domElements.upcomingAssessments.innerHTML = data.assessments.map(createAssessmentRow).join('');
+    updateCharts(data);
+
     }
 
 
 // Function to create an advanced Subjects Chart
 function createSubjectsChart(data) {
     // Get the canvas element
-    const ctx = document.getElementById('subjectsChart').getContext('2d');
+    const canvas = document.getElementById('subjectsChart');
+    const ctx = canvas.getContext('2d');
+
+    // Destroy existing chart instance if it exists
+    if (window.subjectsChart instanceof Chart) {
+        window.subjectsChart.destroy();
+    }
 
     // Define gradient for bars
     const gradient = ctx.createLinearGradient(0, 0, 0, 300);
     gradient.addColorStop(0, 'rgba(20, 184, 166, 0.9)');  // Teal
     gradient.addColorStop(1, 'rgba(20, 184, 166, 0.3)');  // Lighter Teal
 
-    // Create new chart
+    // Create new chart instance
     window.subjectsChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -249,7 +220,6 @@ function updateCharts(data) {
 
     createSubjectsChart(data);
 
-    // Progress chart (Line Chart)
     progressChart = new Chart(document.getElementById('progressChart'), {
         type: 'line',
         data: {
@@ -278,7 +248,6 @@ function updateCharts(data) {
         }
     });
 
-    // Comparison chart (Radar Chart)
     comparisonChart = new Chart(document.getElementById('comparisonChart'), {
         type: 'radar',
         data: {
@@ -315,96 +284,203 @@ function updateCharts(data) {
 }
 
 
-    // Get all tab buttons and tab content divs
-    const tabButtons = document.querySelectorAll(".tab-button");
-    const tabContents = {
+
+
+const performanceTabContents = {
             overview: document.getElementById("overviewTab"),
             subjects: document.getElementById("subjectsTab"),
             progress: document.getElementById("progressTab"),
+            p_timetravel: document.getElementById("performanceTimetravelTab"),
             feedback: document.getElementById("feedbackTab"),
         };
-    
-    // Function to handle tab switching
-    function switchTab(event) {
-            const selectedTab = event.target.getAttribute("data-tab");
-    
-            // Remove active styles from all buttons
-            tabButtons.forEach(button => {
-                button.classList.remove("text-teal-600", "dark:text-teal-400", "border-teal-500");
-                button.classList.add("text-gray-600", "dark:text-gray-400", "hover:text-teal-600", "dark:hover:text-teal-300");
-                button.classList.remove("border-b-2");
-            });
-    
-            // Hide all tab contents
-            Object.values(tabContents).forEach(content => {
-                content.classList.add("hidden");
-            });
-    
-            // Show the selected tab content and highlight the active button
-            if (tabContents[selectedTab]) {
-                tabContents[selectedTab].classList.remove("hidden");
-            }
-    
-            // Add active styles to the clicked button
-            event.target.classList.add("text-teal-600", "dark:text-teal-400", "border-teal-500", "border-b-2");
-            event.target.classList.remove("text-gray-600", "dark:text-gray-400", "hover:text-teal-600", "dark:hover:text-teal-300");
-        }
-    
-        // Add click event listeners to each tab button
-        tabButtons.forEach(button => {
-            button.addEventListener("click", switchTab);
-        });
+handleTabButtons("studentPerformance", performanceTabContents, ".p-tab-button")
 
 
-    
-    // Filter handlers
-    async function handleFilterChange() {
-        const performanceData = await fetchPerformance(
+const domElements = {
+    pTimeTravelTerm: document.getElementById("performanceTimetravelTerm"),
+    pTimeTravelYear: document.getElementById("performanceTimetravelYear"),
+    yearSelect: document.getElementById('performanceYearSelect'),
+    termSelect: document.getElementById('PerformanceTermSelect'),
+    gpa: document.getElementById('gpa'),
+    classRank: document.getElementById('classRank'),
+    attendance: document.getElementById('p-attendance'),
+    credits: document.getElementById('credits'),
+    strengths: document.getElementById('strengths'),
+    areasForImprovement: document.getElementById('areasForImprovement'),
+    subjectDetails: document.getElementById('subjectDetails'),
+    teacherComments: document.getElementById('teacherComments'),
+    upcomingAssessments: document.getElementById('upcomingAssessments')
+};
+
+
+
+
+
+performanceSelectMappings = {
+        schoolTerms: ["PerformanceTermSelect", "performanceTimetravelTerm"],
+        currentYear: "performanceYearSelect",
+        userYears: "performanceTimetravelYear"
+    }
+
+populateSelectElements(Data, performanceSelectMappings)
+domElements.pTimeTravelTerm.innerHTML += "<option value='All'>all</option>";
+domElements.pTimeTravelYear.addEventListener('change', updateData);
+domElements.pTimeTravelTerm.addEventListener('change', updateData);
+domElements.termSelect.addEventListener('change', intializePerformanceDashboard);
+
+
+
+
+
+
+// Filter handlers
+async function intializePerformanceDashboard() {
+        const performanceData = fetchPerformance(
             domElements.yearSelect.value,
             domElements.termSelect.value
         );
+        
         updatePerformanceData(performanceData);
     }
 
-    // Initialization
-    async function initializeDashboard() {
-        const studentInfo = await fetchStudentInfo();
-        populateStudentInfo(studentInfo);
-        
-        const performanceData = await fetchPerformance(
-            studentInfo.currentYear,
-            studentInfo.currentTerm
-        );
-        
-        updatePerformanceData(performanceData);
-        
-        // Event listeners
-        domElements.yearSelect.addEventListener('change', handleFilterChange);
-        domElements.termSelect.addEventListener('change', handleFilterChange);
-        
-        
-    }
 
-    // Function to animate counters
-function animateCounter(id, target) {
-    let element = document.getElementById(id);
-    let count = 0;
-    let speed = Math.max(20, 2000 / target); // Adjust speed based on number size
+  
 
-    function updateCounter() {
-        if (count < target) {
-            count += Math.ceil(target / 100);
-            element.textContent = count;
-            requestAnimationFrame(updateCounter);
-        } else {
-            element.textContent = target;
+
+populateStudentInfo();
+intializePerformanceDashboard();
+
+
+
+
+
+// Mock Data Generator
+function fetchPerformanceTimeTravelData() {
+    return {
+        "2023-2024": {
+            gpa: 3.8,
+            rank: 5,
+            credits: 18,
+            subjects: [
+                { subject: 'Mathematics', grade: 'A', instructor: 'Dr. Smith' },
+                { subject: 'Physics', grade: 'B+', instructor: 'Prof. Johnson' },
+                { subject: 'Literature', grade: 'A-', instructor: 'Dr. Williams' }
+            ],
+            terms: {
+                "First Term": { gpa: 3.7, credits: 9 },
+                "Second Term": { gpa: 3.9, credits: 9 },
+                "Third Term": {gpa:3.6, credits: 9}
+            },
+            timeline: [
+                { term: 'First Term', date: '2023-03-15', event: 'Mathematics Excellence Award' },
+                { term: 'Second Term', date: '2023-09-20', event: 'Physics Research Project Completion' },
+                { term: "Third Term", date: "2023-11-01", event: "developer days"}
+            ]
+        },
+        "2022-2023": {
+            gpa: 3.6,
+            rank: 8,
+            credits: 15,
+            subjects: [
+                { subject: 'Chemistry', grade: 'B', instructor: 'Prof. Davis' },
+                { subject: 'Biology', grade: 'A-', instructor: 'Dr. Wilson' }
+            ],
+            terms: {
+                "First Term": { gpa: 3.5, credits: 6 },
+                "Second Term": { gpa: 3.7, credits: 9 },
+                "Third Term": { gpa: 3.9, credits: 8}
+            },
+            timeline: [
+                { term: 'First Term', date: '2022-04-10', event: 'Chemistry Lab Certification' },
+                { term: 'Second Term', date: '2022-11-05', event: 'Biology Field Research' },
+                {term: "Third Term", date: "2023-01-24", event: "House party"}
+            ]
         }
-    }
-
-    updateCounter();
+    };
 }
 
 
+function initiatePerformanceCharts(subjects) {
+    const ctx = document.getElementById('PT-subjectChart').getContext('2d');
+    if (performanceTimeTravelchart) performanceTimeTravelchart.destroy();
+    
+    performanceTimeTravelchart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: subjects.map(s => s.subject),
+            datasets: [{
+                label: 'Grades',
+                data: subjects.map(s => {
+                    const grades = { 'A': 4, 'A-': 3.7, 'B+': 3.3, 'B': 3 };
+                    return grades[s.grade] || 0;
+                }),
+                backgroundColor: '#0d9488',
+                borderColor: '#115e59',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 4,
+                    grid: { color: '#e5e7eb' },
+                    ticks: { color: '#6b7280' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#6b7280' }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+}
 
-    // Start the dashboard
-    initializeDashboard();
+// Populate Data
+function updatePTtDisplay(year, term) {
+    const data = fetchPerformanceTimeTravelData()[year];
+    const termData = term === 'All' ? data : data.terms[term];
+    
+    // Update Metrics
+    document.getElementById('PT-gpaDisplay').textContent = termData.gpa.toFixed(1);
+    document.getElementById('PT-rankDisplay').textContent = data.rank;
+    document.getElementById('PT-creditsDisplay').textContent = termData.credits;
+    
+    // Update Chart
+    initiatePerformanceCharts(data.subjects);
+    
+    // Update Table
+    const tableBody = document.getElementById('PT-SubjectTable');
+    tableBody.innerHTML = data.subjects.map(subject => `
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td class="p-2 dark:text-white">${subject.subject}</td>
+            <td class="p-2 dark:text-white">${subject.grade}</td>
+            <td class="p-2 dark:text-white">${subject.instructor}</td>
+        </tr>
+    `).join('');
+    
+    // Update Timeline
+    const timeline = document.getElementById('PT-timeline');
+    timeline.innerHTML = data.timeline.map(event => `
+        <div class="relative pl-8 border-l-2 border-teal-200 dark:border-teal-800">
+            <div class="absolute w-4 h-4 bg-teal-500 rounded-full -left-[9px] top-0"></div>
+            <h4 class="text-teal-600 dark:text-teal-400 font-semibold">${event.term}</h4>
+            <p class="text-gray-600 dark:text-gray-300">${event.event}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">${new Date(event.date).toLocaleDateString()}</p>
+        </div>
+    `).join('');
+}
+
+
+function updateData() {
+    const year = document.getElementById('performanceTimetravelYear').value;
+    const term = document.getElementById('performanceTimetravelTerm').value;
+    updatePTtDisplay(year, term);
+}
+
+

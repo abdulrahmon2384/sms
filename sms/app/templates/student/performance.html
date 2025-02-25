@@ -3,36 +3,39 @@
     <div class="container mx-auto px-4 py-8">
         <!-- Student Header Section -->
         <div class="mb-8 space-y-6">
+            
             <!-- Student Profile Section -->
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-    <div class="flex items-center space-x-5">
-        <!-- Avatar with Gradient -->
-        <div class="w-20 h-20 bg-gradient-to-br from-teal-500 to-blue-500 dark:from-teal-600 dark:to-blue-600 text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-lg">
-            JD
-        </div>
-        <div>
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-teal-400" id="studentName">John Doe</h2>
-            <p class="text-sm text-gray-600 dark:text-gray-400" id="studentId">Student ID: 12345</p>
-        </div>
-    </div>
-    <!-- Action Buttons -->
-    <div class="w-full sm:w-auto flex gap-4">
-        <button class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-gray-100 to-gray-300 dark:from-gray-700 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-lg shadow-md hover:from-gray-200 hover:to-gray-400 dark:hover:from-gray-600 dark:hover:to-gray-800 transition-all text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
-            <i class="fas fa-file-download mr-2"></i> Export Report
-        </button>
-        <button class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-teal-600 to-blue-500 text-white rounded-lg shadow-md hover:from-teal-500 hover:to-blue-400 transition-all text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
-            <i class="fas fa-user-edit mr-2"></i> Request Review
-        </button>
-    </div>
-</div>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center space-x-5">
+                    <!-- Avatar Container -->
+                    <div class="w-20 h-20 relative">
+                        <!-- Profile Image -->
+                        <img id="performanceProfilePic" src="" alt="Profile Picture" class="w-full h-full rounded-full shadow-lg">
+                        
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-teal-400" id="performanceStudentName"></h2>
+                        <p class="text-sm text-gray-600 dark:text-gray-400" >Student ID: <span id="performanceStudentId"></span></p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400" >Grade: <span id="performanceStudentGrade"></span></p>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="w-full sm:w-auto flex gap-4">
+                    <button class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-teal-600 to-blue-500 text-white rounded-lg shadow-md hover:from-teal-500 hover:to-blue-400 transition-all text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <i class="fas fa-user-edit mr-2"></i> Export Report
+                    </button>
+                </div>
+            </div>
 
 <!-- Filters Section -->
 <div class="flex flex-col sm:flex-row gap-4 mt-6 p-5 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-    <select id="yearSelect" class="w-full sm:w-48 px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm text-gray-800 dark:text-gray-200 transition-all">
-        <option value="">ð Select Academic Year</option>
+    <select id="performanceYearSelect" class="w-full sm:w-48 px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm text-gray-800 dark:text-gray-200 transition-all">
+        <option value="">ðSelect Academic Year</option>
     </select>
-    <select id="termSelect" class="w-full sm:w-48 px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm text-gray-800 dark:text-gray-200 transition-all">
-        <option value="">ð Select Term</option>
+    <select id="PerformanceTermSelect" class="w-full sm:w-48 px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm text-gray-800 dark:text-gray-200 transition-all">
+        <option value="">ðSelect Term</option>
     </select>
 </div>
 
@@ -93,16 +96,19 @@
             <!-- Tab Navigation -->
             <div class="border-b border-gray-200 dark:border-gray-700">
                 <div class="flex flex-wrap gap-2 px-6 pt-4">
-                    <button data-tab="overview" class="tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-teal-600 dark:text-teal-400 border-b-2 border-teal-500">
+                    <button data-tab="overview" class="p-tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-teal-600 dark:text-teal-400 border-b-2 border-teal-500">
                         Overview
                     </button>
-                    <button data-tab="subjects" class="tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-300">
+                    <button data-tab="subjects" class="p-tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-300">
                         Subjects
                     </button>
-                    <button data-tab="progress" class="tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-300">
+                    <button data-tab="progress" class="p-tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-300">
                         Progress
                     </button>
-                    <button data-tab="feedback" class="tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-300">
+                    <button data-tab="p_timetravel" class="p-tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-300">
+                        Time Travel
+                    </button>
+                    <button data-tab="feedback" class="p-tab-button px-4 py-3 rounded-t-lg text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-300">
                         Feedback
                     </button>
                 </div>
@@ -111,7 +117,7 @@
             <!-- Tab Contents -->
             <div class="p-6">
                 <!-- Overview Tab -->
-                <div id="overviewTab" class="space-y-6">
+<div id="overviewTab" class="space-y-6">
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Academic Performance Breakdown</h3>
                         <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-4">
@@ -138,7 +144,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+</div>
 
                 <!-- Subjects Tab -->
 <div id="subjectsTab" class="hidden space-y-6">
@@ -186,6 +192,73 @@
     </div>
 </div>
 
+
+<div id="performanceTimetravelTab" class="tab-content bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md p-6 hidden">
+    <h3 class="text-xl font-bold text-primary dark:text-primary mb-4">Time-Travel Performance</h3>
+    <div class="flex gap-4 mb-4">
+        <select id="performanceTimetravelYear" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2">
+            <option>Select Year</option>
+        </select>
+        <select id="performanceTimetravelTerm" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2">
+            <option>Select Term</option>
+        </select>
+    </div>
+<!-- Performance Metrics Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <!-- GPA Card -->
+    <div class="p-6 bg-white rounded-xl shadow-lg transition transform hover:-translate-y-1 dark:bg-gray-800 text-center">
+      <h3 class="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">GPA</h3>
+      <p class="mt-2 text-4xl font-extrabold text-teal-600 dark:text-teal-400" id="PT-gpaDisplay"></p>
+    </div>
+    <!-- Class Rank Card -->
+    <div class="p-6 bg-white rounded-xl shadow-lg transition transform hover:-translate-y-1 dark:bg-gray-800 text-center">
+      <h3 class="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Class Rank</h3>
+      <p class="mt-2 text-4xl font-extrabold text-teal-600 dark:text-teal-400" id="PT-rankDisplay"></p>
+    </div>
+    <!-- Credits Earned Card -->
+    <div class="p-6 bg-white rounded-xl shadow-lg transition transform hover:-translate-y-1 dark:bg-gray-800 text-center">
+      <h3 class="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Credits Earned</h3>
+      <p class="mt-2 text-4xl font-extrabold text-teal-600 dark:text-teal-400" id="PT-creditsDisplay"></p>
+    </div>
+  </div>
+  
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+      <!-- Subject Breakdown Chart -->
+      <div class="p-6 bg-white rounded-xl shadow-lg dark:bg-gray-800">
+        <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-100">Subject Performance Breakdown</h3>
+        <div class="w-full aspect-video">
+          <canvas id="PT-subjectChart" class="w-full h-full rounded-lg"></canvas>
+        </div>
+      </div>
+      <!-- Progress Timeline -->
+      <div class="p-6 bg-white rounded-xl shadow-lg dark:bg-gray-800">
+        <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-100">Academic Progress Timeline</h3>
+        <div id="PT-timeline" class="space-y-4">
+          <!-- Timeline items will be populated here -->
+        </div>
+      </div>
+    </div>
+  
+    <!-- Subject Performance Table -->
+    <div class="p-6 bg-white rounded-xl shadow-lg dark:bg-gray-800">
+      <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-100">Subject Performance Details</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Subject</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Grade</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Instructor</th>
+            </tr>
+          </thead>
+          <tbody id="PT-SubjectTable" class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+            <!-- Table rows will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+            </div>
                 <!-- Feedback Tab -->
 <div id="feedbackTab" class="hidden space-y-8">
     

@@ -5,12 +5,6 @@
 // Temporay dataset
 const data = {
     "profile": {
-      "img": "https://f005.backblazeb2.com/file/School-management-system/default.png",
-      "username": "@johndoe",
-      "name": "John Doe",
-      "teacher": "Ms. Smith",
-      "year": "2023-24",
-      "term": "Fall",
       "gpa": "3.8",
       "recentScore": "92%",
       "grade": "11th"
@@ -120,7 +114,6 @@ const data = {
     }
   };
 
-
 // Update the dashboard with data
 function updateDashboard(data) {
     // Helper function to set text content
@@ -136,18 +129,22 @@ function updateDashboard(data) {
     };
 
     // Update Profile Info
-    document.getElementById("profilePic").src = data.profile.img || "";
-    setText("teacher", data.profile.teacher);
-    setText("year", data.profile.year);
-    setText("term", data.profile.term);
-    setText("gpa", data.profile.gpa);
-    setText("recent_score",data.profile.recentScore);
-    setText("grade", data.profile.grade);
-   
+    updatElementIdContent(
+      {
+        dashboardProfilePic: Data.IMG,
+        teacher: Data.teacher,
+        term: Data.currentTerm,
+        gpa: data.profile.gpa,
+        recent_score: data.profile.recentScore,
+        grade: Data.grade,
+        year: Data.currentYear
+      }
+    )
+    const FullName = Data.firstname + " " + Data.lastname
     const profileElement = document.getElementById("profile")
     profileElement.innerHTML =  `
-            <h2 id="name" class="text-lg font-semibold text-gray-900 dark:text-gray-100">${profile.name || "Unknown Name"}</h2>
-            <p id="username" class="text-sm text-gray-600 dark:text-gray-400">@${profile.username || "Unknown Name"}</p>
+            <h2 id="name" class="text-lg font-semibold text-gray-900 dark:text-gray-100">${FullName || "Unknown Name"}</h2>
+            <p id="username" class="text-sm text-gray-600 dark:text-gray-400">@${Data.userID || "Unknown Name"}</p>
                    
             `;
 
