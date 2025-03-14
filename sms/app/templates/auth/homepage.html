@@ -1,4 +1,483 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
+{% block title %}Intelleva - Smart School Management System{% endblock %}
 
+{% block content %}
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-r from-gray-800 to-gray-900 text-white overflow-hidden">
+    <div class="absolute inset-0 z-0 opacity-20">
+        <img src="https://f005.backblazeb2.com/file/School-management-system/hero-pattern.svg" alt="Pattern" class="w-full h-full object-cover">
+    </div>
+    <div class="container mx-auto px-4 py-20 md:py-32 relative z-10">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                    Transform Your <span class="text-teal-400">School Management</span> Experience
+                </h1>
+                <p class="text-xl text-gray-300 mb-8">
+                    Intelleva is a comprehensive school management system that streamlines administration, enhances communication, and improves educational outcomes.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="{{ url_for('auth.register') }}" class="btn-primary text-center py-3 px-8 text-lg">
+                        Register School
+                    </a>
+                    <a href="{{ url_for('auth.choose_school') }}" class="btn-outline text-center py-3 px-8 text-lg">
+                        Login
+                    </a>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <img src="https://f005.backblazeb2.com/file/School-management-system/dashboard-preview.png" alt="Dashboard Preview" class="w-full max-w-lg rounded-lg shadow-2xl">
+            </div>
+        </div>
+    </div>
+</section>
 
+<!-- Features Section -->
+<section id="features" class="py-20 bg-gray-50 dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-white">Powerful Features for Modern Schools</h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Intelleva provides all the tools you need to manage your school efficiently and effectively.
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+                <div class="w-14 h-14 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mb-6">
+                    <i data-lucide="users" class="w-7 h-7 text-teal-600 dark:text-teal-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3 text-gray-800 dark:text-white">Student Management</h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Easily enroll students, track attendance, monitor performance, and manage all student-related activities in one place.
+                </p>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+                <div class="w-14 h-14 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mb-6">
+                    <i data-lucide="user-cog" class="w-7 h-7 text-teal-600 dark:text-teal-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3 text-gray-800 dark:text-white">Teacher Management</h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Assign teachers to classes, manage their profiles, track performance, and streamline communication.
+                </p>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+                <div class="w-14 h-14 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mb-6">
+                    <i data-lucide="dollar-sign" class="w-7 h-7 text-teal-600 dark:text-teal-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3 text-gray-800 dark:text-white">Financial Management</h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Track payments, manage fees, generate financial reports, and handle all financial aspects of your school.
+                </p>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+                <div class="w-14 h-14 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mb-6">
+                    <i data-lucide="bar-chart-2" class="w-7 h-7 text-teal-600 dark:text-teal-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3 text-gray-800 dark:text-white">Performance Analytics</h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Visualize academic performance, attendance statistics, and other key metrics with interactive charts and reports.
+                </p>
+            </div>
+            
+            <!-- Feature 5 -->
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+                <div class="w-14 h-14 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mb-6">
+                    <i data-lucide="message-square" class="w-7 h-7 text-teal-600 dark:text-teal-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3 text-gray-800 dark:text-white">Communication Tools</h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Send notifications, announcements, and messages to students, teachers, and parents to keep everyone informed.
+                </p>
+            </div>
+            
+            <!-- Feature 6 -->
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+                <div class="w-14 h-14 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mb-6">
+                    <i data-lucide="brain-circuit" class="w-7 h-7 text-teal-600 dark:text-teal-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3 text-gray-800 dark:text-white">AI Assistant</h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Leverage artificial intelligence to automate tasks, answer questions, and provide insights for better decision-making.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Role-based Section -->
+<section class="py-20 bg-white dark:bg-gray-900">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-white">Tailored for Every Role</h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Intelleva provides specialized features for administrators, teachers, and students.
+            </p>
+        </div>
+        
+        <div class="flex flex-col space-y-8">
+            <!-- Admin Role -->
+            <div class="flex flex-col md:flex-row items-center bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden">
+                <div class="md:w-1/2 p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mr-3">
+                            <i data-lucide="shield" class="w-5 h-5 text-teal-600 dark:text-teal-400"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white">For Administrators</h3>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">
+                        Gain complete oversight of your school with powerful administrative tools.
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Comprehensive dashboard with financial insights</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Student and teacher management tools</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Fee tracking and financial reporting</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">School-wide communication system</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="https://f005.backblazeb2.com/file/School-management-system/admin-dashboard.png" alt="Admin Dashboard" class="w-full h-full object-cover">
+                </div>
+            </div>
+            
+            <!-- Teacher Role -->
+            <div class="flex flex-col md:flex-row-reverse items-center bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden">
+                <div class="md:w-1/2 p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mr-3">
+                            <i data-lucide="book-open" class="w-5 h-5 text-teal-600 dark:text-teal-400"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white">For Teachers</h3>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">
+                        Streamline classroom management and focus on what matters most: teaching.
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Class performance overview and analytics</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Attendance tracking and management</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Student grade and evaluation tools</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Direct communication with students and parents</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="https://f005.backblazeb2.com/file/School-management-system/teacher-dashboard.png" alt="Teacher Dashboard" class="w-full h-full object-cover">
+                </div>
+            </div>
+            
+            <!-- Student Role -->
+            <div class="flex flex-col md:flex-row items-center bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden">
+                <div class="md:w-1/2 p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mr-3">
+                            <i data-lucide="graduation-cap" class="w-5 h-5 text-teal-600 dark:text-teal-400"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white">For Students</h3>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">
+                        Stay on top of academic progress, attendance, and important updates.
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Academic progress tracking and reports</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Attendance records and history</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Class schedules and teacher information</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Fee payment status and deadlines</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="https://f005.backblazeb2.com/file/School-management-system/student-dashboard.png" alt="Student Dashboard" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-20 bg-gray-50 dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-white">What Our Users Say</h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Hear from schools that have transformed their management with Intelleva.
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Testimonial 1 -->
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
+                <div class="flex items-center mb-4">
+                    <div class="text-teal-500">
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                    </div>
+                </div>
+                <p class="text-gray-600 dark:text-gray-300 mb-6 italic">
+                    "Intelleva has completely transformed how we manage our school. The administrative burden has been reduced significantly, and our staff can focus more on education."
+                </p>
+                <div class="flex items-center">
+                    <img src="https://f005.backblazeb2.com/file/School-management-system/testimonial-1.jpg" alt="Principal" class="w-12 h-12 rounded-full object-cover mr-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 dark:text-white">Sarah Johnson</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Principal, Westview Academy</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonial 2 -->
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
+                <div class="flex items-center mb-4">
+                    <div class="text-teal-500">
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                    </div>
+                </div>
+                <p class="text-gray-600 dark:text-gray-300 mb-6 italic">
+                    "As a teacher, I love how easy it is to track attendance and student performance. The analytics help me identify areas where students need additional support."
+                </p>
+                <div class="flex items-center">
+                    <img src="https://f005.backblazeb2.com/file/School-management-system/testimonial-2.jpg" alt="Teacher" class="w-12 h-12 rounded-full object-cover mr-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 dark:text-white">Michael Chen</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Science Teacher, Riverdale High</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonial 3 -->
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
+                <div class="flex items-center mb-4">
+                    <div class="text-teal-500">
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star" class="w-5 h-5 inline"></i>
+                        <i data-lucide="star-half" class="w-5 h-5 inline"></i>
+                    </div>
+                </div>
+                <p class="text-gray-600 dark:text-gray-300 mb-6 italic">
+                    "The financial management features have been a game-changer for our school. We can now track payments, generate reports, and manage our budget more effectively."
+                </p>
+                <div class="flex items-center">
+                    <img src="https://f005.backblazeb2.com/file/School-management-system/testimonial-3.jpg" alt="Administrator" class="w-12 h-12 rounded-full object-cover mr-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 dark:text-white">Olivia Martinez</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Administrator, Oakridge School</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="py-20 bg-white dark:bg-gray-900">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-white">Simple, Transparent Pricing</h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Choose the plan that works best for your school's needs and budget.
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <!-- Basic Plan -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-200 dark:border-gray-700">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Basic</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">For small schools</p>
+                    <div class="flex items-baseline">
+                        <span class="text-4xl font-bold text-gray-900 dark:text-white">$99</span>
+                        <span class="text-gray-500 dark:text-gray-400 ml-1">/month</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Up to 500 students</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Basic attendance tracking</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Student and teacher management</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Simple fee management</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Email support</span>
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('auth.register') }}" class="btn-outline w-full text-center mt-6 py-2">Get Started</a>
+                </div>
+            </div>
+            
+            <!-- Pro Plan -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl border-2 border-teal-500 dark:border-teal-400 transform scale-105 z-10">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-teal-50 dark:bg-teal-900">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-white">Pro</h3>
+                        <span class="bg-teal-500 text-white text-xs font-semibold px-3 py-1 rounded-full">Popular</span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">For medium-sized schools</p>
+                    <div class="flex items-baseline">
+                        <span class="text-4xl font-bold text-gray-900 dark:text-white">$199</span>
+                        <span class="text-gray-500 dark:text-gray-400 ml-1">/month</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Up to 1,500 students</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Advanced attendance tracking</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Performance analytics</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Comprehensive financial tools</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Communication system</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Priority email & phone support</span>
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('auth.register') }}" class="btn-primary w-full text-center mt-6 py-2">Get Started</a>
+                </div>
+            </div>
+            
+            <!-- Enterprise Plan -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-200 dark:border-gray-700">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Enterprise</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">For large institutions</p>
+                    <div class="flex items-baseline">
+                        <span class="text-4xl font-bold text-gray-900 dark:text-white">$399</span>
+                        <span class="text-gray-500 dark:text-gray-400 ml-1">/month</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Unlimited students</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">All Pro features</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Advanced AI assistant</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Custom integrations</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Dedicated account manager</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                            <span class="text-gray-700 dark:text-gray-300">24/7 premium support</span>
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('auth.register') }}" class="btn-outline w-full text-center mt-6 py-2">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-r from-teal-500 to-teal-700 text-white text-center">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your School Management?</h2>
+        <p class="text-xl mb-8 max-w-3xl mx-auto">
+            Join thousands of schools already using Intelleva to streamline their operations and improve educational outcomes.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <a href="{{ url_for('auth.register') }}" class="bg-white text-teal-600 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg text-lg">
+                Register Your School
+            </a>
+            <a href="{{ url_for('auth.choose_school') }}" class="border-2 border-white text-white hover:bg-white hover:text-teal-600 font-bold py-3 px-8 rounded-lg text-lg transition-colors duration-300">
+                Login
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

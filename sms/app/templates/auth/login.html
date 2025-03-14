@@ -1,156 +1,277 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-
-{% block title %}
-    Inteleeva login-page
-{% endblock %}
-
-
-
-{% block navlink %}
-    <a href="#about" class="text-gray-600 hover:text-teal-400 transition-colors">About</a>
-    <a href="#service" class="text-gray-600 hover:text-teal-400 transition-colors">Services</a>
-    <a href="#contact" class="text-gray-600 hover:text-teal-400 transition-colors">Contact</a>
-{% endblock %}
-
-{% block head %}
-    <!-- style , css link goes here -->
-{% endblock %}
+{% block title %}Login - Intelleva{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-	<div class="max-w-7xl w-full">
-		<div class="flex flex-col lg:flex-row gap-8">
-			<!-- Login Card -->
-			<div class="bg-white rounded-lg shadow-md overflow-hidden flex-1">
-				
-				<div class="relative h-48">
-					<img id="schoolLogo" src="https://via.placeholder.com/1200x400" alt="School Building" class="w-full h-full object-cover">
-					<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 text-white">
-						<h1 id="schoolName" class="text-2xl font-bold">Evergreen High School</h1>
-						<p id="schoolLocation" class="text-sm">123 Education Lane, Knowledge City, ST 12345</p>
-					</div>
-				</div>
-
-				<div class="p-6">
-					<h2 class="text-2xl font-semibold text-gray-800 mb-2">Welcome Back!</h2>
-					<p class="text-gray-600 mb-6">Access your dashboard by entering your credentials below. Let's get started!</p>
-					
-					<!-- Error Message -->
-					<div id="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-md mb-8 hidden" role="alert">
-						<span class="block sm:inline">Invalid school ID. Please try again.</span>
-					</div>
-					
-					<form>
-						<div class="space-y-4">
-							<div>
-								<label for="role" class="block text-sm font-medium text-gray-700 mb-1">
-									Select your role:
-								</label>
-								<select
-									id="role"
-									class="w-full p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-									required
-								>
-									<option value="">Select a role</option>
-									<option value="student">Student</option>
-									<option value="teacher">Teacher</option>
-									<option value="admin">Admin</option>
-								</select>
-							</div>
-							<div>
-								<label for="userId" class="block text-sm font-medium text-gray-700 mb-1">
-									User ID
-								</label>
-								<input
-									type="text"
-									id="userId"
-									placeholder="Enter your User ID"
-									class="w-full p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-									required
-								>
-							</div>
-							<div>
-								<label for="password" class="block text-sm font-medium text-gray-700 mb-1">
-									Password
-								</label>
-								<input
-									type="password"
-									id="password"
-									placeholder="Enter your password"
-									class="w-full p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-									required
-								>
-							</div>
-							<button
-                                id="loginButton" 
-								type="submit"
-								class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300"
-							>
-								Log In
-							</button>
-						</div>
-					</form>
-					<div class="mt-4 text-center">
-						<a href="#" class="text-teal-600 hover:underline">Forgot password?</a>
-					</div>
-					<div class="mt-2 text-center text-gray-600">
-						Don't have an account? <a href="#" class="text-teal-600 hover:underline">Sign up</a>
-					</div>
-					<div class="mt-4 text-center text-sm text-gray-500">
-						By clicking Log In, you agree to our <a href="#" class="text-teal-600 hover:underline">Terms and Conditions</a>.
-					</div>
-				</div>
-			</div>
-
-			<!-- FAQ Card -->
-			<div class="bg-white rounded-lg shadow-md overflow-hidden flex-1 lg:max-w-md">
-				<div class="p-6">
-					<h3 class="text-xl font-semibold text-gray-800 mb-4">Frequently Asked Questions</h3>
-					<div class="space-y-4">
-						<div class="border-b border-gray-200 pb-4">
-							<button class="accordion-header flex justify-between items-center w-full text-left">
-								<span class="font-medium text-gray-700">I don't know my User ID. What should I do?</span>
-								<svg class="h-5 w-5 text-gray-500 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-								</svg>
-							</button>
-							<p class="accordion-content mt-2 text-gray-600 text-sm">If you don't know your User ID, please check your ID card. If you can't find it there, contact your school's Administration office for assistance.</p>
-						</div>
-						<div class="border-b border-gray-200 pb-4">
-							<button class="accordion-header flex justify-between items-center w-full text-left">
-								<span class="font-medium text-gray-700">I can't log in. What could be the problem?</span>
-								<svg class="h-5 w-5 text-gray-500 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-								</svg>
-							</button>
-							<p class="accordion-content mt-2 text-gray-600 text-sm">First, ensure you've selected the correct role. If you're still unable to log in, your account may not have web access permissions. Please contact your school's IT administrator for help.</p>
-						</div>
-						<div class="border-b border-gray-200 pb-4">
-							<button class="accordion-header flex justify-between items-center w-full text-left">
-								<span class="font-medium text-gray-700">How do I reset my password?</span>
-								<svg class="h-5 w-5 text-gray-500 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-								</svg>
-							</button>
-							<p class="accordion-content mt-2 text-gray-600 text-sm">Click on the 'Forgot password?' link below the login form. You'll be guided through the process of resetting your password. If you encounter any issues, please contact your school's IT support.</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
+    <div class="max-w-5xl mx-auto">
+        <div class="flex flex-col lg:flex-row bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <!-- Left Side - Login Form -->
+            <div class="lg:w-1/2 p-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Welcome to Intelleva</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-2">Sign in to your account</p>
+                </div>
+                
+                <form id="loginForm" class="space-y-6">
+                    <div>
+                        <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Select your role:
+                        </label>
+                        <select
+                            id="role"
+                            class="form-select"
+                            required
+                        >
+                            <option value="">Select a role</option>
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="userId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            User ID
+                        </label>
+                        <input
+                            type="text"
+                            id="userId"
+                            placeholder="Enter your User ID"
+                            class="form-input"
+                            required
+                        >
+                    </div>
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Password
+                        </label>
+                        <div class="relative">
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Enter your password"
+                                class="form-input pr-10"
+                                required
+                            >
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500">
+                                <i data-lucide="eye" class="h-5 w-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input id="remember" type="checkbox" class="form-checkbox">
+                            <label for="remember" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="#" class="text-sm text-teal-600 dark:text-teal-400 hover:underline">
+                            Forgot password?
+                        </a>
+                    </div>
+                    <button
+                        id="loginButton" 
+                        type="submit"
+                        class="btn-primary w-full py-2 px-4"
+                    >
+                        Log In
+                    </button>
+                    
+                    <!-- Alert for errors -->
+                    <div id="loginAlert" class="hidden p-4 rounded-md bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300">
+                        <div class="flex">
+                            <i data-lucide="alert-circle" class="h-5 w-5 mr-2"></i>
+                            <span id="loginAlertMessage">Invalid credentials. Please try again.</span>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+                    <p>Don't have an account? Contact your school administrator.</p>
+                    <p class="mt-2">By logging in, you agree to our <a href="#" class="text-teal-600 dark:text-teal-400 hover:underline">Terms and Conditions</a>.</p>
+                </div>
+            </div>
+            
+            <!-- Right Side - FAQ and Help -->
+            <div class="lg:w-1/2 bg-gray-50 dark:bg-gray-700 p-8">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-6">Frequently Asked Questions</h2>
+                
+                <div class="space-y-4">
+                    <div class="border-b border-gray-200 dark:border-gray-600 pb-4">
+                        <button class="accordion-header flex justify-between items-center w-full text-left">
+                            <span class="font-medium text-gray-700 dark:text-gray-300">I don't know my User ID. What should I do?</span>
+                            <i data-lucide="chevron-down" class="h-5 w-5 text-gray-500 dark:text-gray-400 transform transition-transform duration-200"></i>
+                        </button>
+                        <div class="accordion-content mt-2 text-gray-600 dark:text-gray-400 text-sm">
+                            If you don't know your User ID, please check your ID card. If you can't find it there, contact your school's Administration office for assistance.
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 dark:border-gray-600 pb-4">
+                        <button class="accordion-header flex justify-between items-center w-full text-left">
+                            <span class="font-medium text-gray-700 dark:text-gray-300">I can't log in. What could be the problem?</span>
+                            <i data-lucide="chevron-down" class="h-5 w-5 text-gray-500 dark:text-gray-400 transform transition-transform duration-200"></i>
+                        </button>
+                        <div class="accordion-content mt-2 text-gray-600 dark:text-gray-400 text-sm">
+                            First, ensure you've selected the correct role. If you're still unable to log in, your account may not have web access permissions. Please contact your school's IT administrator for help.
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 dark:border-gray-600 pb-4">
+                        <button class="accordion-header flex justify-between items-center w-full text-left">
+                            <span class="font-medium text-gray-700 dark:text-gray-300">How do I reset my password?</span>
+                            <i data-lucide="chevron-down" class="h-5 w-5 text-gray-500 dark:text-gray-400 transform transition-transform duration-200"></i>
+                        </button>
+                        <div class="accordion-content mt-2 text-gray-600 dark:text-gray-400 text-sm">
+                            Click on the 'Forgot password?' link below the login form. You'll be guided through the process of resetting your password. If you encounter any issues, please contact your school's IT support.
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 dark:border-gray-600 pb-4">
+                        <button class="accordion-header flex justify-between items-center w-full text-left">
+                            <span class="font-medium text-gray-700 dark:text-gray-300">Is my information secure?</span>
+                            <i data-lucide="chevron-down" class="h-5 w-5 text-gray-500 dark:text-gray-400 transform transition-transform duration-200"></i>
+                        </button>
+                        <div class="accordion-content mt-2 text-gray-600 dark:text-gray-400 text-sm">
+                            Yes, Intelleva uses industry-standard encryption and security practices to protect your data. We never share your personal information with third parties without your consent.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 p-4 bg-teal-50 dark:bg-teal-900 rounded-lg">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i data-lucide="help-circle" class="h-6 w-6 text-teal-600 dark:text-teal-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-teal-800 dark:text-teal-300">Need more help?</h3>
+                            <p class="mt-1 text-sm text-teal-700 dark:text-teal-400">
+                                Contact our support team at <a href="mailto:support@intelleva.com" class="font-medium underline">support@intelleva.com</a> or call us at +1 (555) 123-4567.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-    <!-- javascript link , script goes here -->
-    <script src="{{ url_for('static', filename='js/auth/login.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script src="{{ url_for('static', filename='js/auth/login.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Toggle password visibility
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+        
+        if (togglePassword && password) {
+            togglePassword.addEventListener('click', function() {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                
+                // Toggle icon
+                const icon = this.querySelector('i');
+                if (type === 'text') {
+                    icon.setAttribute('data-lucide', 'eye-off');
+                } else {
+                    icon.setAttribute('data-lucide', 'eye');
+                }
+                lucide.createIcons();
+            });
+        }
+        
+        // Accordion functionality
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                // Toggle content visibility
+                content.classList.toggle('hidden');
+                
+                // Toggle icon rotation
+                icon.classList.toggle('rotate-180');
+                
+                // Close other accordions
+                accordionHeaders.forEach(otherHeader => {
+                    if (otherHeader !== header) {
+                        const otherContent = otherHeader.nextElementSibling;
+                        const otherIcon = otherHeader.querySelector('i');
+                        
+                        otherContent.classList.add('hidden');
+                        otherIcon.classList.remove('rotate-180');
+                    }
+                });
+            });
+        });
+        
+        // Initially hide all accordion contents except the first one
+        const accordionContents = document.querySelectorAll('.accordion-content');
+        accordionContents.forEach((content, index) => {
+            if (index !== 0) {
+                content.classList.add('hidden');
+            }
+        });
+        
+        // Form submission
+        const loginForm = document.getElementById('loginForm');
+        const loginAlert = document.getElementById('loginAlert');
+        const loginAlertMessage = document.getElementById('loginAlertMessage');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const role = document.getElementById('role').value;
+                const userId = document.getElementById('userId').value;
+                const password = document.getElementById('password').value;
+                
+                if (!role || !userId || !password) {
+                    loginAlert.classList.remove('hidden');
+                    loginAlertMessage.textContent = 'Please fill in all fields.';
+                    return;
+                }
+                
+                // In a real implementation, this would make an API call
+                console.log('Login attempt:', { role, userId });
+                
+                // Simulate API call
+                fetch('/api/submit-login-credentials', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ role, userId, password }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Redirect based on role
+                        if (role === 'admin') {
+                            window.location.href = "{{ url_for('admin.index') }}";
+                        } else if (role === 'teacher') {
+                            window.location.href = "{{ url_for('teacher.index') }}";
+                        } else if (role === 'student') {
+                            window.location.href = "{{ url_for('student.index') }}";
+                        }
+                    } else {
+                        loginAlert.classList.remove('hidden');
+                        loginAlertMessage.textContent = data.message || 'Invalid credentials. Please try again.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Login error:', error);
+                    loginAlert.classList.remove('hidden');
+                    loginAlertMessage.textContent = 'An error occurred. Please try again later.';
+                });
+            });
+        }
+    });
+</script>
 {% endblock %}
-
-
-<<<<<<< HEAD
-
-
-=======
->>>>>>> bbe3dd1 (home choose login page design with some new features)

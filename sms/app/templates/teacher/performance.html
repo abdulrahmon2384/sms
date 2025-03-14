@@ -1,3 +1,581 @@
-<div>
-  Hello from grades
+{% extends 'base.html' %}
+{% from 'components/sidebar.html' import sidebar %}
+{% from 'components/header.html' import header %}
+{% from 'components/ui_components.html' import stat_card, chart_card, data_table %}
+
+{% block title %}Performance Tracking - Intelleva{% endblock %}
+
+{% block content %}
+<div class="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <!-- Sidebar -->
+    {{ sidebar('teacher', 'performance') }}
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden ml-0 md:ml-64 transition-all duration-300">
+        <!-- Header -->
+        {{ header('Performance Tracking', current_user.firstname, current_user.image_link) }}
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 md:p-6">
+            <!-- Page Header with Actions -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Performance Tracking</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1">Record and analyze student grades and evaluations</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <button class="btn-primary py-2 px-4 flex items-center">
+                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                        Add Assessment
+                    </button>
+                    <button class="btn-outline py-2 px-4 flex items-center">
+                        <i data-lucide="download" class="w-4 h-4 mr-2"></i>
+                        Export Report
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                {{ stat_card('users', 'Total Students', '156', 'Across all classes', 'neutral') }}
+                {{ stat_card('check-circle', 'Passing', '132', '85% of students', 'positive') }}
+                {{ stat_card('alert-circle', 'At Risk', '24', '15% of students', 'negative') }}
+                {{ stat_card('bar-chart-2', 'Class Average', '76%', '+2% from last term', 'positive') }}
+            </div>
+            
+            <!-- Class Selection and Assessment -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center md:space-x-4">
+                    <div class="form-group mb-4 md:mb-0 md:w-1/3">
+                        <label for="classSelect">Select Class</label>
+                        <select id="classSelect" class="form-select mt-1">
+                            <option value="10A">Grade 10-A (Mathematics)</option>
+                            <option value="11B">Grade 11-B (Physics)</option>
+                            <option value="9A">Grade 9-A (Mathematics)</option>
+                            <option value="12A">Grade 12-A (Physics)</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-4 md:mb-0 md:w-1/3">
+                        <label for="assessmentType">Assessment Type</label>
+                        <select id="assessmentType" class="form-select mt-1">
+                            <option value="quiz">Quiz</option>
+                            <option value="test">Test</option>
+                            <option value="exam">Exam</option>
+                            <option value="assignment">Assignment</option>
+                            <option value="project">Project</option>
+                        </select>
+                    </div>
+                    <div class="form-group md:w-1/3">
+                        <label for="assessmentDate">Assessment Date</label>
+                        <input type="date" id="assessmentDate" class="form-input mt-1" value="2025-03-14">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Overview -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Class Performance Chart -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Class Performance Distribution</h2>
+                    <div class="h-80">
+                        <canvas id="performanceDistributionChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Performance Trend -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Performance Trend</h2>
+                    <div class="h-80">
+                        <canvas id="performanceTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grade Entry Table -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Grade 10-A (Mathematics) - Quiz Grades</h2>
+                    <div class="flex items-center space-x-2">
+                        <button class="btn-outline py-1 px-3 text-sm flex items-center">
+                            <i data-lucide="filter" class="w-4 h-4 mr-1"></i>
+                            Filter
+                        </button>
+                        <button class="btn-outline py-1 px-3 text-sm flex items-center">
+                            <i data-lucide="save" class="w-4 h-4 mr-1"></i>
+                            Save All
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="intelleva-table">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Grade</th>
+                                <th>Status</th>
+                                <th>Comments</th>
+                                <th>Performance History</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Student 1 -->
+                            <tr>
+                                <td>STU-2025-001</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-1.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">John Smith</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">john.smith@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" max="100" class="form-input py-1 text-sm w-20" value="85">
+                                </td>
+                                <td><span class="badge badge-success">Excellent</span></td>
+                                <td>
+                                    <input type="text" class="form-input py-1 text-sm" placeholder="Add comments..." value="Good understanding of concepts">
+                                </td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-gradient-to-r from-teal-500 to-green-500" style="width: 85%"></div>
+                                        </div>
+                                        <span class="ml-2 text-sm font-medium">85%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Student 2 -->
+                            <tr>
+                                <td>STU-2025-002</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-2.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">Emily Johnson</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">emily.johnson@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" max="100" class="form-input py-1 text-sm w-20" value="92">
+                                </td>
+                                <td><span class="badge badge-success">Excellent</span></td>
+                                <td>
+                                    <input type="text" class="form-input py-1 text-sm" placeholder="Add comments..." value="Outstanding performance, shows deep understanding">
+                                </td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-gradient-to-r from-teal-500 to-green-500" style="width: 92%"></div>
+                                        </div>
+                                        <span class="ml-2 text-sm font-medium">92%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Student 3 -->
+                            <tr>
+                                <td>STU-2025-003</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-3.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">Michael Brown</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">michael.brown@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" max="100" class="form-input py-1 text-sm w-20" value="65">
+                                </td>
+                                <td><span class="badge badge-warning">Needs Improvement</span></td>
+                                <td>
+                                    <input type="text" class="form-input py-1 text-sm" placeholder="Add comments..." value="Struggling with algebraic concepts, needs additional support">
+                                </td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-gradient-to-r from-yellow-500 to-orange-500" style="width: 65%"></div>
+                                        </div>
+                                        <span class="ml-2 text-sm font-medium">65%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Student 4 -->
+                            <tr>
+                                <td>STU-2025-004</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-4.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">Sarah Davis</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">sarah.davis@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" max="100" class="form-input py-1 text-sm w-20" value="78">
+                                </td>
+                                <td><span class="badge badge-info">Good</span></td>
+                                <td>
+                                    <input type="text" class="form-input py-1 text-sm" placeholder="Add comments..." value="Consistent performance, could improve on problem-solving">
+                                </td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-gradient-to-r from-blue-500 to-teal-500" style="width: 78%"></div>
+                                        </div>
+                                        <span class="ml-2 text-sm font-medium">78%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Student 5 -->
+                            <tr>
+                                <td>STU-2025-005</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-5.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">David Wilson</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">david.wilson@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" max="100" class="form-input py-1 text-sm w-20" value="58">
+                                </td>
+                                <td><span class="badge badge-error">At Risk</span></td>
+                                <td>
+                                    <input type="text" class="form-input py-1 text-sm" placeholder="Add comments..." value="Significant gaps in understanding, requires intervention">
+                                </td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-gradient-to-r from-red-500 to-orange-500" style="width: 58%"></div>
+                                        </div>
+                                        <span class="ml-2 text-sm font-medium">58%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Student Performance Analysis -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Performance Analysis</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Top Performers -->
+                    <div>
+                        <h3 class="text-md font-medium text-gray-800 dark:text-white mb-3">Top Performers</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img src="https://f005.backblazeb2.com/file/School-management-system/student-2.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                    <div>
+                                        <div class="font-medium text-gray-900 dark:text-white">Emily Johnson</div>
+                                        <div class="text-gray-500 dark:text-gray-400 text-xs">Grade 10-A</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-green-500 font-medium">92%</span>
+                                    <button class="ml-2 text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                        <i data-lucide="eye" class="h-4 w-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img src="https://f005.backblazeb2.com/file/School-management-system/student-1.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                    <div>
+                                        <div class="font-medium text-gray-900 dark:text-white">John Smith</div>
+                                        <div class="text-gray-500 dark:text-gray-400 text-xs">Grade 10-A</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-green-500 font-medium">85%</span>
+                                    <button class="ml-2 text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                        <i data-lucide="eye" class="h-4 w-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img src="https://f005.backblazeb2.com/file/School-management-system/student-6.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                    <div>
+                                        <div class="font-medium text-gray-900 dark:text-white">Jessica Lee</div>
+                                        <div class="text-gray-500 dark:text-gray-400 text-xs">Grade 10-A</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-green-500 font-medium">83%</span>
+                                    <button class="ml-2 text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                        <i data-lucide="eye" class="h-4 w-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Students Needing Support -->
+                    <div>
+                        <h3 class="text-md font-medium text-gray-800 dark:text-white mb-3">Students Needing Support</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img src="https://f005.backblazeb2.com/file/School-management-system/student-5.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                    <div>
+                                        <div class="font-medium text-gray-900 dark:text-white">David Wilson</div>
+                                        <div class="text-gray-500 dark:text-gray-400 text-xs">Grade 10-A</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-red-500 font-medium">58%</span>
+                                    <button class="ml-2 text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                        <i data-lucide="message-square" class="h-4 w-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img src="https://f005.backblazeb2.com/file/School-management-system/student-3.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                    <div>
+                                        <div class="font-medium text-gray-900 dark:text-white">Michael Brown</div>
+                                        <div class="text-gray-500 dark:text-gray-400 text-xs">Grade 10-A</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-yellow-500 font-medium">65%</span>
+                                    <button class="ml-2 text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                        <i data-lucide="message-square" class="h-4 w-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img src="https://f005.backblazeb2.com/file/School-management-system/student-7.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                    <div>
+                                        <div class="font-medium text-gray-900 dark:text-white">Robert Chen</div>
+                                        <div class="text-gray-500 dark:text-gray-400 text-xs">Grade 10-A</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-yellow-500 font-medium">68%</span>
+                                    <button class="ml-2 text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                        <i data-lucide="message-square" class="h-4 w-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Intervention Strategies -->
+                <div class="mt-6">
+                    <h3 class="text-md font-medium text-gray-800 dark:text-white mb-3">Recommended Interventions</h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-start">
+                                <i data-lucide="book-open" class="h-5 w-5 text-teal-500 mt-0.5 mr-2"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Additional Study Materials</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Provide supplementary resources for students scoring below 70% to reinforce key concepts.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-start">
+                                <i data-lucide="users" class="h-5 w-5 text-teal-500 mt-0.5 mr-2"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Peer Tutoring Program</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Pair top-performing students with those needing support for collaborative learning sessions.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-start">
+                                <i data-lucide="calendar" class="h-5 w-5 text-teal-500 mt-0.5 mr-2"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">After-School Support Sessions</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Schedule additional help sessions for students scoring below 60% to address specific learning gaps.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Performance Distribution Chart
+        const distributionCtx = document.getElementById('performanceDistributionChart').getContext('2d');
+        new Chart(distributionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['0-59', '60-69', '70-79', '80-89', '90-100'],
+                datasets: [{
+                    label: 'Number of Students',
+                    data: [3, 5, 8, 10, 4],
+                    backgroundColor: [
+                        'rgba(239, 68, 68, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(59, 130, 246, 0.7)',
+                        'rgba(16, 185, 129, 0.7)',
+                        'rgba(5, 150, 105, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgb(239, 68, 68)',
+                        'rgb(245, 158, 11)',
+                        'rgb(59, 130, 246)',
+                        'rgb(16, 185, 129)',
+                        'rgb(5, 150, 105)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.raw} students (${(context.raw / 30 * 100).toFixed(1)}%)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Grade Range (%)'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Students'
+                        },
+                        ticks: {
+                            stepSize: 2
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Performance Trend Chart
+        const trendCtx = document.getElementById('performanceTrendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Quiz 1', 'Quiz 2', 'Test 1', 'Quiz 3', 'Project', 'Midterm', 'Quiz 4', 'Test 2'],
+                datasets: [{
+                    label: 'Class Average',
+                    data: [72, 74, 70, 75, 78, 76, 77, 76],
+                    borderColor: '#14b8a6',
+                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                    tension: 0.1,
+                    fill: true
+                }, {
+                    label: 'Top 25%',
+                    data: [88, 90, 85, 89, 92, 88, 91, 90],
+                    borderColor: '#10b981',
+                    borderDash: [5, 5],
+                    tension: 0.1,
+                    fill: false
+                }, {
+                    label: 'Bottom 25%',
+                    data: [58, 60, 55, 62, 65, 63, 64, 62],
+                    borderColor: '#f59e0b',
+                    borderDash: [5, 5],
+                    tension: 0.1,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 6
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        min: 50,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Class selection change event
+        const classSelect = document.getElementById('classSelect');
+        if (classSelect) {
+            classSelect.addEventListener('change', function() {
+                // In a real implementation, this would fetch the performance data for the selected class
+                console.log('Selected class:', this.value);
+            });
+        }
+        
+        // Assessment type change event
+        const assessmentType = document.getElementById('assessmentType');
+        if (assessmentType) {
+            assessmentType.addEventListener('change', function() {
+                // In a real implementation, this would fetch the performance data for the selected assessment type
+                console.log('Selected assessment type:', this.value);
+            });
+        }
+        
+        // Assessment date change event
+        const assessmentDate = document.getElementById('assessmentDate');
+        if (assessmentDate) {
+            assessmentDate.addEventListener('change', function() {
+                // In a real implementation, this would fetch the performance data for the selected date
+                console.log('Selected date:', this.value);
+            });
+        }
+    });
+</script>
+{% endblock %}

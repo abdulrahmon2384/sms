@@ -1,3 +1,596 @@
-<div>
-  <h1>Hello world from student management</h1>
+{% extends 'base.html' %}
+{% from 'components/sidebar.html' import sidebar %}
+{% from 'components/header.html' import header %}
+{% from 'components/ui_components.html' import stat_card, chart_card, data_table %}
+
+{% block title %}Student Management - Intelleva{% endblock %}
+
+{% block content %}
+<div class="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <!-- Sidebar -->
+    {{ sidebar('admin', 'students') }}
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden ml-0 md:ml-64 transition-all duration-300">
+        <!-- Header -->
+        {{ header('Student Management', current_user.firstname, current_user.image_link) }}
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 md:p-6">
+            <!-- Page Header with Actions -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Student Management</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1">Manage all student records, enrollments, and information</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <button class="btn-primary py-2 px-4 flex items-center" data-modal-target="addStudentModal">
+                        <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i>
+                        Add Student
+                    </button>
+                    <button class="btn-outline py-2 px-4 flex items-center">
+                        <i data-lucide="upload" class="w-4 h-4 mr-2"></i>
+                        Import
+                    </button>
+                    <button class="btn-outline py-2 px-4 flex items-center">
+                        <i data-lucide="download" class="w-4 h-4 mr-2"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                {{ stat_card('users', 'Total Students', '1,248', '+12% from last year', 'positive') }}
+                {{ stat_card('user-plus', 'New Enrollments', '87', 'This academic year', 'positive') }}
+                {{ stat_card('user-minus', 'Dropouts', '12', '0.9% dropout rate', 'negative') }}
+                {{ stat_card('award', 'Honor Students', '156', '12.5% of total', 'positive') }}
+            </div>
+            
+            <!-- Search and Filter -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center md:space-x-4">
+                    <div class="flex-1 mb-4 md:mb-0">
+                        <div class="relative">
+                            <input type="text" placeholder="Search students..." class="form-input pl-10 w-full">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="search" class="h-5 w-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                        <select class="form-select">
+                            <option value="">All Classes</option>
+                            <option value="9A">Grade 9-A</option>
+                            <option value="9B">Grade 9-B</option>
+                            <option value="10A">Grade 10-A</option>
+                            <option value="10B">Grade 10-B</option>
+                            <option value="11A">Grade 11-A</option>
+                            <option value="11B">Grade 11-B</option>
+                            <option value="12A">Grade 12-A</option>
+                            <option value="12B">Grade 12-B</option>
+                        </select>
+                        <select class="form-select">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="suspended">Suspended</option>
+                            <option value="graduated">Graduated</option>
+                        </select>
+                        <button class="btn-outline py-2 px-4 flex items-center">
+                            <i data-lucide="filter" class="w-4 h-4 mr-2"></i>
+                            More Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Students Table -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
+                <div class="overflow-x-auto">
+                    <table class="intelleva-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </th>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Gender</th>
+                                <th>Contact</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Student 1 -->
+                            <tr>
+                                <td>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </td>
+                                <td>STU-2025-001</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-1.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">John Smith</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">john.smith@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Grade 10-A</td>
+                                <td>Male</td>
+                                <td>+1 (555) 123-4567</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="eye" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Student 2 -->
+                            <tr>
+                                <td>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </td>
+                                <td>STU-2025-002</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-2.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">Emily Johnson</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">emily.johnson@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Grade 11-B</td>
+                                <td>Female</td>
+                                <td>+1 (555) 234-5678</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="eye" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Student 3 -->
+                            <tr>
+                                <td>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </td>
+                                <td>STU-2025-003</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-3.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">Michael Brown</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">michael.brown@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Grade 9-A</td>
+                                <td>Male</td>
+                                <td>+1 (555) 345-6789</td>
+                                <td><span class="badge badge-warning">Suspended</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="eye" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Student 4 -->
+                            <tr>
+                                <td>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </td>
+                                <td>STU-2025-004</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-4.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">Sarah Davis</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">sarah.davis@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Grade 12-A</td>
+                                <td>Female</td>
+                                <td>+1 (555) 456-7890</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="eye" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Student 5 -->
+                            <tr>
+                                <td>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </td>
+                                <td>STU-2025-005</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-5.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">David Wilson</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">david.wilson@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Grade 10-B</td>
+                                <td>Male</td>
+                                <td>+1 (555) 567-8901</td>
+                                <td><span class="badge badge-danger">Inactive</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="eye" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-4 sm:mb-0">
+                            Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">1,248</span> results
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="btn-outline py-1 px-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                Previous
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm bg-teal-50 dark:bg-teal-900 text-teal-600 dark:text-teal-400 border-teal-500 dark:border-teal-400">
+                                1
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                2
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                3
+                            </button>
+                            <span class="text-gray-500 dark:text-gray-400">...</span>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                125
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Class Distribution Chart -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div>
+                    {{ chart_card('Student Distribution by Class', 'classDistributionChart') }}
+                </div>
+                <div>
+                    {{ chart_card('Gender Distribution', 'genderDistributionChart') }}
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
+
+<!-- Add Student Modal -->
+<div id="addStudentModal" class="modal">
+    <div class="modal-content max-w-3xl">
+        <div class="modal-header">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Add New Student</h3>
+            <button class="modal-close">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="addStudentForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Personal Information -->
+                    <div class="md:col-span-2">
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Personal Information</h4>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" class="form-select" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group md:col-span-2">
+                        <label for="address">Address</label>
+                        <textarea id="address" name="address" rows="2" class="form-input" required></textarea>
+                    </div>
+                    
+                    <!-- Academic Information -->
+                    <div class="md:col-span-2 mt-4">
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Academic Information</h4>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admissionDate">Admission Date</label>
+                        <input type="date" id="admissionDate" name="admissionDate" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="class">Class</label>
+                        <select id="class" name="class" class="form-select" required>
+                            <option value="">Select Class</option>
+                            <option value="9A">Grade 9-A</option>
+                            <option value="9B">Grade 9-B</option>
+                            <option value="10A">Grade 10-A</option>
+                            <option value="10B">Grade 10-B</option>
+                            <option value="11A">Grade 11-A</option>
+                            <option value="11B">Grade 11-B</option>
+                            <option value="12A">Grade 12-A</option>
+                            <option value="12B">Grade 12-B</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rollNumber">Roll Number</label>
+                        <input type="text" id="rollNumber" name="rollNumber" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bloodGroup">Blood Group</label>
+                        <select id="bloodGroup" name="bloodGroup" class="form-select">
+                            <option value="">Select Blood Group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Parent/Guardian Information -->
+                    <div class="md:col-span-2 mt-4">
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Parent/Guardian Information</h4>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="parentName">Parent/Guardian Name</label>
+                        <input type="text" id="parentName" name="parentName" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="relationship">Relationship</label>
+                        <select id="relationship" name="relationship" class="form-select" required>
+                            <option value="">Select Relationship</option>
+                            <option value="father">Father</option>
+                            <option value="mother">Mother</option>
+                            <option value="guardian">Guardian</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="parentPhone">Phone Number</label>
+                        <input type="tel" id="parentPhone" name="parentPhone" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="parentEmail">Email</label>
+                        <input type="email" id="parentEmail" name="parentEmail" class="form-input">
+                    </div>
+                    
+                    <!-- Photo Upload -->
+                    <div class="md:col-span-2 mt-4">
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Student Photo</h4>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+                                <img id="photoPreview" src="" alt="" class="w-full h-full object-cover hidden">
+                                <i data-lucide="user" class="w-12 h-12 text-gray-400" id="photoPlaceholder"></i>
+                            </div>
+                            <div>
+                                <label for="photo" class="btn-outline py-2 px-4 cursor-pointer">
+                                    <input type="file" id="photo" name="photo" class="hidden" accept="image/*">
+                                    Upload Photo
+                                </label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Maximum file size: 2MB. Supported formats: JPG, PNG</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline py-2 px-4 modal-close">Cancel</button>
+            <button class="btn-primary py-2 px-4 ml-2" id="saveStudentBtn">Save Student</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/intelleva-charts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Initialize charts
+        const classDistributionData = {
+            labels: ['Grade 9-A', 'Grade 9-B', 'Grade 10-A', 'Grade 10-B', 'Grade 11-A', 'Grade 11-B', 'Grade 12-A', 'Grade 12-B'],
+            values: [145, 132, 168, 155, 172, 163, 158, 155]
+        };
+        initDoughnutChart('classDistributionChart', classDistributionData, 'Student Distribution by Class');
+        
+        const genderDistributionData = {
+            labels: ['Male', 'Female'],
+            values: [652, 596]
+        };
+        initDoughnutChart('genderDistributionChart', genderDistributionData, 'Gender Distribution');
+        
+        // Modal functionality
+        const modals = document.querySelectorAll('.modal');
+        const modalTriggers = document.querySelectorAll('[data-modal-target]');
+        const modalCloseButtons = document.querySelectorAll('.modal-close');
+        
+        modalTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const modalId = trigger.getAttribute('data-modal-target');
+                const modal = document.getElementById(modalId);
+                modal.classList.add('modal-open');
+            });
+        });
+        
+        modalCloseButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const modal = button.closest('.modal');
+                modal.classList.remove('modal-open');
+            });
+        });
+        
+        // Close modal when clicking outside
+        modals.forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('modal-open');
+                }
+            });
+        });
+        
+        // Photo upload preview
+        const photoInput = document.getElementById('photo');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
+        
+        if (photoInput) {
+            photoInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        photoPreview.src = e.target.result;
+                        photoPreview.classList.remove('hidden');
+                        photoPlaceholder.classList.add('hidden');
+                    }
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+        
+        // Save student form
+        const saveStudentBtn = document.getElementById('saveStudentBtn');
+        const addStudentForm = document.getElementById('addStudentForm');
+        
+        if (saveStudentBtn && addStudentForm) {
+            saveStudentBtn.addEventListener('click', function() {
+                // Validate form
+                if (addStudentForm.checkValidity()) {
+                    // In a real implementation, this would submit the form data to the server
+                    console.log('Form is valid, submitting...');
+                    
+                    // Simulate API call
+                    setTimeout(() => {
+                        // Close modal
+                        const modal = document.getElementById('addStudentModal');
+                        modal.classList.remove('modal-open');
+                        
+                        // Show success message (in a real implementation)
+                        alert('Student added successfully!');
+                    }, 1000);
+                } else {
+                    // Trigger form validation
+                    addStudentForm.reportValidity();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

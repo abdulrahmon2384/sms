@@ -1,0 +1,67 @@
+{% macro header(title, user_name, user_image) %}
+<header class="bg-white dark:bg-gray-800 shadow-sm">
+    <div class="flex justify-between items-center px-4 py-3">
+        <div class="flex items-center">
+            <button id="mobileSidebarToggle" class="mr-4 text-gray-600 dark:text-gray-300 md:hidden">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+            <h1 class="text-xl font-bold text-gray-800 dark:text-white">{{ title }}</h1>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <div class="relative">
+                <button id="notificationButton" class="text-gray-600 dark:text-gray-300 hover:text-teal-500 dark:hover:text-teal-400">
+                    <i data-lucide="bell" class="w-6 h-6"></i>
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50">
+                    <div class="p-3 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Notifications</h3>
+                    </div>
+                    <div class="max-h-64 overflow-y-auto">
+                        <div class="p-3 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <p class="text-sm text-gray-800 dark:text-gray-200">New message from admin</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">2 minutes ago</p>
+                        </div>
+                        <div class="p-3 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <p class="text-sm text-gray-800 dark:text-gray-200">Your attendance has been marked</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">1 hour ago</p>
+                        </div>
+                        <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <p class="text-sm text-gray-800 dark:text-gray-200">New assignment posted</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Yesterday</p>
+                        </div>
+                    </div>
+                    <div class="p-2 border-t border-gray-200 dark:border-gray-700">
+                        <a href="#" class="block text-center text-sm text-teal-500 hover:text-teal-600 dark:text-teal-400 dark:hover:text-teal-300">
+                            View all notifications
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="relative">
+                <button id="userDropdownButton" class="flex items-center space-x-2">
+                    <img src="{{ user_image if user_image else 'https://via.placeholder.com/40' }}" alt="User" class="w-8 h-8 rounded-full object-cover">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:inline">{{ user_name }}</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500 dark:text-gray-400"></i>
+                </button>
+                <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50">
+                    <div class="py-2">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <i data-lucide="user" class="w-4 h-4 inline mr-2"></i> Profile
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <i data-lucide="settings" class="w-4 h-4 inline mr-2"></i> Settings
+                        </a>
+                        <div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                        <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <i data-lucide="log-out" class="w-4 h-4 inline mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+{% endmacro %}

@@ -1,141 +1,194 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}
-    choose school
-{% endblock %}
-
-
-{% block navlink %}
-<a href="#about" class="text-gray-600 hover:text-teal-400 transition-colors">About</a>
-<a href="#service" class="text-gray-600 hover:text-teal-400 transition-colors">Service</a>
-<a href="#pricing" class="text-gray-600 hover:text-teal-400 transition-colors">Pricing</a>
-<a href="#contact" class="text-gray-600 hover:text-teal-400 transition-colors">Contact</a>
-{% endblock %}
-
-
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/auth/choose_school.css') }}">
-{% endblock %}
-
-
+{% block title %}Choose School - Intelleva{% endblock %}
 
 {% block content %}
-<div >
-	<!-- Hero Section -->
-    <div class="relative bg-teal-700 text-white py-8 md:py-16">
-        <!-- Background Image -->
-        <img 
-            src="https://f005.backblazeb2.com/file/School-management-system/choose_your_school.jpg" 
-            alt="Background" 
-            class="absolute inset-0 w-full h-full object-cover opacity-50">
-
-        <!-- Content Overlay -->
-        <div class="relative container mx-auto px-4 z-10">
-            <h1 class="text-3xl md:text-4xl font-bold mb-4">Choose Your School</h1>
-            <p class="text-lg md:text-xl">Find your perfect school and discover the best educational institutions tailored to your needs</p>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Select Your School</h1>
+            <p class="text-gray-600 dark:text-gray-300">Enter your school ID or search by name to continue</p>
+        </div>
+        
+        <!-- Search Box -->
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row md:items-center md:space-x-4">
+                <div class="flex-1 mb-4 md:mb-0">
+                    <label for="schoolSearch" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Search for your school
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="schoolSearch" 
+                            placeholder="Enter school name or ID" 
+                            class="form-input pl-10 pr-4 py-3 w-full"
+                        >
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="search" class="h-5 w-5 text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-none">
+                    <label class="invisible block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        &nbsp;
+                    </label>
+                    <button id="searchButton" class="btn-primary py-3 px-6 w-full md:w-auto">
+                        Search
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                <i data-lucide="info" class="h-4 w-4 mr-2"></i>
+                <span>Don't know your school ID? Contact your school administrator or search by name.</span>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div id="searchResults" class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-8">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Search Results</h2>
+            
+            <div id="resultsContainer" class="space-y-4">
+                <!-- Results will be populated dynamically -->
+                <div class="school-result border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 mr-4">
+                            <img src="https://via.placeholder.com/80" alt="School Logo" class="h-16 w-16 object-contain">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Westview Academy</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">ID: WVA-2023</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">New York, USA</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <button class="btn-outline py-2 px-4">Select</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="school-result border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 mr-4">
+                            <img src="https://via.placeholder.com/80" alt="School Logo" class="h-16 w-16 object-contain">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Eastside High School</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">ID: EHS-1045</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Chicago, USA</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <button class="btn-outline py-2 px-4">Select</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="school-result border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 mr-4">
+                            <img src="https://via.placeholder.com/80" alt="School Logo" class="h-16 w-16 object-contain">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Northside Elementary</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">ID: NSE-3872</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Boston, USA</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <button class="btn-outline py-2 px-4">Select</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="mt-6 flex justify-between items-center">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Showing 1-3 of 15 results</p>
+                <div class="flex space-x-2">
+                    <button class="btn-outline py-1 px-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i data-lucide="chevron-left" class="h-4 w-4"></i>
+                    </button>
+                    <button class="btn-outline py-1 px-3 text-sm">
+                        <i data-lucide="chevron-right" class="h-4 w-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Direct ID Entry -->
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Enter School ID Directly</h2>
+            
+            <div class="flex flex-col md:flex-row md:items-end md:space-x-4">
+                <div class="flex-1 mb-4 md:mb-0">
+                    <label for="schoolID" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        School ID
+                    </label>
+                    <input 
+                        type="text" 
+                        id="schoolID" 
+                        placeholder="e.g., SCH-12345" 
+                        class="form-input py-3 w-full"
+                    >
+                </div>
+                <div class="flex-none">
+                    <button id="continueButton" class="btn-primary py-3 px-6 w-full md:w-auto">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Help Section -->
+        <div class="mt-8 text-center">
+            <p class="text-gray-600 dark:text-gray-400">
+                Can't find your school? <a href="{{ url_for('auth.register') }}" class="text-teal-600 dark:text-teal-400 hover:underline">Register a new school</a>
+            </p>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">
+                Need help? <a href="{{ url_for('auth.contact') }}" class="text-teal-600 dark:text-teal-400 hover:underline">Contact support</a>
+            </p>
         </div>
     </div>
-
-	<div class="container mx-auto px-4 py-8">
-		<!-- School Details Section -->
-	    <div id="schoolDetails" class="w-full max-w-4xl mx-auto relative overflow-hidden rounded-2xl shadow-2xl" aria-live="polite">
-		    <div class="absolute inset-0 bg-cover bg-center filter blur-sm" style="background-image: url('https://via.placeholder.com/1000');" aria-hidden="true"></div>
-		    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-		    <a href="/login" class="block relative z-10">
-			    <div class="p-8 md:p-12">
-				    <div class="flex flex-col items-center text-center">
-					    <div class="w-32 h-32 mb-6 rounded-full overflow-hidden border-4 border-white shadow-lg">
-						   <img id="schoolLogo" src="https://via.placeholder.com/200" alt="School logo" class="w-full h-full object-cover">
-					    </div>
-					    <h2 id="schoolName" class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">Evergreen High School</h2>
-					    <div class="bg-white bg-opacity-90 rounded-lg p-4 mb-4 inline-block">
-					    	<p id="schoolLocation" class="text-gray-800 mb-2 flex items-center justify-center">
-						    	<svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-							    	<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-							    	<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-							    </svg>
-							    <span id="locationText" class="font-medium">123 Education Street, City, State 12345</span>
-						    </p>
-						    <p id="schoolInfo" class="text-gray-800 flex flex-wrap justify-center gap-4">
-							    <span class="flex items-center">
-								    <svg class="w-5 h-5 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-									    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-								    </svg>
-								    Type: Public
-							    </span>
-							    <span class="flex items-center">
-								    <svg class="w-5 h-5 mr-1 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-									    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-								    </svg>
-								    Grades: K-12
-							    </span>
-							    <span class="flex items-center">
-								    <svg class="w-5 h-5 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-									    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-								    </svg>
-								    Students: 1,200
-							    </span>
-						    </p>
-					    </div>
-				    </div>
-			    </div>
-		    </a>
-	    </div>
-
-		<!-- Error Message -->
-		<div id="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-md mb-8 hidden" role="alert">
-			<span class="block sm:inline">Invalid school ID. Please try again.</span>
-		</div>
-
-		<!-- Search Section -->
-		<div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-			<h2 class="text-2xl font-semibold text-gray-800 mb-4">Enter School ID</h2>
-			<div class="flex flex-col sm:flex-row">
-				<input type="text" id="schoolIdInput" placeholder="Enter School ID" aria-label="School ID" class="flex-grow p-2 border border-gray-300 rounded-md sm:rounded-r-none focus:ring-teal-500 focus:border-teal-500 mb-2 sm:mb-0">
-				<button id="nextButton" class="bg-teal-600 text-white px-6 py-2 rounded-md sm:rounded-l-none hover:bg-teal-700 transition duration-300">Search</button>
-			</div>
-		</div>
-
-		<!-- FAQ Section -->
-		<div class="bg-white rounded-lg shadow-lg p-6">
-			<h2 class="text-2xl font-semibold text-gray-800 mb-4">Frequently Asked Questions</h2>
-			<div class="space-y-4">
-				<div class="border-b border-gray-200 pb-4">
-					<button class="accordion-header flex justify-between items-center w-full text-left">
-						<span class="font-medium text-gray-700">How do I find my school?</span>
-						<svg class="h-5 w-5 text-gray-500 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-						</svg>
-					</button>
-					<p class="accordion-content mt-2 text-gray-600 text-sm">Enter your school ID in the search box above. You can find your school ID on your student ID card or by contacting your school administration.</p>
-				</div>
-				<div class="border-b border-gray-200 pb-4">
-					<button class="accordion-header flex justify-between items-center w-full text-left">
-						<span class="font-medium text-gray-700">What if I don't know my school ID?</span>
-						<svg class="h-5 w-5 text-gray-500 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-						</svg>
-					</button>
-					<p class="accordion-content mt-2 text-gray-600 text-sm">Contact your school administrator or the help desk for assistance in obtaining your school ID.</p>
-				</div>
-				<div class="border-b border-gray-200 pb-4">
-					<button class="accordion-header flex justify-between items-center w-full text-left">
-						<span class="font-medium text-gray-700">Can I search for schools in my area?</span>
-						<svg class="h-5 w-5 text-gray-500 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-						</svg>
-					</button>
-					<p class="accordion-content mt-2 text-gray-600 text-sm">Currently, our system is designed to work with school IDs. If you're looking for schools in your area, please contact our support team for assistance.</p>
-				</div>
-			</div>
-		</div>
-	</div>
 </div>
 {% endblock %}
 
-
 {% block scripts %}
-    <!-- Link to JavaScript -->
-    <script src="{{ url_for('static', filename='js/auth/choose_school.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script src="{{ url_for('static', filename='js/auth/choose_school.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Example functionality for the search button
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const searchTerm = document.getElementById('schoolSearch').value.trim();
+            if (searchTerm) {
+                // In a real implementation, this would make an API call
+                console.log('Searching for:', searchTerm);
+                // Show results section
+                document.getElementById('searchResults').style.display = 'block';
+            }
+        });
+        
+        // Example functionality for the continue button
+        document.getElementById('continueButton').addEventListener('click', function() {
+            const schoolID = document.getElementById('schoolID').value.trim();
+            if (schoolID) {
+                // In a real implementation, this would validate and redirect
+                console.log('Continuing with school ID:', schoolID);
+                window.location.href = "{{ url_for('auth.login') }}?school=" + encodeURIComponent(schoolID);
+            }
+        });
+        
+        // Example functionality for the select buttons
+        document.querySelectorAll('.school-result button').forEach(button => {
+            button.addEventListener('click', function() {
+                const schoolName = this.closest('.school-result').querySelector('h3').textContent;
+                const schoolID = this.closest('.school-result').querySelector('p:nth-child(2)').textContent.split(': ')[1];
+                console.log('Selected school:', schoolName, 'ID:', schoolID);
+                window.location.href = "{{ url_for('auth.login') }}?school=" + encodeURIComponent(schoolID);
+            });
+        });
+    });
+</script>
 {% endblock %}
-

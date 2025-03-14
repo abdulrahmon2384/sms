@@ -1,0 +1,639 @@
+{% extends 'base.html' %}
+{% from 'components/sidebar.html' import sidebar %}
+{% from 'components/header.html' import header %}
+{% from 'components/ui_components.html' import stat_card, chart_card, data_table %}
+
+{% block title %}Fee Management - Intelleva{% endblock %}
+
+{% block content %}
+<div class="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <!-- Sidebar -->
+    {{ sidebar('admin', 'fees') }}
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden ml-0 md:ml-64 transition-all duration-300">
+        <!-- Header -->
+        {{ header('Fee Management', current_user.firstname, current_user.image_link) }}
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 md:p-6">
+            <!-- Page Header with Actions -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Fee Management</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1">Track payments, manage fee structures, and generate financial reports</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <button class="btn-primary py-2 px-4 flex items-center" data-modal-target="addFeeModal">
+                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                        Add Fee Structure
+                    </button>
+                    <button class="btn-outline py-2 px-4 flex items-center">
+                        <i data-lucide="printer" class="w-4 h-4 mr-2"></i>
+                        Generate Reports
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                {{ stat_card('dollar-sign', 'Total Collected', '$248,750', '78% of expected', 'positive') }}
+                {{ stat_card('alert-circle', 'Outstanding', '$72,450', '22% pending', 'negative') }}
+                {{ stat_card('users', 'Paid Students', '985', '79% of total', 'positive') }}
+                {{ stat_card('calendar', 'Next Due Date', 'Apr 15, 2025', '32 days remaining', 'neutral') }}
+            </div>
+            
+            <!-- Fee Collection Chart -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Fee Collection Trends</h2>
+                <div class="h-80">
+                    <canvas id="feeCollectionChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Fee Structure Table -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Fee Structure</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="intelleva-table">
+                        <thead>
+                            <tr>
+                                <th>Class</th>
+                                <th>Fee Type</th>
+                                <th>Amount</th>
+                                <th>Frequency</th>
+                                <th>Due Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Fee Structure 1 -->
+                            <tr>
+                                <td>Grade 9</td>
+                                <td>Tuition Fee</td>
+                                <td>$1,200</td>
+                                <td>Quarterly</td>
+                                <td>15th of Jan, Apr, Jul, Oct</td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Fee Structure 2 -->
+                            <tr>
+                                <td>Grade 10</td>
+                                <td>Tuition Fee</td>
+                                <td>$1,350</td>
+                                <td>Quarterly</td>
+                                <td>15th of Jan, Apr, Jul, Oct</td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Fee Structure 3 -->
+                            <tr>
+                                <td>Grade 11</td>
+                                <td>Tuition Fee</td>
+                                <td>$1,500</td>
+                                <td>Quarterly</td>
+                                <td>15th of Jan, Apr, Jul, Oct</td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Fee Structure 4 -->
+                            <tr>
+                                <td>Grade 12</td>
+                                <td>Tuition Fee</td>
+                                <td>$1,650</td>
+                                <td>Quarterly</td>
+                                <td>15th of Jan, Apr, Jul, Oct</td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Fee Structure 5 -->
+                            <tr>
+                                <td>All Grades</td>
+                                <td>Library Fee</td>
+                                <td>$100</td>
+                                <td>Annual</td>
+                                <td>15th of January</td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Fee Structure 6 -->
+                            <tr>
+                                <td>All Grades</td>
+                                <td>Technology Fee</td>
+                                <td>$150</td>
+                                <td>Annual</td>
+                                <td>15th of January</td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Recent Payments -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Recent Payments</h2>
+                    <div class="flex items-center">
+                        <div class="relative">
+                            <input type="text" placeholder="Search payments..." class="form-input pl-10 py-2 text-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="search" class="h-4 w-4 text-gray-400"></i>
+                            </div>
+                        </div>
+                        <select class="form-select ml-2 py-2 text-sm">
+                            <option value="all">All Classes</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="intelleva-table">
+                        <thead>
+                            <tr>
+                                <th>Receipt ID</th>
+                                <th>Student</th>
+                                <th>Class</th>
+                                <th>Fee Type</th>
+                                <th>Amount</th>
+                                <th>Payment Date</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Payment 1 -->
+                            <tr>
+                                <td>RCP-2025-1001</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-1.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>John Smith</div>
+                                    </div>
+                                </td>
+                                <td>Grade 10-A</td>
+                                <td>Tuition Fee (Q1)</td>
+                                <td>$1,350</td>
+                                <td>Jan 12, 2025</td>
+                                <td>Credit Card</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="file-text" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="printer" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Payment 2 -->
+                            <tr>
+                                <td>RCP-2025-1002</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-2.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>Emily Johnson</div>
+                                    </div>
+                                </td>
+                                <td>Grade 11-B</td>
+                                <td>Tuition Fee (Q1)</td>
+                                <td>$1,500</td>
+                                <td>Jan 14, 2025</td>
+                                <td>Bank Transfer</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="file-text" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="printer" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Payment 3 -->
+                            <tr>
+                                <td>RCP-2025-1003</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-3.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>Michael Brown</div>
+                                    </div>
+                                </td>
+                                <td>Grade 9-A</td>
+                                <td>Tuition Fee (Q1)</td>
+                                <td>$1,200</td>
+                                <td>Jan 15, 2025</td>
+                                <td>Paystack</td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="file-text" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="printer" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Payment 4 -->
+                            <tr>
+                                <td>RCP-2025-1004</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-4.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>Sarah Davis</div>
+                                    </div>
+                                </td>
+                                <td>Grade 12-A</td>
+                                <td>Tuition Fee (Q1)</td>
+                                <td>$1,650</td>
+                                <td>Jan 16, 2025</td>
+                                <td>Credit Card</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="file-text" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="printer" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Payment 5 -->
+                            <tr>
+                                <td>RCP-2025-1005</td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-5.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>David Wilson</div>
+                                    </div>
+                                </td>
+                                <td>Grade 10-B</td>
+                                <td>Tuition Fee (Q1)</td>
+                                <td>$1,350</td>
+                                <td>Jan 18, 2025</td>
+                                <td>Paystack</td>
+                                <td><span class="badge badge-danger">Failed</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="file-text" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="refresh-cw" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-4 sm:mb-0">
+                            Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">248</span> results
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="btn-outline py-1 px-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                Previous
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm bg-teal-50 dark:bg-teal-900 text-teal-600 dark:text-teal-400 border-teal-500 dark:border-teal-400">
+                                1
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                2
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                3
+                            </button>
+                            <span class="text-gray-500 dark:text-gray-400">...</span>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                25
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Method Distribution -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div>
+                    {{ chart_card('Payment Method Distribution', 'paymentMethodChart') }}
+                </div>
+                <div>
+                    {{ chart_card('Fee Collection by Class', 'feeByClassChart') }}
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Add Fee Structure Modal -->
+<div id="addFeeModal" class="modal">
+    <div class="modal-content max-w-2xl">
+        <div class="modal-header">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Add Fee Structure</h3>
+            <button class="modal-close">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="addFeeForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="feeClass">Class</label>
+                        <select id="feeClass" name="feeClass" class="form-select" required>
+                            <option value="">Select Class</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                            <option value="all">All Grades</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feeType">Fee Type</label>
+                        <select id="feeType" name="feeType" class="form-select" required>
+                            <option value="">Select Fee Type</option>
+                            <option value="tuition">Tuition Fee</option>
+                            <option value="library">Library Fee</option>
+                            <option value="technology">Technology Fee</option>
+                            <option value="sports">Sports Fee</option>
+                            <option value="lab">Laboratory Fee</option>
+                            <option value="transport">Transportation Fee</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="otherFeeTypeContainer" style="display: none;">
+                        <label for="otherFeeType">Specify Fee Type</label>
+                        <input type="text" id="otherFeeType" name="otherFeeType" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feeAmount">Amount ($)</label>
+                        <input type="number" id="feeAmount" name="feeAmount" min="0" step="0.01" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feeFrequency">Frequency</label>
+                        <select id="feeFrequency" name="feeFrequency" class="form-select" required>
+                            <option value="">Select Frequency</option>
+                            <option value="annual">Annual</option>
+                            <option value="biannual">Bi-Annual</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="onetime">One-Time</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group md:col-span-2">
+                        <label for="feeDueDate">Due Date(s)</label>
+                        <input type="text" id="feeDueDate" name="feeDueDate" class="form-input" placeholder="e.g., 15th of Jan, Apr, Jul, Oct" required>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">For multiple dates, separate with commas</p>
+                    </div>
+                    
+                    <div class="form-group md:col-span-2">
+                        <label for="feeDescription">Description</label>
+                        <textarea id="feeDescription" name="feeDescription" rows="2" class="form-input"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline py-2 px-4 modal-close">Cancel</button>
+            <button class="btn-primary py-2 px-4 ml-2" id="saveFeeBtn">Save Fee Structure</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/intelleva-charts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Initialize charts
+        const paymentMethodData = {
+            labels: ['Credit Card', 'Bank Transfer', 'Paystack', 'Cash', 'Other'],
+            values: [42, 28, 18, 10, 2]
+        };
+        initDoughnutChart('paymentMethodChart', paymentMethodData, 'Payment Method Distribution (%)');
+        
+        const feeByClassData = {
+            labels: ['Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
+            values: [58250, 67500, 75000, 48000]
+        };
+        initDoughnutChart('feeByClassChart', feeByClassData, 'Fee Collection by Class ($)');
+        
+        // Fee Collection Trend Chart
+        const ctx = document.getElementById('feeCollectionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Expected Collection',
+                    data: [85000, 15000, 10000, 85000, 15000, 10000, 85000, 15000, 10000, 85000, 15000, 10000],
+                    borderColor: '#94a3b8',
+                    backgroundColor: 'transparent',
+                    borderDashed: [5, 5],
+                    tension: 0.1
+                }, {
+                    label: 'Actual Collection',
+                    data: [82500, 14200, 9500, 83000, 14800, 9200, 84500, 14500, 9800, 0, 0, 0],
+                    borderColor: '#14b8a6',
+                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 6
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Modal functionality
+        const modals = document.querySelectorAll('.modal');
+        const modalTriggers = document.querySelectorAll('[data-modal-target]');
+        const modalCloseButtons = document.querySelectorAll('.modal-close');
+        
+        modalTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const modalId = trigger.getAttribute('data-modal-target');
+                const modal = document.getElementById(modalId);
+                modal.classList.add('modal-open');
+            });
+        });
+        
+        modalCloseButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const modal = button.closest('.modal');
+                modal.classList.remove('modal-open');
+            });
+        });
+        
+        // Close modal when clicking outside
+        modals.forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('modal-open');
+                }
+            });
+        });
+        
+        // Show/hide other fee type field
+        const feeTypeSelect = document.getElementById('feeType');
+        const otherFeeTypeContainer = document.getElementById('otherFeeTypeContainer');
+        
+        if (feeTypeSelect && otherFeeTypeContainer) {
+            feeTypeSelect.addEventListener('change', function() {
+                if (this.value === 'other') {
+                    otherFeeTypeContainer.style.display = 'block';
+                    document.getElementById('otherFeeType').setAttribute('required', 'required');
+                } else {
+                    otherFeeTypeContainer.style.display = 'none';
+                    document.getElementById('otherFeeType').removeAttribute('required');
+                }
+            });
+        }
+        
+        // Save fee structure form
+        const saveFeeBtn = document.getElementById('saveFeeBtn');
+        const addFeeForm = document.getElementById('addFeeForm');
+        
+        if (saveFeeBtn && addFeeForm) {
+            saveFeeBtn.addEventListener('click', function() {
+                // Validate form
+                if (addFeeForm.checkValidity()) {
+                    // In a real implementation, this would submit the form data to the server
+                    console.log('Form is valid, submitting...');
+                    
+                    // Simulate API call
+                    setTimeout(() => {
+                        // Close modal
+                        const modal = document.getElementById('addFeeModal');
+                        modal.classList.remove('modal-open');
+                        
+                        // Show success message (in a real implementation)
+                        alert('Fee structure added successfully!');
+                    }, 1000);
+                } else {
+                    // Trigger form validation
+                    addFeeForm.reportValidity();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

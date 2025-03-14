@@ -1,3 +1,256 @@
-<div>
-  <h1>Hello world from dashboard</h1>
+{% extends 'base.html' %}
+{% from 'components/sidebar.html' import sidebar %}
+{% from 'components/header.html' import header %}
+{% from 'components/ui_components.html' import stat_card, chart_card, data_table %}
+
+{% block title %}Admin Dashboard - Intelleva{% endblock %}
+
+{% block content %}
+<div class="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <!-- Sidebar -->
+    {{ sidebar('admin', 'dashboard') }}
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden ml-0 md:ml-64 transition-all duration-300">
+        <!-- Header -->
+        {{ header('Dashboard', current_user.firstname, current_user.image_link) }}
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 md:p-6">
+            <!-- Welcome Banner -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Welcome back, {{ current_user.firstname }}!</h1>
+                        <p class="text-gray-600 dark:text-gray-300 mt-1">Here's what's happening with your school today.</p>
+                    </div>
+                    <div class="mt-4 md:mt-0">
+                        <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+                            <i data-lucide="calendar" class="w-4 h-4 text-teal-500"></i>
+                            <span id="currentDate">March 14, 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                {{ stat_card('users', 'Total Students', '1,248', '+12% from last month', 'positive') }}
+                {{ stat_card('user-check', 'Attendance Rate', '94.2%', '+2.3% from last month', 'positive') }}
+                {{ stat_card('dollar-sign', 'Fee Collection', '$52,489', '87% of total', 'positive') }}
+                {{ stat_card('alert-triangle', 'Pending Issues', '24', '+5 from last week', 'negative') }}
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Attendance Chart -->
+                <div>
+                    {{ chart_card('Attendance Overview', 'attendanceChart') }}
+                </div>
+                
+                <!-- Performance Chart -->
+                <div>
+                    {{ chart_card('Academic Performance', 'performanceChart') }}
+                </div>
+            </div>
+            
+            <!-- Financial Overview -->
+            <div class="mb-6">
+                {{ chart_card('Financial Overview', 'financeChart') }}
+            </div>
+            
+            <!-- Recent Activities and Upcoming Events -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Recent Activities -->
+                <div class="lg:col-span-2">
+                    {% call data_table(['Activity', 'User', 'Time', 'Status'], 'activitiesTable') %}
+                        Recent Activities
+                    {% endcall %}
+                </div>
+                
+                <!-- Upcoming Events -->
+                <div>
+                    <div class="intelleva-card">
+                        <div class="intelleva-card-header">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Upcoming Events</h3>
+                            <button class="text-gray-500 dark:text-gray-400 hover:text-teal-500 dark:hover:text-teal-400">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div class="intelleva-card-body">
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 bg-teal-100 dark:bg-teal-900 rounded-full p-2 mr-3">
+                                        <i data-lucide="calendar" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-800 dark:text-white">Parent-Teacher Meeting</h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">March 18, 2025 • 10:00 AM</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900 rounded-full p-2 mr-3">
+                                        <i data-lucide="award" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-800 dark:text-white">Annual Sports Day</h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">March 25, 2025 • All Day</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 bg-orange-100 dark:bg-orange-900 rounded-full p-2 mr-3">
+                                        <i data-lucide="book-open" class="w-4 h-4 text-orange-600 dark:text-orange-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-800 dark:text-white">Final Exams Begin</h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">April 5, 2025</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 bg-purple-100 dark:bg-purple-900 rounded-full p-2 mr-3">
+                                        <i data-lucide="users" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-800 dark:text-white">Staff Development Day</h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">April 12, 2025 • No Students</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <a href="#" class="block text-center text-sm text-teal-600 dark:text-teal-400 hover:underline mt-4">
+                                View All Events
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Quick Actions</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <a href="{{ url_for('admin.student_management') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-teal-100 dark:bg-teal-900 p-3 rounded-full mb-3">
+                            <i data-lucide="user-plus" class="w-6 h-6 text-teal-600 dark:text-teal-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Add Student</span>
+                    </a>
+                    
+                    <a href="{{ url_for('admin.teacher_management') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-full mb-3">
+                            <i data-lucide="user-cog" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Add Teacher</span>
+                    </a>
+                    
+                    <a href="{{ url_for('admin.finacial_management') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full mb-3">
+                            <i data-lucide="file-text" class="w-6 h-6 text-green-600 dark:text-green-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Generate Report</span>
+                    </a>
+                    
+                    <a href="{{ url_for('admin.communication') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-purple-100 dark:bg-purple-900 p-3 rounded-full mb-3">
+                            <i data-lucide="mail" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Send Notification</span>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/intelleva-charts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Set current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        
+        // Initialize charts
+        // Attendance Chart
+        const attendanceData = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            present: [92, 88, 94, 96, 91, 94],
+            absent: [8, 12, 6, 4, 9, 6]
+        };
+        initAttendanceChart('attendanceChart', attendanceData);
+        
+        // Performance Chart
+        const performanceData = {
+            labels: ['Math', 'Science', 'English', 'History', 'Arts'],
+            current: [78, 82, 85, 76, 90],
+            previous: [72, 75, 80, 68, 85]
+        };
+        initPerformanceChart('performanceChart', performanceData);
+        
+        // Finance Chart
+        const financeData = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            income: [45000, 52000, 48000, 58000, 50000, 55000],
+            expenses: [38000, 42000, 40000, 45000, 42000, 47000]
+        };
+        initFinanceChart('financeChart', financeData);
+        
+        // Populate activities table with sample data
+        const activitiesData = [
+            { activity: 'New student registered', user: 'Admin', time: '10 minutes ago', status: 'Completed' },
+            { activity: 'Fee payment received', user: 'Finance', time: '1 hour ago', status: 'Completed' },
+            { activity: 'Attendance marked', user: 'Teacher', time: '2 hours ago', status: 'Completed' },
+            { activity: 'Report generated', user: 'Admin', time: '3 hours ago', status: 'Completed' },
+            { activity: 'System maintenance', user: 'System', time: 'Yesterday', status: 'Completed' }
+        ];
+        
+        const tableBody = document.getElementById('activitiesTable-body');
+        if (tableBody) {
+            tableBody.innerHTML = '';
+            
+            activitiesData.forEach(item => {
+                const row = document.createElement('tr');
+                
+                const activityCell = document.createElement('td');
+                activityCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100';
+                activityCell.textContent = item.activity;
+                
+                const userCell = document.createElement('td');
+                userCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100';
+                userCell.textContent = item.user;
+                
+                const timeCell = document.createElement('td');
+                timeCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400';
+                timeCell.textContent = item.time;
+                
+                const statusCell = document.createElement('td');
+                statusCell.className = 'px-6 py-4 whitespace-nowrap text-sm';
+                
+                const statusBadge = document.createElement('span');
+                statusBadge.className = 'badge badge-success';
+                statusBadge.textContent = item.status;
+                statusCell.appendChild(statusBadge);
+                
+                row.appendChild(activityCell);
+                row.appendChild(userCell);
+                row.appendChild(timeCell);
+                row.appendChild(statusCell);
+                
+                tableBody.appendChild(row);
+            });
+            
+            document.getElementById('activitiesTable-showing').textContent = activitiesData.length;
+            document.getElementById('activitiesTable-total').textContent = activitiesData.length;
+        }
+    });
+</script>
+{% endblock %}

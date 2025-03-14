@@ -1,3 +1,300 @@
-<div>
-    Hello from dashboard
+{% extends 'base.html' %}
+{% from 'components/sidebar.html' import sidebar %}
+{% from 'components/header.html' import header %}
+{% from 'components/ui_components.html' import stat_card, chart_card, data_table %}
+
+{% block title %}Teacher Dashboard - Intelleva{% endblock %}
+
+{% block content %}
+<div class="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <!-- Sidebar -->
+    {{ sidebar('teacher', 'dashboard') }}
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden ml-0 md:ml-64 transition-all duration-300">
+        <!-- Header -->
+        {{ header('Dashboard', current_user.firstname, current_user.image_link) }}
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 md:p-6">
+            <!-- Welcome Banner -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Welcome, {{ current_user.firstname }}!</h1>
+                        <p class="text-gray-600 dark:text-gray-300 mt-1">Here's an overview of your classes and students.</p>
+                    </div>
+                    <div class="mt-4 md:mt-0">
+                        <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+                            <i data-lucide="calendar" class="w-4 h-4 text-teal-500"></i>
+                            <span id="currentDate">March 14, 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                {{ stat_card('users', 'Total Students', '87', '3 new this month', 'positive') }}
+                {{ stat_card('user-check', 'Today\'s Attendance', '92%', '+2% from yesterday', 'positive') }}
+                {{ stat_card('book-open', 'Classes Today', '4', '2 remaining', 'neutral') }}
+                {{ stat_card('clipboard-list', 'Pending Tasks', '7', '3 due today', 'negative') }}
+            </div>
+            
+            <!-- Class Schedule -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Today's Schedule</h2>
+                    <a href="{{ url_for('teacher.class') }}" class="text-sm text-teal-600 dark:text-teal-400 hover:underline">View Full Schedule</a>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="intelleva-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Class</th>
+                                <th>Subject</th>
+                                <th>Room</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>08:00 - 09:30</td>
+                                <td>Grade 10-A</td>
+                                <td>Mathematics</td>
+                                <td>Room 105</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>09:45 - 11:15</td>
+                                <td>Grade 11-B</td>
+                                <td>Physics</td>
+                                <td>Lab 2</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>11:30 - 13:00</td>
+                                <td>Grade 9-C</td>
+                                <td>Mathematics</td>
+                                <td>Room 108</td>
+                                <td><span class="badge badge-info">Current</span></td>
+                            </tr>
+                            <tr>
+                                <td>14:00 - 15:30</td>
+                                <td>Grade 10-B</td>
+                                <td>Physics</td>
+                                <td>Lab 1</td>
+                                <td><span class="badge badge-warning">Upcoming</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Class Performance Chart -->
+                <div>
+                    {{ chart_card('Class Performance', 'performanceChart') }}
+                </div>
+                
+                <!-- Attendance Chart -->
+                <div>
+                    {{ chart_card('Attendance Overview', 'attendanceChart') }}
+                </div>
+            </div>
+            
+            <!-- Recent Activities and Announcements -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Recent Activities -->
+                <div class="lg:col-span-2">
+                    {% call data_table(['Student', 'Activity', 'Time', 'Status'], 'activitiesTable') %}
+                        Recent Student Activities
+                    {% endcall %}
+                </div>
+                
+                <!-- Announcements -->
+                <div>
+                    <div class="intelleva-card">
+                        <div class="intelleva-card-header">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Announcements</h3>
+                            <button class="text-gray-500 dark:text-gray-400 hover:text-teal-500 dark:hover:text-teal-400">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div class="intelleva-card-body">
+                            <div class="space-y-4">
+                                <div class="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-800 rounded-full p-1 mr-3">
+                                            <i data-lucide="megaphone" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-800 dark:text-white">Staff Meeting</h4>
+                                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">Staff meeting scheduled for March 16 at 3:30 PM in the conference room.</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Posted by: Principal • 2 hours ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-3 bg-green-50 dark:bg-green-900 rounded-lg">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 bg-green-100 dark:bg-green-800 rounded-full p-1 mr-3">
+                                            <i data-lucide="calendar" class="w-4 h-4 text-green-600 dark:text-green-400"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-800 dark:text-white">Parent-Teacher Meeting</h4>
+                                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">Please prepare student progress reports for the upcoming parent-teacher meeting.</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Posted by: Admin • Yesterday</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-3 bg-yellow-50 dark:bg-yellow-900 rounded-lg">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-800 rounded-full p-1 mr-3">
+                                            <i data-lucide="alert-triangle" class="w-4 h-4 text-yellow-600 dark:text-yellow-400"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-800 dark:text-white">Exam Schedule Update</h4>
+                                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">Final exam schedule has been updated. Please check your email for details.</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Posted by: Academic Office • 2 days ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <a href="#" class="block text-center text-sm text-teal-600 dark:text-teal-400 hover:underline mt-4">
+                                View All Announcements
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Quick Actions</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <a href="{{ url_for('teacher.attendance') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-teal-100 dark:bg-teal-900 p-3 rounded-full mb-3">
+                            <i data-lucide="check-square" class="w-6 h-6 text-teal-600 dark:text-teal-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Mark Attendance</span>
+                    </a>
+                    
+                    <a href="{{ url_for('teacher.performance') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-full mb-3">
+                            <i data-lucide="bar-chart-2" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Record Grades</span>
+                    </a>
+                    
+                    <a href="{{ url_for('teacher.communication') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-purple-100 dark:bg-purple-900 p-3 rounded-full mb-3">
+                            <i data-lucide="mail" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Send Message</span>
+                    </a>
+                    
+                    <a href="{{ url_for('teacher.class') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full mb-3">
+                            <i data-lucide="file-text" class="w-6 h-6 text-green-600 dark:text-green-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Class Materials</span>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/intelleva-charts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Set current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        
+        // Initialize charts
+        // Performance Chart
+        const performanceData = {
+            labels: ['Grade 9-C', 'Grade 10-A', 'Grade 10-B', 'Grade 11-B'],
+            current: [72, 85, 78, 88],
+            previous: [68, 80, 75, 82]
+        };
+        initPerformanceChart('performanceChart', performanceData);
+        
+        // Attendance Chart
+        const attendanceData = {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Today'],
+            present: [95, 92, 88, 94, 90, 92],
+            absent: [5, 8, 12, 6, 10, 8]
+        };
+        initAttendanceChart('attendanceChart', attendanceData);
+        
+        // Populate activities table with sample data
+        const activitiesData = [
+            { student: 'John Smith', activity: 'Submitted assignment', time: '30 minutes ago', status: 'Completed' },
+            { student: 'Emily Johnson', activity: 'Took quiz', time: '1 hour ago', status: 'Completed' },
+            { student: 'Michael Brown', activity: 'Absent from class', time: '2 hours ago', status: 'Pending' },
+            { student: 'Sarah Davis', activity: 'Asked question', time: '3 hours ago', status: 'Completed' },
+            { student: 'David Wilson', activity: 'Late to class', time: 'Yesterday', status: 'Resolved' }
+        ];
+        
+        const tableBody = document.getElementById('activitiesTable-body');
+        if (tableBody) {
+            tableBody.innerHTML = '';
+            
+            activitiesData.forEach(item => {
+                const row = document.createElement('tr');
+                
+                const studentCell = document.createElement('td');
+                studentCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100';
+                studentCell.textContent = item.student;
+                
+                const activityCell = document.createElement('td');
+                activityCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100';
+                activityCell.textContent = item.activity;
+                
+                const timeCell = document.createElement('td');
+                timeCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400';
+                timeCell.textContent = item.time;
+                
+                const statusCell = document.createElement('td');
+                statusCell.className = 'px-6 py-4 whitespace-nowrap text-sm';
+                
+                const statusBadge = document.createElement('span');
+                if (item.status === 'Completed') {
+                    statusBadge.className = 'badge badge-success';
+                } else if (item.status === 'Pending') {
+                    statusBadge.className = 'badge badge-warning';
+                } else {
+                    statusBadge.className = 'badge badge-info';
+                }
+                statusBadge.textContent = item.status;
+                statusCell.appendChild(statusBadge);
+                
+                row.appendChild(studentCell);
+                row.appendChild(activityCell);
+                row.appendChild(timeCell);
+                row.appendChild(statusCell);
+                
+                tableBody.appendChild(row);
+            });
+            
+            document.getElementById('activitiesTable-showing').textContent = activitiesData.length;
+            document.getElementById('activitiesTable-total').textContent = activitiesData.length;
+        }
+    });
+</script>
+{% endblock %}

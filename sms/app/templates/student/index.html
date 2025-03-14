@@ -1,123 +1,371 @@
+{% extends 'base.html' %}
+{% from 'components/sidebar.html' import sidebar %}
+{% from 'components/header.html' import header %}
+{% from 'components/ui_components.html' import stat_card, chart_card, data_table %}
 
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-    <div class="min-h-screen">
-          <div id="dashboard" class="container mx-auto p-2 space-y-4">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <!-- Container -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-                  <!-- Profile Section -->
-                  <div class="flex items-center space-x-4">
-                    <!-- Profile Image -->
-                    <div class="w-12 h-12 rounded-full overflow-hidden">
-                      <img id="dashboardProfilePic" src="" alt="Profile Image" class="w-full h-full object-cover">
-                    </div>
-                    <!-- Profile Details -->
-                    <div id="profile">
-                      <h2 id="name" class="text-lg font-semibold text-gray-900 dark:text-gray-100">Unknown</h2>
-                      <p id="username" class="text-sm text-gray-600 dark:text-gray-400">@Unknown</p>
-                    </div>
-                  </div>
-                  <!-- Info Section -->
-                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-                    <!-- Year -->
-                    <div class="flex items-center space-x-2">
-                      <i data-lucide="graduation-cap" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
-                      <div>
-                        <p class="text-gray-600 dark:text-gray-400">Year</p>
-                        <p id="year" class="font-medium text-gray-900 dark:text-gray-100">2023-24</p>
-                      </div>
-                    </div>
-                    <!-- Term -->
-                    <div class="flex items-center space-x-2">
-                      <i data-lucide="calendar-days" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
-                      <div>
-                        <p class="text-gray-600 dark:text-gray-400">Term</p>
-                        <p id="term" class="font-medium text-gray-900 dark:text-gray-100">Fall</p>
-                      </div>
-                    </div>
-                    <!-- Grade -->
-                    <div class="flex items-center space-x-2">
-                      <i data-lucide="user" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
-                      <div>
-                        <p class="text-gray-600 dark:text-gray-400">Grade</p>
-                        <p id="grade" class="font-medium text-gray-900 dark:text-gray-100">11th</p>
-                      </div>
-                    </div>
-                    <!-- Teacher -->
-                    <div class="flex items-center space-x-2">
-                      <i data-lucide="users" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
-                      <div>
-                        <p class="text-gray-600 dark:text-gray-400">Teacher</p>
-                        <p id="teacher" class="font-medium text-gray-900 dark:text-gray-100">Ms. Smith</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-            </div>
+{% block title %}Student Dashboard - Intelleva{% endblock %}
 
-            <!-- Dashboard Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Assignments & Events -->
-                <div id="assignments" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"></div>
-
-
-                <div id="per" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                    <div class="p-4">
-                      <h3 class="text-lg font-bold flex items-center text-teal-600 dark:text-teal-400 mb-8">
-                        <i data-lucide="award" class="w-5 h-5 mr-2"></i>
-                        Performance
-                      </h3>
-                      <div id="performance"></div>
-                    </div>
-                </div>
-
-                <!-- Attendance -->
-                <div id="attendance" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                    
-                </div>
-
-                <!-- Behavior -->
-                <div id="behavior" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"></div>
-            </div>
-
-            <!-- Class Schedule -->
-            <div id="schedule" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                <div class="p-4">
-                  <h3 class="text-xl font-semibold text-teal-600 dark:text-teal-400 flex items-center mb-4">
-                    <i data-lucide="calendar-days" class="w-4 h-4 mr-2"></i>
-                        Academic Schedule
-                  </h3>
-                    <div class="w-full">
-                        <div class="flex border-b">
-                            <button class="text-sm py-2 px-4 border-b-2 border-teal-600 dark:border-teal-400" data-tab="class">Class</button>
-                            <button class="text-sm py-2 px-4" data-tab="exam">Exam</button>
-                            <button class="text-sm py-2 px-4" data-tab="test">Test</button>
-                        </div>
-                        <div class="mt-4">
-                            <div id="class-schedule" class="overflow-x-auto"></div>
-                            <div id="exam-schedule" class="hidden overflow-x-auto"></div>
-                            <div id="test-schedule" class="hidden overflow-x-auto"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Community & Financial -->
-            <div class="grid gap-4 md:grid-cols-2">
-                <div id="community" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"></div>
-                <div id="financial" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"></div>
-            </div>
-          </div>
-    </div>
-    <script src="{{ url_for('static', filename='js/student/index.js') }}"></script>
-</body>
-
-
-
-
-
-
-
-
-
+{% block content %}
+<div class="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <!-- Sidebar -->
+    {{ sidebar('student', 'dashboard') }}
     
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden ml-0 md:ml-64 transition-all duration-300">
+        <!-- Header -->
+        {{ header('Dashboard', current_user.firstname, current_user.image_link) }}
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 md:p-6">
+            <!-- Welcome Banner -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Hello, {{ current_user.firstname }}!</h1>
+                        <p class="text-gray-600 dark:text-gray-300 mt-1">Welcome to your student dashboard.</p>
+                    </div>
+                    <div class="mt-4 md:mt-0">
+                        <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+                            <i data-lucide="calendar" class="w-4 h-4 text-teal-500"></i>
+                            <span id="currentDate">March 14, 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Student Info Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-col md:flex-row items-start">
+                    <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                        <img src="{{ current_user.image_link if current_user.image_link else 'https://via.placeholder.com/150' }}" alt="Student" class="w-24 h-24 rounded-full object-cover border-4 border-teal-500 dark:border-teal-400">
+                    </div>
+                    <div class="flex-grow">
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-2">{{ current_user.firstname }} {{ current_user.lastname }}</h2>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                            <!-- Year -->
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="graduation-cap" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+                                <div>
+                                    <p class="text-gray-600 dark:text-gray-400">Year</p>
+                                    <p id="year" class="font-medium text-gray-900 dark:text-gray-100">2024-25</p>
+                                </div>
+                            </div>
+                            <!-- Term -->
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="calendar-days" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+                                <div>
+                                    <p class="text-gray-600 dark:text-gray-400">Term</p>
+                                    <p id="term" class="font-medium text-gray-900 dark:text-gray-100">Spring</p>
+                                </div>
+                            </div>
+                            <!-- Grade -->
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="user" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+                                <div>
+                                    <p class="text-gray-600 dark:text-gray-400">Grade</p>
+                                    <p id="grade" class="font-medium text-gray-900 dark:text-gray-100">10th</p>
+                                </div>
+                            </div>
+                            <!-- Class -->
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="users" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+                                <div>
+                                    <p class="text-gray-600 dark:text-gray-400">Class</p>
+                                    <p id="class" class="font-medium text-gray-900 dark:text-gray-100">10-A</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                {{ stat_card('check-square', 'Attendance Rate', '96.5%', '+1.2% from last month', 'positive') }}
+                {{ stat_card('award', 'GPA', '3.8/4.0', '+0.2 from last term', 'positive') }}
+                {{ stat_card('book-open', 'Completed Assignments', '28/30', '2 pending', 'neutral') }}
+                {{ stat_card('credit-card', 'Fee Status', 'Paid', 'Next due: Jun 15', 'success') }}
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Performance Chart -->
+                <div>
+                    {{ chart_card('Academic Performance', 'performanceChart') }}
+                </div>
+                
+                <!-- Attendance Chart -->
+                <div>
+                    {{ chart_card('Monthly Attendance', 'attendanceChart') }}
+                </div>
+            </div>
+            
+            <!-- Class Schedule -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Today's Schedule</h2>
+                    <a href="{{ url_for('student.class_info') }}" class="text-sm text-teal-600 dark:text-teal-400 hover:underline">View Full Schedule</a>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="intelleva-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Subject</th>
+                                <th>Teacher</th>
+                                <th>Room</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>08:00 - 09:30</td>
+                                <td>Mathematics</td>
+                                <td>Mr. Johnson</td>
+                                <td>Room 105</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>09:45 - 11:15</td>
+                                <td>English Literature</td>
+                                <td>Ms. Williams</td>
+                                <td>Room 203</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>11:30 - 13:00</td>
+                                <td>Physics</td>
+                                <td>Dr. Brown</td>
+                                <td>Lab 2</td>
+                                <td><span class="badge badge-info">Current</span></td>
+                            </tr>
+                            <tr>
+                                <td>14:00 - 15:30</td>
+                                <td>History</td>
+                                <td>Mrs. Davis</td>
+                                <td>Room 108</td>
+                                <td><span class="badge badge-warning">Upcoming</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Assignments and Announcements -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Assignments -->
+                <div class="lg:col-span-2">
+                    <div class="intelleva-card">
+                        <div class="intelleva-card-header">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Upcoming Assignments</h3>
+                            <a href="#" class="text-sm text-teal-600 dark:text-teal-400 hover:underline">View All</a>
+                        </div>
+                        <div class="intelleva-card-body">
+                            <div class="space-y-4">
+                                <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-base font-medium text-gray-800 dark:text-white">Mathematics Problem Set</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Chapter 7 Problems 1-15</p>
+                                            <div class="flex items-center mt-2">
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                                    <i data-lucide="user" class="w-3 h-3 mr-1"></i> Mr. Johnson
+                                                </span>
+                                                <span class="mx-2 text-gray-300 dark:text-gray-600">|</span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                                    <i data-lucide="calendar" class="w-3 h-3 mr-1"></i> Due: Mar 16, 2025
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-warning">Due Soon</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-base font-medium text-gray-800 dark:text-white">English Essay</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Analysis of "To Kill a Mockingbird" (1500 words)</p>
+                                            <div class="flex items-center mt-2">
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                                    <i data-lucide="user" class="w-3 h-3 mr-1"></i> Ms. Williams
+                                                </span>
+                                                <span class="mx-2 text-gray-300 dark:text-gray-600">|</span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                                    <i data-lucide="calendar" class="w-3 h-3 mr-1"></i> Due: Mar 20, 2025
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-info">In Progress</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-base font-medium text-gray-800 dark:text-white">Physics Lab Report</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Experiment on Newton's Laws of Motion</p>
+                                            <div class="flex items-center mt-2">
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                                    <i data-lucide="user" class="w-3 h-3 mr-1"></i> Dr. Brown
+                                                </span>
+                                                <span class="mx-2 text-gray-300 dark:text-gray-600">|</span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                                    <i data-lucide="calendar" class="w-3 h-3 mr-1"></i> Due: Mar 25, 2025
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-info">Not Started</span>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-base font-medium text-gray-800 dark:text-white">History Presentation</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">World War II Impact (10 minutes)</p>
+                                            <div class="flex items-center mt-2">
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                                    <i data-lucide="user" class="w-3 h-3 mr-1"></i> Mrs. Davis
+                                                </span>
+                                                <span class="mx-2 text-gray-300 dark:text-gray-600">|</span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                                    <i data-lucide="calendar" class="w-3 h-3 mr-1"></i> Due: Apr 2, 2025
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-info">Not Started</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Announcements -->
+                <div>
+                    <div class="intelleva-card">
+                        <div class="intelleva-card-header">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Announcements</h3>
+                        </div>
+                        <div class="intelleva-card-body">
+                            <div class="space-y-4">
+                                <div class="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-800 rounded-full p-1 mr-3">
+                                            <i data-lucide="megaphone" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-800 dark:text-white">Spring Break</h4>
+                                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">Spring break will be from April 5-12. Classes resume on April 13.</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Posted by: Admin • 1 day ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-3 bg-green-50 dark:bg-green-900 rounded-lg">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 bg-green-100 dark:bg-green-800 rounded-full p-1 mr-3">
+                                            <i data-lucide="calendar" class="w-4 h-4 text-green-600 dark:text-green-400"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-800 dark:text-white">Parent-Teacher Meeting</h4>
+                                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">Parent-teacher meetings scheduled for March 18. Please inform your parents.</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Posted by: Principal • 2 days ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-3 bg-yellow-50 dark:bg-yellow-900 rounded-lg">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-800 rounded-full p-1 mr-3">
+                                            <i data-lucide="alert-triangle" class="w-4 h-4 text-yellow-600 dark:text-yellow-400"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-800 dark:text-white">Final Exam Schedule</h4>
+                                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">Final exam schedule has been posted. Check your email for details.</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Posted by: Academic Office • 3 days ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <a href="#" class="block text-center text-sm text-teal-600 dark:text-teal-400 hover:underline mt-4">
+                                View All Announcements
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Quick Access</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <a href="{{ url_for('student.attendance') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-teal-100 dark:bg-teal-900 p-3 rounded-full mb-3">
+                            <i data-lucide="calendar" class="w-6 h-6 text-teal-600 dark:text-teal-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Attendance</span>
+                    </a>
+                    
+                    <a href="{{ url_for('student.performance') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-full mb-3">
+                            <i data-lucide="trending-up" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Performance</span>
+                    </a>
+                    
+                    <a href="{{ url_for('student.fee') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full mb-3">
+                            <i data-lucide="credit-card" class="w-6 h-6 text-green-600 dark:text-green-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Fees</span>
+                    </a>
+                    
+                    <a href="{{ url_for('student.ai') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="bg-purple-100 dark:bg-purple-900 p-3 rounded-full mb-3">
+                            <i data-lucide="brain-circuit" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">AI Assistant</span>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/intelleva-charts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Set current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        
+        // Initialize charts
+        // Performance Chart
+        const performanceData = {
+            labels: ['Math', 'English', 'Physics', 'Chemistry', 'History'],
+            current: [85, 78, 92, 88, 76],
+            previous: [80, 75, 85, 82, 70]
+        };
+        initPerformanceChart('performanceChart', performanceData);
+        
+        // Attendance Chart
+        const attendanceData = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            present: [98, 95, 97, 96, 94, 97],
+            absent: [2, 5, 3, 4, 6, 3]
+        };
+        initAttendanceChart('attendanceChart', attendanceData);
+    });
+</script>
+{% endblock %}

@@ -1,3 +1,652 @@
-<div>
-    Hello from communication
+{% extends 'base.html' %}
+{% from 'components/sidebar.html' import sidebar %}
+{% from 'components/header.html' import header %}
+{% from 'components/ui_components.html' import stat_card, chart_card, data_table %}
+
+{% block title %}Communication - Intelleva{% endblock %}
+
+{% block content %}
+<div class="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <!-- Sidebar -->
+    {{ sidebar('admin', 'communication') }}
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden ml-0 md:ml-64 transition-all duration-300">
+        <!-- Header -->
+        {{ header('Communication', current_user.firstname, current_user.image_link) }}
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 md:p-6">
+            <!-- Page Header with Actions -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Communication Center</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1">Send announcements, notifications, and messages to students and teachers</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <button class="btn-primary py-2 px-4 flex items-center" data-modal-target="composeMessageModal">
+                        <i data-lucide="message-square-plus" class="w-4 h-4 mr-2"></i>
+                        Compose Message
+                    </button>
+                    <button class="btn-outline py-2 px-4 flex items-center">
+                        <i data-lucide="megaphone" class="w-4 h-4 mr-2"></i>
+                        Announcement
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                {{ stat_card('message-square', 'Total Messages', '1,248', '+32 this week', 'neutral') }}
+                {{ stat_card('megaphone', 'Announcements', '87', '12 this month', 'neutral') }}
+                {{ stat_card('users', 'Recipients', '1,356', 'Students & Teachers', 'neutral') }}
+                {{ stat_card('check-circle', 'Read Rate', '92%', '+5% from last month', 'positive') }}
+            </div>
+            
+            <!-- Communication Tabs -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
+                <div class="border-b border-gray-200 dark:border-gray-700">
+                    <ul class="flex flex-wrap -mb-px">
+                        <li class="mr-2">
+                            <a href="#" class="inline-block py-4 px-4 text-sm font-medium text-center border-b-2 border-teal-500 text-teal-600 dark:text-teal-400 rounded-t-lg active" aria-current="page">Inbox</a>
+                        </li>
+                        <li class="mr-2">
+                            <a href="#" class="inline-block py-4 px-4 text-sm font-medium text-center border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 rounded-t-lg">Sent</a>
+                        </li>
+                        <li class="mr-2">
+                            <a href="#" class="inline-block py-4 px-4 text-sm font-medium text-center border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 rounded-t-lg">Announcements</a>
+                        </li>
+                        <li class="mr-2">
+                            <a href="#" class="inline-block py-4 px-4 text-sm font-medium text-center border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 rounded-t-lg">Drafts</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Message Filters -->
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                    <div class="flex flex-col md:flex-row md:items-center md:space-x-4">
+                        <div class="flex-1 mb-4 md:mb-0">
+                            <div class="relative">
+                                <input type="text" placeholder="Search messages..." class="form-input pl-10 w-full">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-lucide="search" class="h-5 w-5 text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                            <select class="form-select">
+                                <option value="all">All Recipients</option>
+                                <option value="students">Students</option>
+                                <option value="teachers">Teachers</option>
+                                <option value="parents">Parents</option>
+                            </select>
+                            <select class="form-select">
+                                <option value="all">All Time</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                            </select>
+                            <button class="btn-outline py-2 px-4 flex items-center">
+                                <i data-lucide="filter" class="w-4 h-4 mr-2"></i>
+                                More Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Messages List -->
+                <div class="overflow-x-auto">
+                    <table class="intelleva-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </th>
+                                <th>From</th>
+                                <th>Subject</th>
+                                <th>Message</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Message 1 -->
+                            <tr>
+                                <td>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/teacher-1.jpg" alt="Teacher" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">Robert Johnson</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">Teacher</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="font-medium">Math Department Meeting</td>
+                                <td class="truncate max-w-xs">Please be informed that there will be a Math Department meeting on Friday at 2:00 PM in the conference room...</td>
+                                <td>Mar 14, 2025</td>
+                                <td><span class="badge badge-success">Read</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="eye" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="reply" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Message 2 -->
+                            <tr>
+                                <td>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-2.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">Emily Johnson</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">Student</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="font-medium">Request for Leave</td>
+                                <td class="truncate max-w-xs">I would like to request a leave of absence for three days next week due to a family emergency...</td>
+                                <td>Mar 13, 2025</td>
+                                <td><span class="badge badge-success">Read</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="eye" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="reply" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Message 3 -->
+                            <tr class="bg-blue-50 dark:bg-blue-900/20">
+                                <td>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/parent-1.jpg" alt="Parent" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">James Wilson</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">Parent</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="font-medium font-bold">Regarding David's Performance</td>
+                                <td class="truncate max-w-xs">I am concerned about my son David's recent performance in mathematics. Could we schedule a meeting...</td>
+                                <td>Mar 12, 2025</td>
+                                <td><span class="badge badge-warning">Unread</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="eye" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="reply" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Message 4 -->
+                            <tr>
+                                <td>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <img src="https://f005.backblazeb2.com/file/School-management-system/teacher-4.jpg" alt="Teacher" class="h-8 w-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">Sarah Davis</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">Teacher</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="font-medium">Science Fair Preparations</td>
+                                <td class="truncate max-w-xs">I wanted to update you on the preparations for the upcoming Science Fair. We have received 32 project proposals...</td>
+                                <td>Mar 10, 2025</td>
+                                <td><span class="badge badge-success">Read</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="eye" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="reply" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Message 5 -->
+                            <tr class="bg-blue-50 dark:bg-blue-900/20">
+                                <td>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <div class="h-8 w-8 rounded-full mr-3 bg-teal-500 flex items-center justify-center text-white font-bold">S</div>
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">System Notification</div>
+                                            <div class="text-gray-500 dark:text-gray-400 text-xs">Automated</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="font-medium font-bold">End of Term Approaching</td>
+                                <td class="truncate max-w-xs">This is a reminder that the end of the current term is approaching. Please ensure all grades are submitted by March 25...</td>
+                                <td>Mar 8, 2025</td>
+                                <td><span class="badge badge-warning">Unread</span></td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            <i data-lucide="eye" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-4 sm:mb-0">
+                            Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">28</span> messages
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="btn-outline py-1 px-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                Previous
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm bg-teal-50 dark:bg-teal-900 text-teal-600 dark:text-teal-400 border-teal-500 dark:border-teal-400">
+                                1
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                2
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                3
+                            </button>
+                            <span class="text-gray-500 dark:text-gray-400">...</span>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                6
+                            </button>
+                            <button class="btn-outline py-1 px-3 text-sm">
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Announcements -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Recent Announcements</h2>
+                    <a href="#" class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300 text-sm">View All</a>
+                </div>
+                
+                <div class="space-y-4">
+                    <!-- Announcement 1 -->
+                    <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-medium text-gray-900 dark:text-white">End of Term Examination Schedule</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Posted on Mar 5, 2025 • To: All Students and Teachers</p>
+                            </div>
+                            <span class="badge badge-info">Important</span>
+                        </div>
+                        <p class="mt-3 text-gray-600 dark:text-gray-300">The end of term examinations will be held from March 25 to April 2, 2025. The detailed schedule has been posted on the school notice board and is available for download from the school portal. All students are required to be present for their examinations.</p>
+                        <div class="mt-3 flex items-center justify-between">
+                            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                <i data-lucide="eye" class="h-4 w-4 mr-1"></i> 1,248 views
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300 text-sm">
+                                    <i data-lucide="edit" class="h-4 w-4 mr-1 inline"></i>
+                                    Edit
+                                </button>
+                                <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm">
+                                    <i data-lucide="trash-2" class="h-4 w-4 mr-1 inline"></i>
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Announcement 2 -->
+                    <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-medium text-gray-900 dark:text-white">Annual Sports Day</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Posted on Mar 1, 2025 • To: All Students, Teachers, and Parents</p>
+                            </div>
+                            <span class="badge badge-success">Event</span>
+                        </div>
+                        <p class="mt-3 text-gray-600 dark:text-gray-300">We are pleased to announce that the Annual Sports Day will be held on April 15, 2025, at the school grounds. All students are encouraged to participate in various sports activities. Parents are cordially invited to attend and support their children.</p>
+                        <div class="mt-3 flex items-center justify-between">
+                            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                <i data-lucide="eye" class="h-4 w-4 mr-1"></i> 1,056 views
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300 text-sm">
+                                    <i data-lucide="edit" class="h-4 w-4 mr-1 inline"></i>
+                                    Edit
+                                </button>
+                                <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm">
+                                    <i data-lucide="trash-2" class="h-4 w-4 mr-1 inline"></i>
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Communication Analytics -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div>
+                    {{ chart_card('Message Volume by Recipient Type', 'messageVolumeChart') }}
+                </div>
+                <div>
+                    {{ chart_card('Message Read Rate', 'readRateChart') }}
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
+
+<!-- Compose Message Modal -->
+<div id="composeMessageModal" class="modal">
+    <div class="modal-content max-w-3xl">
+        <div class="modal-header">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Compose Message</h3>
+            <button class="modal-close">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="composeMessageForm">
+                <div class="space-y-4">
+                    <div class="form-group">
+                        <label for="messageType">Message Type</label>
+                        <select id="messageType" name="messageType" class="form-select" required>
+                            <option value="message">Direct Message</option>
+                            <option value="announcement">Announcement</option>
+                            <option value="notification">Notification</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="recipients">Recipients</label>
+                        <select id="recipients" name="recipients" class="form-select" multiple required>
+                            <option value="all">All Users</option>
+                            <option value="students">All Students</option>
+                            <option value="teachers">All Teachers</option>
+                            <option value="parents">All Parents</option>
+                            <option value="grade9">Grade 9 Students</option>
+                            <option value="grade10">Grade 10 Students</option>
+                            <option value="grade11">Grade 11 Students</option>
+                            <option value="grade12">Grade 12 Students</option>
+                        </select>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Hold Ctrl/Cmd to select multiple recipients</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="messageContent">Message</label>
+                        <textarea id="messageContent" name="messageContent" rows="6" class="form-input" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="attachments">Attachments</label>
+                        <div class="mt-1 flex items-center">
+                            <label for="file-upload" class="btn-outline py-2 px-4 cursor-pointer">
+                                <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple>
+                                <i data-lucide="paperclip" class="w-4 h-4 mr-2 inline"></i>
+                                Add Files
+                            </label>
+                            <p class="ml-3 text-xs text-gray-500 dark:text-gray-400">Upload up to 5 files (PDF, DOC, JPG, PNG)</p>
+                        </div>
+                        <div id="file-list" class="mt-2 space-y-2"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="priority" name="priority" class="form-checkbox">
+                            <label for="priority" class="ml-2">Mark as Priority</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="sendEmail" name="sendEmail" class="form-checkbox" checked>
+                            <label for="sendEmail" class="ml-2">Also send as email</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline py-2 px-4 mr-2">Save as Draft</button>
+            <button class="btn-outline py-2 px-4 modal-close">Cancel</button>
+            <button class="btn-primary py-2 px-4 ml-2" id="sendMessageBtn">Send Message</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/intelleva-charts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Initialize charts
+        const messageVolumeData = {
+            labels: ['Students', 'Teachers', 'Parents', 'System'],
+            values: [45, 30, 20, 5]
+        };
+        initDoughnutChart('messageVolumeChart', messageVolumeData, 'Message Volume by Recipient Type (%)');
+        
+        // Read Rate Chart
+        const ctx = document.getElementById('readRateChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Read Rate (%)',
+                    data: [85, 87, 89, 90, 91, 92, 92, 93, 92, 0, 0, 0],
+                    borderColor: '#14b8a6',
+                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 6
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Modal functionality
+        const modals = document.querySelectorAll('.modal');
+        const modalTriggers = document.querySelectorAll('[data-modal-target]');
+        const modalCloseButtons = document.querySelectorAll('.modal-close');
+        
+        modalTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const modalId = trigger.getAttribute('data-modal-target');
+                const modal = document.getElementById(modalId);
+                modal.classList.add('modal-open');
+            });
+        });
+        
+        modalCloseButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const modal = button.closest('.modal');
+                modal.classList.remove('modal-open');
+            });
+        });
+        
+        // Close modal when clicking outside
+        modals.forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('modal-open');
+                }
+            });
+        });
+        
+        // File upload preview
+        const fileUpload = document.getElementById('file-upload');
+        const fileList = document.getElementById('file-list');
+        
+        if (fileUpload && fileList) {
+            fileUpload.addEventListener('change', function() {
+                fileList.innerHTML = '';
+                
+                if (this.files.length > 0) {
+                    Array.from(this.files).forEach((file, index) => {
+                        if (index < 5) {
+                            const fileItem = document.createElement('div');
+                            fileItem.className = 'flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded';
+                            
+                            const fileInfo = document.createElement('div');
+                            fileInfo.className = 'flex items-center';
+                            
+                            // Choose icon based on file type
+                            let iconName = 'file';
+                            if (file.type.includes('image')) iconName = 'image';
+                            else if (file.type.includes('pdf')) iconName = 'file-text';
+                            else if (file.type.includes('word') || file.type.includes('document')) iconName = 'file-text';
+                            
+                            fileInfo.innerHTML = `
+                                <i data-lucide="${iconName}" class="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400"></i>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">${file.name}</span>
+                                <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">(${(file.size / 1024).toFixed(1)} KB)</span>
+                            `;
+                            
+                            const removeButton = document.createElement('button');
+                            removeButton.className = 'text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300';
+                            removeButton.innerHTML = '<i data-lucide="x" class="h-4 w-4"></i>';
+                            removeButton.addEventListener('click', function() {
+                                fileItem.remove();
+                            });
+                            
+                            fileItem.appendChild(fileInfo);
+                            fileItem.appendChild(removeButton);
+                            fileList.appendChild(fileItem);
+                        }
+                    });
+                    
+                    lucide.createIcons();
+                }
+            });
+        }
+        
+        // Send message form
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        const composeMessageForm = document.getElementById('composeMessageForm');
+        
+        if (sendMessageBtn && composeMessageForm) {
+            sendMessageBtn.addEventListener('click', function() {
+                // Validate form
+                if (composeMessageForm.checkValidity()) {
+                    // In a real implementation, this would submit the form data to the server
+                    console.log('Form is valid, submitting...');
+                    
+                    // Simulate API call
+                    setTimeout(() => {
+                        // Close modal
+                        const modal = document.getElementById('composeMessageModal');
+                        modal.classList.remove('modal-open');
+                        
+                        // Show success message (in a real implementation)
+                        alert('Message sent successfully!');
+                    }, 1000);
+                } else {
+                    // Trigger form validation
+                    composeMessageForm.reportValidity();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

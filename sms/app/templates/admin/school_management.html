@@ -1,3 +1,548 @@
-<div>
-    <h1>Hello world from school management</h1>
+{% extends 'base.html' %}
+{% from 'components/sidebar.html' import sidebar %}
+{% from 'components/header.html' import header %}
+{% from 'components/ui_components.html' import stat_card, chart_card, data_table %}
+
+{% block title %}School Management - Intelleva{% endblock %}
+
+{% block content %}
+<div class="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <!-- Sidebar -->
+    {{ sidebar('admin', 'school') }}
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden ml-0 md:ml-64 transition-all duration-300">
+        <!-- Header -->
+        {{ header('School Management', current_user.firstname, current_user.image_link) }}
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 md:p-6">
+            <!-- Page Header with Actions -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white">School Management</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1">Manage school details, academic years, and system settings</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <button class="btn-primary py-2 px-4 flex items-center">
+                        <i data-lucide="save" class="w-4 h-4 mr-2"></i>
+                        Save Changes
+                    </button>
+                    <button class="btn-outline py-2 px-4 flex items-center">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i>
+                        Reset
+                    </button>
+                </div>
+            </div>
+            
+            <!-- School Information Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-col md:flex-row">
+                    <div class="md:w-1/4 mb-6 md:mb-0 flex justify-center">
+                        <div class="relative">
+                            <div class="w-40 h-40 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+                                <img id="schoolLogoPreview" src="https://f005.backblazeb2.com/file/School-management-system/school-logo.png" alt="School Logo" class="w-full h-full object-cover">
+                            </div>
+                            <label for="schoolLogo" class="absolute bottom-2 right-2 bg-white dark:bg-gray-800 rounded-full p-2 shadow-md cursor-pointer">
+                                <input type="file" id="schoolLogo" name="schoolLogo" class="hidden" accept="image/*">
+                                <i data-lucide="camera" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="md:w-3/4 md:pl-6">
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">School Information</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-group">
+                                <label for="schoolName">School Name</label>
+                                <input type="text" id="schoolName" name="schoolName" class="form-input" value="Intelleva Academy" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="schoolID">School ID</label>
+                                <input type="text" id="schoolID" name="schoolID" class="form-input" value="SCH-2025-001" readonly>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Unique identifier for your school</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="schoolEmail">Email</label>
+                                <input type="email" id="schoolEmail" name="schoolEmail" class="form-input" value="admin@intelleva-academy.edu" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="schoolPhone">Phone Number</label>
+                                <input type="tel" id="schoolPhone" name="schoolPhone" class="form-input" value="+1 (555) 123-4567" required>
+                            </div>
+                            
+                            <div class="form-group md:col-span-2">
+                                <label for="schoolAddress">Address</label>
+                                <textarea id="schoolAddress" name="schoolAddress" rows="2" class="form-input" required>123 Education Street, Knowledge City, KN 12345</textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="foundedYear">Founded Year</label>
+                                <input type="number" id="foundedYear" name="foundedYear" class="form-input" value="2010" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="schoolWebsite">Website</label>
+                                <input type="url" id="schoolWebsite" name="schoolWebsite" class="form-input" value="https://intelleva-academy.edu">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Academic Year Settings -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Academic Year Settings</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="currentAcademicYear">Current Academic Year</label>
+                        <select id="currentAcademicYear" name="currentAcademicYear" class="form-select" required>
+                            <option value="2024-2025" selected>2024-2025</option>
+                            <option value="2023-2024">2023-2024</option>
+                            <option value="2022-2023">2022-2023</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="academicYearStart">Academic Year Start Date</label>
+                        <input type="date" id="academicYearStart" name="academicYearStart" class="form-input" value="2024-09-01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="academicYearEnd">Academic Year End Date</label>
+                        <input type="date" id="academicYearEnd" name="academicYearEnd" class="form-input" value="2025-06-30" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="currentTerm">Current Term/Semester</label>
+                        <select id="currentTerm" name="currentTerm" class="form-select" required>
+                            <option value="1" selected>First Term</option>
+                            <option value="2">Second Term</option>
+                            <option value="3">Third Term</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h3 class="text-md font-medium text-gray-800 dark:text-white mb-3">Term Schedule</h3>
+                    <div class="overflow-x-auto">
+                        <table class="intelleva-table">
+                            <thead>
+                                <tr>
+                                    <th>Term</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>First Term</td>
+                                    <td>Sep 1, 2024</td>
+                                    <td>Dec 20, 2024</td>
+                                    <td><span class="badge badge-success">Current</span></td>
+                                    <td>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Second Term</td>
+                                    <td>Jan 10, 2025</td>
+                                    <td>Mar 28, 2025</td>
+                                    <td><span class="badge badge-neutral">Upcoming</span></td>
+                                    <td>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Third Term</td>
+                                    <td>Apr 15, 2025</td>
+                                    <td>Jun 30, 2025</td>
+                                    <td><span class="badge badge-neutral">Upcoming</span></td>
+                                    <td>
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                            <i data-lucide="edit" class="h-4 w-4"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Classes and Subjects -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Classes -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Classes</h2>
+                        <button class="btn-outline py-1 px-3 text-sm">
+                            <i data-lucide="plus" class="w-4 h-4 mr-1 inline"></i>
+                            Add Class
+                        </button>
+                    </div>
+                    <div class="overflow-y-auto max-h-80">
+                        <table class="intelleva-table">
+                            <thead>
+                                <tr>
+                                    <th>Class Name</th>
+                                    <th>Students</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Grade 9-A</td>
+                                    <td>35</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Grade 9-B</td>
+                                    <td>32</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Grade 10-A</td>
+                                    <td>33</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Grade 10-B</td>
+                                    <td>30</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Grade 11-A</td>
+                                    <td>28</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Grade 11-B</td>
+                                    <td>27</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Grade 12-A</td>
+                                    <td>25</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Grade 12-B</td>
+                                    <td>24</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Subjects -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Subjects</h2>
+                        <button class="btn-outline py-1 px-3 text-sm">
+                            <i data-lucide="plus" class="w-4 h-4 mr-1 inline"></i>
+                            Add Subject
+                        </button>
+                    </div>
+                    <div class="overflow-y-auto max-h-80">
+                        <table class="intelleva-table">
+                            <thead>
+                                <tr>
+                                    <th>Subject Name</th>
+                                    <th>Department</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Mathematics</td>
+                                    <td>Mathematics</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Physics</td>
+                                    <td>Science</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Chemistry</td>
+                                    <td>Science</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Biology</td>
+                                    <td>Science</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>English Literature</td>
+                                    <td>English</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>English Grammar</td>
+                                    <td>English</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>World History</td>
+                                    <td>History</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Geography</td>
+                                    <td>History</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                                <i data-lucide="edit" class="h-4 w-4"></i>
+                                            </button>
+                                            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                                <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Settings -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">System Settings</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="systemLanguage">System Language</label>
+                        <select id="systemLanguage" name="systemLanguage" class="form-select">
+                            <option value="en" selected>English</option>
+                            <option value="fr">French</option>
+                            <option value="es">Spanish</option>
+                            <option value="de">German</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="timeZone">Time Zone</label>
+                        <select id="timeZone" name="timeZone" class="form-select">
+                            <option value="UTC-8" selected>Pacific Time (UTC-8)</option>
+                            <option value="UTC-7">Mountain Time (UTC-7)</option>
+                            <option value="UTC-6">Central Time (UTC-6)</option>
+                            <option value="UTC-5">Eastern Time (UTC-5)</option>
+                            <option value="UTC+0">Greenwich Mean Time (UTC+0)</option>
+                            <option value="UTC+1">Central European Time (UTC+1)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dateFormat">Date Format</label>
+                        <select id="dateFormat" name="dateFormat" class="form-select">
+                            <option value="MM/DD/YYYY" selected>MM/DD/YYYY</option>
+                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <select id="currency" name="currency" class="form-select">
+                            <option value="USD" selected>US Dollar ($)</option>
+                            <option value="EUR">Euro (€)</option>
+                            <option value="GBP">British Pound (£)</option>
+                            <option value="NGN">Nigerian Naira (₦)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group md:col-span-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="enableNotifications" name="enableNotifications" class="form-checkbox" checked>
+                            <label for="enableNotifications" class="ml-2">Enable Email Notifications</label>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Send email notifications for important events</p>
+                    </div>
+                    
+                    <div class="form-group md:col-span-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="enableSMS" name="enableSMS" class="form-checkbox">
+                            <label for="enableSMS" class="ml-2">Enable SMS Notifications</label>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Send SMS notifications for important events (additional charges may apply)</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // School logo upload preview
+        const logoInput = document.getElementById('schoolLogo');
+        const logoPreview = document.getElementById('schoolLogoPreview');
+        
+        if (logoInput) {
+            logoInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        logoPreview.src = e.target.result;
+                    }
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

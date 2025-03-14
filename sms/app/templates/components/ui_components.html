@@ -1,0 +1,186 @@
+{% macro stat_card(icon, title, value, change=None, change_type=None) %}
+<div class="stat-card">
+    <div class="flex items-center">
+        <div class="p-3 rounded-full bg-teal-100 dark:bg-teal-900 text-teal-500 dark:text-teal-300 mr-4">
+            <i data-lucide="{{ icon }}" class="w-6 h-6"></i>
+        </div>
+        <span class="text-gray-500 dark:text-gray-400">{{ title }}</span>
+    </div>
+    <div class="stat-value">{{ value }}</div>
+    {% if change %}
+        <div class="stat-change {% if change_type == 'positive' %}stat-change-positive{% elif change_type == 'negative' %}stat-change-negative{% endif %}">
+            <i data-lucide="{% if change_type == 'positive' %}trending-up{% elif change_type == 'negative' %}trending-down{% else %}minus{% endif %}" class="w-4 h-4 mr-1"></i>
+            <span>{{ change }}</span>
+        </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro chart_card(title, id, height="300px") %}
+<div class="intelleva-card">
+    <div class="intelleva-card-header">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">{{ title }}</h3>
+        <div class="flex space-x-2">
+            <button class="text-gray-500 dark:text-gray-400 hover:text-teal-500 dark:hover:text-teal-400">
+                <i data-lucide="download" class="w-5 h-5"></i>
+            </button>
+            <button class="text-gray-500 dark:text-gray-400 hover:text-teal-500 dark:hover:text-teal-400">
+                <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+    <div class="intelleva-card-body">
+        <div style="height: {{ height }}">
+            <canvas id="{{ id }}"></canvas>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro data_table(headers, id) %}
+<div class="intelleva-card">
+    <div class="intelleva-card-header">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">{{ caller() }}</h3>
+        <div class="flex items-center space-x-2">
+            <div class="relative">
+                <input type="text" id="{{ id }}-search" placeholder="Search..." class="form-input py-1 px-3 text-sm">
+                <i data-lucide="search" class="w-4 h-4 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+            <button class="text-gray-500 dark:text-gray-400 hover:text-teal-500 dark:hover:text-teal-400">
+                <i data-lucide="filter" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+    <div class="intelleva-card-body overflow-x-auto">
+        <table class="intelleva-table" id="{{ id }}">
+            <thead>
+                <tr>
+                    {% for header in headers %}
+                    <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody id="{{ id }}-body">
+                <!-- Table data will be populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+    <div class="intelleva-card-footer flex justify-between items-center">
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+            Showing <span id="{{ id }}-showing">0</span> of <span id="{{ id }}-total">0</span> entries
+        </div>
+        <div class="flex space-x-1">
+            <button class="btn-outline py-1 px-3 text-sm" id="{{ id }}-prev">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <button class="btn-outline py-1 px-3 text-sm" id="{{ id }}-next">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro form_group(label, type="text", id="", name="", placeholder="", required=false, options=None) %}
+<div class="mb-4">
+    <label for="{{ id }}" class="form-label">{{ label }}{% if required %} <span class="text-red-500">*</span>{% endif %}</label>
+    {% if type == "select" and options %}
+        <select id="{{ id }}" name="{{ name }}" class="form-select" {% if required %}required{% endif %}>
+            <option value="">Select {{ label }}</option>
+            {% for option in options %}
+                <option value="{{ option.value }}">{{ option.label }}</option>
+            {% endfor %}
+        </select>
+    {% elif type == "textarea" %}
+        <textarea id="{{ id }}" name="{{ name }}" placeholder="{{ placeholder }}" class="form-input" {% if required %}required{% endif %}></textarea>
+    {% elif type == "checkbox" %}
+        <div class="flex items-center">
+            <input type="checkbox" id="{{ id }}" name="{{ name }}" class="form-checkbox" {% if required %}required{% endif %}>
+            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ placeholder }}</span>
+        </div>
+    {% else %}
+        <input type="{{ type }}" id="{{ id }}" name="{{ name }}" placeholder="{{ placeholder }}" class="form-input" {% if required %}required{% endif %}>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro modal(id, title) %}
+<div id="{{ id }}" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">{{ title }}</h3>
+                <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" onclick="document.getElementById('{{ id }}').classList.add('hidden')">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                {{ caller() }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro alert(type, dismissible=true) %}
+<div class="p-4 mb-4 rounded-lg {% if type == 'success' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300{% elif type == 'warning' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300{% elif type == 'danger' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300{% elif type == 'info' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300{% endif %} relative" role="alert">
+    <div class="flex items-center">
+        <i data-lucide="{% if type == 'success' %}check-circle{% elif type == 'warning' %}alert-triangle{% elif type == 'danger' %}alert-circle{% elif type == 'info' %}info{% endif %}" class="w-5 h-5 mr-2"></i>
+        <div>{{ caller() }}</div>
+    </div>
+    {% if dismissible %}
+    <button type="button" class="absolute top-4 right-4 text-current" onclick="this.parentElement.remove()">
+        <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro tabs(id, tabs) %}
+<div class="mb-4">
+    <div class="border-b border-gray-200 dark:border-gray-700">
+        <nav class="flex -mb-px" aria-label="{{ id }} tabs">
+            {% for tab in tabs %}
+            <button id="{{ id }}-tab-{{ loop.index }}" class="{% if loop.first %}border-teal-500 text-teal-600 dark:text-teal-400{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600{% endif %} whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm" onclick="switchTab('{{ id }}', {{ loop.index }})">
+                {% if tab.icon %}<i data-lucide="{{ tab.icon }}" class="w-4 h-4 mr-2 inline"></i>{% endif %}
+                {{ tab.label }}
+            </button>
+            {% endfor %}
+        </nav>
+    </div>
+    <div class="py-4">
+        {% for tab in tabs %}
+        <div id="{{ id }}-content-{{ loop.index }}" class="{% if not loop.first %}hidden{% endif %}">
+            {{ tab.content|safe }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro badge(text, type) %}
+<span class="badge {% if type == 'success' %}badge-success{% elif type == 'warning' %}badge-warning{% elif type == 'danger' %}badge-danger{% elif type == 'info' %}badge-info{% endif %}">
+    {{ text }}
+</span>
+{% endmacro %}
+
+{% macro pagination(id, total_pages) %}
+<div class="flex justify-center mt-4">
+    <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+        <button id="{{ id }}-prev-page" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-600 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <span class="sr-only">Previous</span>
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        
+        <div id="{{ id }}-page-numbers" class="flex">
+            <!-- Page numbers will be generated dynamically -->
+        </div>
+        
+        <button id="{{ id }}-next-page" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-600 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <span class="sr-only">Next</span>
+            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+        </button>
+    </nav>
+</div>
+{% endmacro %}

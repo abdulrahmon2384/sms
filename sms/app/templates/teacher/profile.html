@@ -1,3 +1,510 @@
-<div>
-  Hello from profile
+{% extends 'base.html' %}
+{% from 'components/sidebar.html' import sidebar %}
+{% from 'components/header.html' import header %}
+{% from 'components/ui_components.html' import stat_card, chart_card, data_table %}
+
+{% block title %}Profile Management - Intelleva{% endblock %}
+
+{% block content %}
+<div class="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <!-- Sidebar -->
+    {{ sidebar('teacher', 'profile') }}
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden ml-0 md:ml-64 transition-all duration-300">
+        <!-- Header -->
+        {{ header('Profile Management', current_user.firstname, current_user.image_link) }}
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 md:p-6">
+            <!-- Page Header -->
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Profile Management</h1>
+                <p class="text-gray-600 dark:text-gray-300 mt-1">Update your personal and professional information</p>
+            </div>
+            
+            <!-- Profile Information -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Profile Picture and Basic Info -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <div class="flex flex-col items-center">
+                        <div class="relative mb-4">
+                            <div class="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
+                                <img id="profileImagePreview" src="https://f005.backblazeb2.com/file/School-management-system/teacher-profile.jpg" alt="Profile Picture" class="w-full h-full object-cover">
+                            </div>
+                            <label for="profileImage" class="absolute bottom-0 right-0 bg-white dark:bg-gray-800 rounded-full p-2 shadow-md cursor-pointer">
+                                <input type="file" id="profileImage" name="profileImage" class="hidden" accept="image/*">
+                                <i data-lucide="camera" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                            </label>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Robert Johnson</h2>
+                        <p class="text-gray-600 dark:text-gray-400">Mathematics Teacher</p>
+                        <div class="flex items-center mt-2">
+                            <span class="badge badge-success">Active</span>
+                        </div>
+                        
+                        <div class="w-full mt-6 space-y-4">
+                            <div class="flex items-center">
+                                <i data-lucide="mail" class="w-5 h-5 text-gray-500 dark:text-gray-400 mr-3"></i>
+                                <span class="text-gray-700 dark:text-gray-300">robert.johnson@intelleva-academy.edu</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i data-lucide="phone" class="w-5 h-5 text-gray-500 dark:text-gray-400 mr-3"></i>
+                                <span class="text-gray-700 dark:text-gray-300">+1 (555) 987-6543</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i data-lucide="calendar" class="w-5 h-5 text-gray-500 dark:text-gray-400 mr-3"></i>
+                                <span class="text-gray-700 dark:text-gray-300">Joined: Sep 2020</span>
+                            </div>
+                        </div>
+                        
+                        <div class="w-full mt-6">
+                            <button class="btn-outline w-full py-2 px-4 flex items-center justify-center">
+                                <i data-lucide="key" class="w-4 h-4 mr-2"></i>
+                                Change Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Personal Information -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 lg:col-span-2">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Personal Information</h2>
+                    <form id="personalInfoForm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" class="form-input" value="Robert" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" class="form-input" value="Johnson" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" class="form-input" value="robert.johnson@intelleva-academy.edu" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" class="form-input" value="+1 (555) 987-6543" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="dateOfBirth">Date of Birth</label>
+                                <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-input" value="1985-06-15">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select id="gender" name="gender" class="form-select">
+                                    <option value="male" selected>Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                    <option value="prefer-not-to-say">Prefer not to say</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group md:col-span-2">
+                                <label for="address">Address</label>
+                                <textarea id="address" name="address" rows="2" class="form-input">456 Teacher Lane, Knowledge City, KN 12345</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 flex justify-end">
+                            <button type="button" class="btn-outline py-2 px-4 mr-2">Cancel</button>
+                            <button type="submit" class="btn-primary py-2 px-4">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Professional Information -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Qualifications and Skills -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Qualifications & Skills</h2>
+                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                            <i data-lucide="edit" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-md font-medium text-gray-800 dark:text-white">Education</h3>
+                            <ul class="mt-2 space-y-2">
+                                <li class="flex items-start">
+                                    <i data-lucide="graduation-cap" class="w-5 h-5 text-gray-500 dark:text-gray-400 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-700 dark:text-gray-300">M.Sc. in Mathematics</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Stanford University, 2010</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="graduation-cap" class="w-5 h-5 text-gray-500 dark:text-gray-400 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-700 dark:text-gray-300">B.Sc. in Mathematics</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">University of California, 2008</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-md font-medium text-gray-800 dark:text-white">Certifications</h3>
+                            <ul class="mt-2 space-y-2">
+                                <li class="flex items-start">
+                                    <i data-lucide="award" class="w-5 h-5 text-gray-500 dark:text-gray-400 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-700 dark:text-gray-300">Advanced Teaching Certification</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">National Board for Professional Teaching Standards, 2015</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="award" class="w-5 h-5 text-gray-500 dark:text-gray-400 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-700 dark:text-gray-300">STEM Education Specialist</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">American Association of STEM Educators, 2018</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-md font-medium text-gray-800 dark:text-white">Skills</h3>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Advanced Mathematics</span>
+                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Calculus</span>
+                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Statistics</span>
+                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Algebra</span>
+                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Curriculum Development</span>
+                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Educational Technology</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Teaching Information -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 lg:col-span-2">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Teaching Information</h2>
+                    <form id="teachingInfoForm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-group">
+                                <label for="employeeId">Employee ID</label>
+                                <input type="text" id="employeeId" name="employeeId" class="form-input" value="TCH-2025-042" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="department">Department</label>
+                                <select id="department" name="department" class="form-select">
+                                    <option value="mathematics" selected>Mathematics</option>
+                                    <option value="science">Science</option>
+                                    <option value="english">English</option>
+                                    <option value="history">History</option>
+                                    <option value="arts">Arts</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="position">Position</label>
+                                <select id="position" name="position" class="form-select">
+                                    <option value="teacher" selected>Teacher</option>
+                                    <option value="head-teacher">Head Teacher</option>
+                                    <option value="department-head">Department Head</option>
+                                    <option value="coordinator">Coordinator</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="joiningDate">Joining Date</label>
+                                <input type="date" id="joiningDate" name="joiningDate" class="form-input" value="2020-09-01" readonly>
+                            </div>
+                            
+                            <div class="form-group md:col-span-2">
+                                <label>Assigned Classes</label>
+                                <div class="mt-2 space-y-2">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="class10A" name="assignedClasses" value="10A" class="form-checkbox" checked>
+                                        <label for="class10A" class="ml-2">Grade 10-A (Mathematics)</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="class11B" name="assignedClasses" value="11B" class="form-checkbox" checked>
+                                        <label for="class11B" class="ml-2">Grade 11-B (Mathematics)</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="class9A" name="assignedClasses" value="9A" class="form-checkbox" checked>
+                                        <label for="class9A" class="ml-2">Grade 9-A (Mathematics)</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="class12A" name="assignedClasses" value="12A" class="form-checkbox">
+                                        <label for="class12A" class="ml-2">Grade 12-A (Mathematics)</label>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Note: Class assignments can only be modified by administrators</p>
+                            </div>
+                            
+                            <div class="form-group md:col-span-2">
+                                <label for="bio">Professional Bio</label>
+                                <textarea id="bio" name="bio" rows="4" class="form-input">Experienced mathematics teacher with over 10 years of teaching experience. Specializes in advanced mathematics, calculus, and statistics. Passionate about making complex mathematical concepts accessible to students of all learning styles and abilities.</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 flex justify-end">
+                            <button type="button" class="btn-outline py-2 px-4 mr-2">Cancel</button>
+                            <button type="submit" class="btn-primary py-2 px-4">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Schedule and Preferences -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Weekly Schedule -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Weekly Schedule</h2>
+                        <span class="text-sm text-gray-500 dark:text-gray-400">Current Term</span>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="intelleva-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Monday</th>
+                                    <th>Tuesday</th>
+                                    <th>Wednesday</th>
+                                    <th>Thursday</th>
+                                    <th>Friday</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-medium">8:00 - 9:30</td>
+                                    <td class="bg-teal-50 dark:bg-teal-900/20">Grade 10-A</td>
+                                    <td>-</td>
+                                    <td class="bg-teal-50 dark:bg-teal-900/20">Grade 10-A</td>
+                                    <td>-</td>
+                                    <td class="bg-teal-50 dark:bg-teal-900/20">Grade 10-A</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">9:45 - 11:15</td>
+                                    <td>-</td>
+                                    <td class="bg-blue-50 dark:bg-blue-900/20">Grade 11-B</td>
+                                    <td>-</td>
+                                    <td class="bg-blue-50 dark:bg-blue-900/20">Grade 11-B</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">11:30 - 1:00</td>
+                                    <td class="bg-purple-50 dark:bg-purple-900/20">Grade 9-A</td>
+                                    <td>-</td>
+                                    <td class="bg-purple-50 dark:bg-purple-900/20">Grade 9-A</td>
+                                    <td>-</td>
+                                    <td class="bg-purple-50 dark:bg-purple-900/20">Grade 9-A</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">2:00 - 3:30</td>
+                                    <td class="bg-gray-50 dark:bg-gray-700">Office Hours</td>
+                                    <td class="bg-gray-50 dark:bg-gray-700">Office Hours</td>
+                                    <td>-</td>
+                                    <td class="bg-gray-50 dark:bg-gray-700">Office Hours</td>
+                                    <td>-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                        <p>Note: Schedule is set by administration and may change based on school requirements.</p>
+                    </div>
+                </div>
+                
+                <!-- Notification Preferences -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Notification Preferences</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-700 dark:text-gray-300">Email Notifications</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Receive notifications via email</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-700 dark:text-gray-300">SMS Notifications</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Receive notifications via SMS</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-700 dark:text-gray-300">System Notifications</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Receive in-app notifications</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Notification Types</h3>
+                            
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="notif_announcements" class="form-checkbox" checked>
+                                    <label for="notif_announcements" class="ml-2">School Announcements</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="notif_attendance" class="form-checkbox" checked>
+                                    <label for="notif_attendance" class="ml-2">Attendance Updates</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="notif_grades" class="form-checkbox" checked>
+                                    <label for="notif_grades" class="ml-2">Grade Submissions</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="notif_messages" class="form-checkbox" checked>
+                                    <label for="notif_messages" class="ml-2">Messages from Students/Parents</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="notif_events" class="form-checkbox" checked>
+                                    <label for="notif_events" class="ml-2">School Events</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end">
+                        <button class="btn-primary py-2 px-4">Save Preferences</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Profile image upload preview
+        const profileImageInput = document.getElementById('profileImage');
+        const profileImagePreview = document.getElementById('profileImagePreview');
+        
+        if (profileImageInput && profileImagePreview) {
+            profileImageInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        profileImagePreview.src = e.target.result;
+                    }
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+        
+        // Form submission handlers
+        const personalInfoForm = document.getElementById('personalInfoForm');
+        const teachingInfoForm = document.getElementById('teachingInfoForm');
+        
+        if (personalInfoForm) {
+            personalInfoForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // In a real implementation, this would submit the form data to the server
+                console.log('Personal info form submitted');
+                
+                // Show success message
+                alert('Personal information updated successfully!');
+            });
+        }
+        
+        if (teachingInfoForm) {
+            teachingInfoForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // In a real implementation, this would submit the form data to the server
+                console.log('Teaching info form submitted');
+                
+                // Show success message
+                alert('Teaching information updated successfully!');
+            });
+        }
+    });
+</script>
+<style>
+    /* Custom switch styling */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+    
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+    }
+    
+    input:checked + .slider {
+        background-color: #14b8a6;
+    }
+    
+    input:focus + .slider {
+        box-shadow: 0 0 1px #14b8a6;
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
+    .slider.round {
+        border-radius: 24px;
+    }
+    
+    .slider.round:before {
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}
