@@ -24,11 +24,11 @@
                     <p class="text-gray-600 dark:text-gray-300 mt-1">Track payments, manage fee structures, and generate financial reports</p>
                 </div>
                 <div class="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                    <button class="btn-primary py-2 px-4 flex items-center" data-modal-target="addFeeModal">
+                    <button class="btn-primary py-2 px-4 flex items-center" onclick="openModal('addFeeModal')">
                         <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
                         Add Fee Structure
                     </button>
-                    <button class="btn-outline py-2 px-4 flex items-center">
+                    <button class="btn-outline py-2 px-4 flex items-center" onclick="openModal('generateReportModal')">
                         <i data-lucide="printer" class="w-4 h-4 mr-2"></i>
                         Generate Reports
                     </button>
@@ -37,15 +37,29 @@
             
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                {{ stat_card('dollar-sign', 'Total Collected', '$248,750', '78% of expected', 'positive') }}
-                {{ stat_card('alert-circle', 'Outstanding', '$72,450', '22% pending', 'negative') }}
-                {{ stat_card('users', 'Paid Students', '985', '79% of total', 'positive') }}
-                {{ stat_card('calendar', 'Next Due Date', 'Apr 15, 2025', '32 days remaining', 'neutral') }}
+                {{ stat_card('credit-card', 'Total Collected', '₦' + '{:,.2f}'.format(total_collected|default(2487500, true)), '{:.0f}%'.format(collection_percentage|default(78, true)) + ' of expected', 'positive') }}
+                {{ stat_card('alert-circle', 'Outstanding', '₦' + '{:,.2f}'.format(outstanding_amount|default(724500, true)), '{:.0f}%'.format(outstanding_percentage|default(22, true)) + ' pending', 'negative') }}
+                {{ stat_card('users', 'Paid Students', paid_students|default(985, true)|string, '{:.0f}%'.format(paid_percentage|default(79, true)) + ' of total', 'positive') }}
+                {{ stat_card('calendar', 'Next Due Date', next_due_date|default('Apr 15, 2025', true), days_remaining|default(32, true)|string + ' days remaining', 'neutral') }}
             </div>
             
             <!-- Fee Collection Chart -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Fee Collection Trends</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Fee Collection Trends</h2>
+                    <div class="flex space-x-2">
+                        <select id="chartPeriod" class="form-select py-1 px-2 text-sm">
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                        <select id="chartYear" class="form-select py-1 px-2 text-sm">
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="h-80">
                     <canvas id="feeCollectionChart"></canvas>
                 </div>
@@ -53,8 +67,21 @@
             
             <!-- Fee Structure Table -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                     <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Fee Structure</h2>
+                    <div class="flex items-center">
+                        <div class="relative mr-2">
+                            <input type="text" placeholder="Search..." class="form-input py-1 px-3 text-sm pr-8">
+                            <i data-lucide="search" class="w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <select class="form-select py-1 px-2 text-sm">
+                            <option value="all">All Classes</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="intelleva-table">
@@ -69,141 +96,67 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Fee Structure 1 -->
+                            {% for fee in fee_structures|default([
+                                {'class': 'Grade 9', 'type': 'Tuition Fee', 'amount': 120000, 'frequency': 'Quarterly', 'due_date': '15th of Jan, Apr, Jul, Oct'},
+                                {'class': 'Grade 10', 'type': 'Tuition Fee', 'amount': 135000, 'frequency': 'Quarterly', 'due_date': '15th of Jan, Apr, Jul, Oct'},
+                                {'class': 'Grade 11', 'type': 'Tuition Fee', 'amount': 150000, 'frequency': 'Quarterly', 'due_date': '15th of Jan, Apr, Jul, Oct'},
+                                {'class': 'Grade 12', 'type': 'Tuition Fee', 'amount': 165000, 'frequency': 'Quarterly', 'due_date': '15th of Jan, Apr, Jul, Oct'},
+                                {'class': 'All Grades', 'type': 'Library Fee', 'amount': 10000, 'frequency': 'Annual', 'due_date': '15th of January'},
+                                {'class': 'All Grades', 'type': 'Laboratory Fee', 'amount': 15000, 'frequency': 'Annual', 'due_date': '15th of January'},
+                                {'class': 'All Grades', 'type': 'Technology Fee', 'amount': 20000, 'frequency': 'Annual', 'due_date': '15th of January'},
+                                {'class': 'All Grades', 'type': 'Sports Fee', 'amount': 8000, 'frequency': 'Annual', 'due_date': '15th of January'}
+                            ], true) %}
                             <tr>
-                                <td>Grade 9</td>
-                                <td>Tuition Fee</td>
-                                <td>$1,200</td>
-                                <td>Quarterly</td>
-                                <td>15th of Jan, Apr, Jul, Oct</td>
+                                <td>{{ fee.class }}</td>
+                                <td>{{ fee.type }}</td>
+                                <td>₦{{ '{:,.2f}'.format(fee.amount) }}</td>
+                                <td>{{ fee.frequency }}</td>
+                                <td>{{ fee.due_date }}</td>
                                 <td>
                                     <div class="flex items-center space-x-2">
-                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300" onclick="editFeeStructure('{{ fee.class }}', '{{ fee.type }}', {{ fee.amount }}, '{{ fee.frequency }}', '{{ fee.due_date }}')">
                                             <i data-lucide="edit" class="h-4 w-4"></i>
                                         </button>
-                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300" onclick="deleteFeeStructure('{{ fee.class }}', '{{ fee.type }}')">
                                             <i data-lucide="trash-2" class="h-4 w-4"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-                            
-                            <!-- Fee Structure 2 -->
-                            <tr>
-                                <td>Grade 10</td>
-                                <td>Tuition Fee</td>
-                                <td>$1,350</td>
-                                <td>Quarterly</td>
-                                <td>15th of Jan, Apr, Jul, Oct</td>
-                                <td>
-                                    <div class="flex items-center space-x-2">
-                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
-                                            <i data-lucide="edit" class="h-4 w-4"></i>
-                                        </button>
-                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
-                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <!-- Fee Structure 3 -->
-                            <tr>
-                                <td>Grade 11</td>
-                                <td>Tuition Fee</td>
-                                <td>$1,500</td>
-                                <td>Quarterly</td>
-                                <td>15th of Jan, Apr, Jul, Oct</td>
-                                <td>
-                                    <div class="flex items-center space-x-2">
-                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
-                                            <i data-lucide="edit" class="h-4 w-4"></i>
-                                        </button>
-                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
-                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <!-- Fee Structure 4 -->
-                            <tr>
-                                <td>Grade 12</td>
-                                <td>Tuition Fee</td>
-                                <td>$1,650</td>
-                                <td>Quarterly</td>
-                                <td>15th of Jan, Apr, Jul, Oct</td>
-                                <td>
-                                    <div class="flex items-center space-x-2">
-                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
-                                            <i data-lucide="edit" class="h-4 w-4"></i>
-                                        </button>
-                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
-                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <!-- Fee Structure 5 -->
-                            <tr>
-                                <td>All Grades</td>
-                                <td>Library Fee</td>
-                                <td>$100</td>
-                                <td>Annual</td>
-                                <td>15th of January</td>
-                                <td>
-                                    <div class="flex items-center space-x-2">
-                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
-                                            <i data-lucide="edit" class="h-4 w-4"></i>
-                                        </button>
-                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
-                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <!-- Fee Structure 6 -->
-                            <tr>
-                                <td>All Grades</td>
-                                <td>Technology Fee</td>
-                                <td>$150</td>
-                                <td>Annual</td>
-                                <td>15th of January</td>
-                                <td>
-                                    <div class="flex items-center space-x-2">
-                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
-                                            <i data-lucide="edit" class="h-4 w-4"></i>
-                                        </button>
-                                        <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
-                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        Showing <span class="font-medium">1-8</span> of <span class="font-medium">8</span> items
+                    </div>
+                    <div class="flex space-x-1">
+                        <button class="btn-sm btn-outline py-1 px-2 disabled:opacity-50" disabled>
+                            <i data-lucide="chevron-left" class="h-4 w-4"></i>
+                        </button>
+                        <button class="btn-sm btn-primary py-1 px-3">1</button>
+                        <button class="btn-sm btn-outline py-1 px-2 disabled:opacity-50" disabled>
+                            <i data-lucide="chevron-right" class="h-4 w-4"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
             
-            <!-- Recent Payments -->
+            <!-- Payment Transactions -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Recent Payments</h2>
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Recent Payment Transactions</h2>
                     <div class="flex items-center">
-                        <div class="relative">
-                            <input type="text" placeholder="Search payments..." class="form-input pl-10 py-2 text-sm">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-lucide="search" class="h-4 w-4 text-gray-400"></i>
-                            </div>
+                        <div class="relative mr-2">
+                            <input type="text" placeholder="Search..." class="form-input py-1 px-3 text-sm pr-8">
+                            <i data-lucide="search" class="w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         </div>
-                        <select class="form-select ml-2 py-2 text-sm">
-                            <option value="all">All Classes</option>
-                            <option value="9">Grade 9</option>
-                            <option value="10">Grade 10</option>
-                            <option value="11">Grade 11</option>
-                            <option value="12">Grade 12</option>
+                        <select class="form-select py-1 px-2 text-sm">
+                            <option value="all">All Status</option>
+                            <option value="successful">Successful</option>
+                            <option value="pending">Pending</option>
+                            <option value="failed">Failed</option>
                         </select>
                     </div>
                 </div>
@@ -211,194 +164,281 @@
                     <table class="intelleva-table">
                         <thead>
                             <tr>
-                                <th>Receipt ID</th>
+                                <th>Transaction ID</th>
                                 <th>Student</th>
-                                <th>Class</th>
                                 <th>Fee Type</th>
                                 <th>Amount</th>
-                                <th>Payment Date</th>
                                 <th>Payment Method</th>
+                                <th>Date</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Payment 1 -->
+                            {% for transaction in transactions|default([
+                                {'id': 'TRX-123456789', 'student': 'John Doe', 'student_id': 'S12345', 'fee_type': 'Tuition Fee', 'amount': 45000, 'method': 'Paystack', 'date': 'Mar 15, 2025', 'status': 'successful'},
+                                {'id': 'TRX-987654321', 'student': 'Jane Smith', 'student_id': 'S12346', 'fee_type': 'Library Fee', 'amount': 10000, 'method': 'Bank Transfer', 'date': 'Mar 14, 2025', 'status': 'successful'},
+                                {'id': 'TRX-456789123', 'student': 'Michael Johnson', 'student_id': 'S12347', 'fee_type': 'Technology Fee', 'amount': 20000, 'method': 'Paystack', 'date': 'Mar 13, 2025', 'status': 'successful'},
+                                {'id': 'TRX-789123456', 'student': 'Emily Williams', 'student_id': 'S12348', 'fee_type': 'Tuition Fee', 'amount': 45000, 'method': 'Paystack', 'date': 'Mar 12, 2025', 'status': 'successful'},
+                                {'id': 'TRX-321654987', 'student': 'David Brown', 'student_id': 'S12349', 'fee_type': 'Laboratory Fee', 'amount': 15000, 'method': 'Bank Transfer', 'date': 'Mar 10, 2025', 'status': 'pending'},
+                                {'id': 'TRX-654987321', 'student': 'Sarah Lee', 'student_id': 'S12350', 'fee_type': 'Tuition Fee', 'amount': 45000, 'method': 'Paystack', 'date': 'Mar 08, 2025', 'status': 'failed'}
+                            ], true) %}
                             <tr>
-                                <td>RCP-2025-1001</td>
+                                <td>{{ transaction.id }}</td>
                                 <td>
                                     <div class="flex items-center">
-                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-1.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
-                                        <div>John Smith</div>
+                                        <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mr-2">
+                                            <span class="text-xs font-semibold">{{ transaction.student[:1] }}</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">{{ transaction.student }}</p>
+                                            <p class="text-xs text-gray-500">{{ transaction.student_id }}</p>
+                                        </div>
                                     </div>
                                 </td>
-                                <td>Grade 10-A</td>
-                                <td>Tuition Fee (Q1)</td>
-                                <td>$1,350</td>
-                                <td>Jan 12, 2025</td>
-                                <td>Credit Card</td>
-                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>{{ transaction.fee_type }}</td>
+                                <td>₦{{ '{:,.2f}'.format(transaction.amount) }}</td>
+                                <td>{{ transaction.method }}</td>
+                                <td>{{ transaction.date }}</td>
+                                <td>
+                                    <span class="badge badge-{{ 'success' if transaction.status == 'successful' else ('warning' if transaction.status == 'pending' else 'danger') }}">
+                                        {{ transaction.status|title }}
+                                    </span>
+                                </td>
                                 <td>
                                     <div class="flex items-center space-x-2">
-                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                            <i data-lucide="file-text" class="h-4 w-4"></i>
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" onclick="viewTransaction('{{ transaction.id }}')">
+                                            <i data-lucide="eye" class="h-4 w-4"></i>
                                         </button>
-                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                                        {% if transaction.status == 'pending' %}
+                                        <button class="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300" onclick="approveTransaction('{{ transaction.id }}')">
+                                            <i data-lucide="check" class="h-4 w-4"></i>
+                                        </button>
+                                        {% endif %}
+                                        <button class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300" onclick="printReceipt('{{ transaction.id }}')">
                                             <i data-lucide="printer" class="h-4 w-4"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-                            
-                            <!-- Payment 2 -->
-                            <tr>
-                                <td>RCP-2025-1002</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-2.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
-                                        <div>Emily Johnson</div>
-                                    </div>
-                                </td>
-                                <td>Grade 11-B</td>
-                                <td>Tuition Fee (Q1)</td>
-                                <td>$1,500</td>
-                                <td>Jan 14, 2025</td>
-                                <td>Bank Transfer</td>
-                                <td><span class="badge badge-success">Completed</span></td>
-                                <td>
-                                    <div class="flex items-center space-x-2">
-                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                            <i data-lucide="file-text" class="h-4 w-4"></i>
-                                        </button>
-                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
-                                            <i data-lucide="printer" class="h-4 w-4"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <!-- Payment 3 -->
-                            <tr>
-                                <td>RCP-2025-1003</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-3.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
-                                        <div>Michael Brown</div>
-                                    </div>
-                                </td>
-                                <td>Grade 9-A</td>
-                                <td>Tuition Fee (Q1)</td>
-                                <td>$1,200</td>
-                                <td>Jan 15, 2025</td>
-                                <td>Paystack</td>
-                                <td><span class="badge badge-warning">Pending</span></td>
-                                <td>
-                                    <div class="flex items-center space-x-2">
-                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                            <i data-lucide="file-text" class="h-4 w-4"></i>
-                                        </button>
-                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
-                                            <i data-lucide="printer" class="h-4 w-4"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <!-- Payment 4 -->
-                            <tr>
-                                <td>RCP-2025-1004</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-4.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
-                                        <div>Sarah Davis</div>
-                                    </div>
-                                </td>
-                                <td>Grade 12-A</td>
-                                <td>Tuition Fee (Q1)</td>
-                                <td>$1,650</td>
-                                <td>Jan 16, 2025</td>
-                                <td>Credit Card</td>
-                                <td><span class="badge badge-success">Completed</span></td>
-                                <td>
-                                    <div class="flex items-center space-x-2">
-                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                            <i data-lucide="file-text" class="h-4 w-4"></i>
-                                        </button>
-                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
-                                            <i data-lucide="printer" class="h-4 w-4"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <!-- Payment 5 -->
-                            <tr>
-                                <td>RCP-2025-1005</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-5.jpg" alt="Student" class="h-8 w-8 rounded-full mr-3">
-                                        <div>David Wilson</div>
-                                    </div>
-                                </td>
-                                <td>Grade 10-B</td>
-                                <td>Tuition Fee (Q1)</td>
-                                <td>$1,350</td>
-                                <td>Jan 18, 2025</td>
-                                <td>Paystack</td>
-                                <td><span class="badge badge-danger">Failed</span></td>
-                                <td>
-                                    <div class="flex items-center space-x-2">
-                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                            <i data-lucide="file-text" class="h-4 w-4"></i>
-                                        </button>
-                                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
-                                            <i data-lucide="refresh-cw" class="h-4 w-4"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                
-                <!-- Pagination -->
-                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-4 sm:mb-0">
-                            Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">248</span> results
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <button class="btn-outline py-1 px-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                                Previous
-                            </button>
-                            <button class="btn-outline py-1 px-3 text-sm bg-teal-50 dark:bg-teal-900 text-teal-600 dark:text-teal-400 border-teal-500 dark:border-teal-400">
-                                1
-                            </button>
-                            <button class="btn-outline py-1 px-3 text-sm">
-                                2
-                            </button>
-                            <button class="btn-outline py-1 px-3 text-sm">
-                                3
-                            </button>
-                            <span class="text-gray-500 dark:text-gray-400">...</span>
-                            <button class="btn-outline py-1 px-3 text-sm">
-                                25
-                            </button>
-                            <button class="btn-outline py-1 px-3 text-sm">
-                                Next
-                            </button>
-                        </div>
+                <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        Showing <span class="font-medium">1-6</span> of <span class="font-medium">256</span> transactions
+                    </div>
+                    <div class="flex space-x-1">
+                        <button class="btn-sm btn-outline py-1 px-2 disabled:opacity-50" disabled>
+                            <i data-lucide="chevron-left" class="h-4 w-4"></i>
+                        </button>
+                        <button class="btn-sm btn-primary py-1 px-3">1</button>
+                        <button class="btn-sm btn-outline py-1 px-3">2</button>
+                        <button class="btn-sm btn-outline py-1 px-3">3</button>
+                        <button class="btn-sm btn-outline py-1 px-3">4</button>
+                        <button class="btn-sm btn-outline py-1 px-3">5</button>
+                        <button class="btn-sm btn-outline py-1 px-2">
+                            <i data-lucide="chevron-right" class="h-4 w-4"></i>
+                        </button>
                     </div>
                 </div>
             </div>
             
-            <!-- Payment Method Distribution -->
+            <!-- Payment Analytics -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <div>
-                    {{ chart_card('Payment Method Distribution', 'paymentMethodChart') }}
+                <!-- Payment Methods Distribution -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Payment Methods Distribution</h2>
+                    <div class="h-64">
+                        <canvas id="paymentMethodsChart"></canvas>
+                    </div>
                 </div>
-                <div>
-                    {{ chart_card('Fee Collection by Class', 'feeByClassChart') }}
+                
+                <!-- Fee Type Distribution -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Fee Type Distribution</h2>
+                    <div class="h-64">
+                        <canvas id="feeTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Reminders -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Payment Reminders</h2>
+                    <button class="btn-sm btn-primary" onclick="openModal('sendReminderModal')">
+                        <i data-lucide="send" class="w-4 h-4 mr-1"></i>
+                        Send Reminders
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="intelleva-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox" id="selectAllReminders">
+                                    </div>
+                                </th>
+                                <th>Student</th>
+                                <th>Fee Type</th>
+                                <th>Amount Due</th>
+                                <th>Due Date</th>
+                                <th>Days Overdue</th>
+                                <th>Last Reminder</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reminder in reminders|default([
+                                {'student': 'David Brown', 'student_id': 'S12349', 'fee_type': 'Tuition Fee', 'amount': 45000, 'due_date': 'Mar 01, 2025', 'days_overdue': 16, 'last_reminder': 'Mar 10, 2025'},
+                                {'student': 'Sarah Lee', 'student_id': 'S12350', 'fee_type': 'Tuition Fee', 'amount': 45000, 'due_date': 'Mar 01, 2025', 'days_overdue': 16, 'last_reminder': 'Mar 08, 2025'},
+                                {'student': 'James Wilson', 'student_id': 'S12351', 'fee_type': 'Library Fee', 'amount': 10000, 'due_date': 'Mar 05, 2025', 'days_overdue': 12, 'last_reminder': 'Mar 12, 2025'},
+                                {'student': 'Emma Davis', 'student_id': 'S12352', 'fee_type': 'Technology Fee', 'amount': 20000, 'due_date': 'Mar 05, 2025', 'days_overdue': 12, 'last_reminder': 'Never'}
+                            ], true) %}
+                            <tr>
+                                <td>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox reminder-checkbox">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mr-2">
+                                            <span class="text-xs font-semibold">{{ reminder.student[:1] }}</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">{{ reminder.student }}</p>
+                                            <p class="text-xs text-gray-500">{{ reminder.student_id }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ reminder.fee_type }}</td>
+                                <td>₦{{ '{:,.2f}'.format(reminder.amount) }}</td>
+                                <td>{{ reminder.due_date }}</td>
+                                <td>
+                                    <span class="text-red-500 font-medium">{{ reminder.days_overdue }} days</span>
+                                </td>
+                                <td>{{ reminder.last_reminder }}</td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" onclick="sendIndividualReminder('{{ reminder.student_id }}')">
+                                            <i data-lucide="mail" class="h-4 w-4"></i>
+                                        </button>
+                                        <button class="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300" onclick="recordManualPayment('{{ reminder.student_id }}', '{{ reminder.fee_type }}', {{ reminder.amount }})">
+                                            <i data-lucide="credit-card" class="h-4 w-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Paystack Integration Settings -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Payment Gateway Settings</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-3">Paystack Configuration</h3>
+                        <form id="paystackConfigForm">
+                            <div class="form-group">
+                                <label for="paystackPublicKey">Public Key</label>
+                                <input type="text" id="paystackPublicKey" name="paystackPublicKey" class="form-input" value="{{ paystack_public_key|default('pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', true) }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="paystackSecretKey">Secret Key</label>
+                                <input type="password" id="paystackSecretKey" name="paystackSecretKey" class="form-input" value="{{ paystack_secret_key|default('sk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', true) }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="paystackMode">Mode</label>
+                                <select id="paystackMode" name="paystackMode" class="form-select">
+                                    <option value="test" {{ 'selected' if paystack_mode|default('test', true) == 'test' else '' }}>Test Mode</option>
+                                    <option value="live" {{ 'selected' if paystack_mode|default('test', true) == 'live' else '' }}>Live Mode</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="paystackWebhook">Webhook URL</label>
+                                <div class="flex">
+                                    <input type="text" id="paystackWebhook" name="paystackWebhook" class="form-input flex-1" value="{{ paystack_webhook|default('https://intelleva-academy.edu/api/payments/webhook', true) }}" readonly>
+                                    <button type="button" class="btn-outline ml-2" onclick="copyWebhookUrl()">
+                                        <i data-lucide="copy" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn-primary py-2 px-4">Save Configuration</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-3">Payment Options</h3>
+                        <form id="paymentOptionsForm">
+                            <div class="form-group">
+                                <label for="allowPartialPayments">Allow Partial Payments</label>
+                                <div class="flex items-center mt-1">
+                                    <label class="inline-flex items-center mr-4">
+                                        <input type="radio" name="allowPartialPayments" value="yes" class="form-radio" {{ 'checked' if allow_partial_payments|default(true, true) else '' }}>
+                                        <span class="ml-2">Yes</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="allowPartialPayments" value="no" class="form-radio" {{ 'checked' if not allow_partial_payments|default(true, true) else '' }}>
+                                        <span class="ml-2">No</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentMethods">Enabled Payment Methods</label>
+                                <div class="mt-1 space-y-2">
+                                    <label class="inline-flex items-center">
+                                        <input type="checkbox" name="paymentMethods[]" value="card" class="form-checkbox" {{ 'checked' if 'card' in payment_methods|default(['card', 'bank', 'ussd', 'qr'], true) else '' }}>
+                                        <span class="ml-2">Card Payments</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="checkbox" name="paymentMethods[]" value="bank" class="form-checkbox" {{ 'checked' if 'bank' in payment_methods|default(['card', 'bank', 'ussd', 'qr'], true) else '' }}>
+                                        <span class="ml-2">Bank Transfers</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="checkbox" name="paymentMethods[]" value="ussd" class="form-checkbox" {{ 'checked' if 'ussd' in payment_methods|default(['card', 'bank', 'ussd', 'qr'], true) else '' }}>
+                                        <span class="ml-2">USSD</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="checkbox" name="paymentMethods[]" value="qr" class="form-checkbox" {{ 'checked' if 'qr' in payment_methods|default(['card', 'bank', 'ussd', 'qr'], true) else '' }}>
+                                        <span class="ml-2">QR Code</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="autoReminders">Automatic Payment Reminders</label>
+                                <div class="flex items-center mt-1">
+                                    <label class="inline-flex items-center mr-4">
+                                        <input type="radio" name="autoReminders" value="yes" class="form-radio" {{ 'checked' if auto_reminders|default(true, true) else '' }}>
+                                        <span class="ml-2">Enabled</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="autoReminders" value="no" class="form-radio" {{ 'checked' if not auto_reminders|default(true, true) else '' }}>
+                                        <span class="ml-2">Disabled</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="reminderFrequency">Reminder Frequency</label>
+                                <select id="reminderFrequency" name="reminderFrequency" class="form-select" {{ 'disabled' if not auto_reminders|default(true, true) else '' }}>
+                                    <option value="3" {{ 'selected' if reminder_frequency|default(7, true) == 3 else '' }}>Every 3 days</option>
+                                    <option value="7" {{ 'selected' if reminder_frequency|default(7, true) == 7 else '' }}>Weekly</option>
+                                    <option value="14" {{ 'selected' if reminder_frequency|default(7, true) == 14 else '' }}>Bi-weekly</option>
+                                    <option value="30" {{ 'selected' if reminder_frequency|default(7, true) == 30 else '' }}>Monthly</option>
+                                </select>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn-primary py-2 px-4">Save Options</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </main>
@@ -407,155 +447,308 @@
 
 <!-- Add Fee Structure Modal -->
 <div id="addFeeModal" class="modal">
-    <div class="modal-content max-w-2xl">
+    <div class="modal-content">
         <div class="modal-header">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Add Fee Structure</h3>
-            <button class="modal-close">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
+            <h2>Add Fee Structure</h2>
+            <span class="close" onclick="closeModal('addFeeModal')">&times;</span>
         </div>
         <div class="modal-body">
             <form id="addFeeForm">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="form-group">
-                        <label for="feeClass">Class</label>
-                        <select id="feeClass" name="feeClass" class="form-select" required>
-                            <option value="">Select Class</option>
-                            <option value="9">Grade 9</option>
-                            <option value="10">Grade 10</option>
-                            <option value="11">Grade 11</option>
-                            <option value="12">Grade 12</option>
-                            <option value="all">All Grades</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="feeType">Fee Type</label>
-                        <select id="feeType" name="feeType" class="form-select" required>
-                            <option value="">Select Fee Type</option>
-                            <option value="tuition">Tuition Fee</option>
-                            <option value="library">Library Fee</option>
-                            <option value="technology">Technology Fee</option>
-                            <option value="sports">Sports Fee</option>
-                            <option value="lab">Laboratory Fee</option>
-                            <option value="transport">Transportation Fee</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group" id="otherFeeTypeContainer" style="display: none;">
-                        <label for="otherFeeType">Specify Fee Type</label>
-                        <input type="text" id="otherFeeType" name="otherFeeType" class="form-input">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="feeAmount">Amount ($)</label>
-                        <input type="number" id="feeAmount" name="feeAmount" min="0" step="0.01" class="form-input" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="feeFrequency">Frequency</label>
-                        <select id="feeFrequency" name="feeFrequency" class="form-select" required>
-                            <option value="">Select Frequency</option>
-                            <option value="annual">Annual</option>
-                            <option value="biannual">Bi-Annual</option>
-                            <option value="quarterly">Quarterly</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="onetime">One-Time</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group md:col-span-2">
-                        <label for="feeDueDate">Due Date(s)</label>
-                        <input type="text" id="feeDueDate" name="feeDueDate" class="form-input" placeholder="e.g., 15th of Jan, Apr, Jul, Oct" required>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">For multiple dates, separate with commas</p>
-                    </div>
-                    
-                    <div class="form-group md:col-span-2">
-                        <label for="feeDescription">Description</label>
-                        <textarea id="feeDescription" name="feeDescription" rows="2" class="form-input"></textarea>
-                    </div>
+                <div class="form-group">
+                    <label for="feeClass">Class</label>
+                    <select id="feeClass" name="feeClass" class="form-select" required>
+                        <option value="">Select Class</option>
+                        <option value="Grade 9">Grade 9</option>
+                        <option value="Grade 10">Grade 10</option>
+                        <option value="Grade 11">Grade 11</option>
+                        <option value="Grade 12">Grade 12</option>
+                        <option value="All Grades">All Grades</option>
+                    </select>
                 </div>
+                <div class="form-group">
+                    <label for="feeType">Fee Type</label>
+                    <input type="text" id="feeType" name="feeType" class="form-input" placeholder="e.g., Tuition Fee, Library Fee" required>
+                </div>
+                <div class="form-group">
+                    <label for="feeAmount">Amount (₦)</label>
+                    <input type="number" id="feeAmount" name="feeAmount" class="form-input" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="feeFrequency">Frequency</label>
+                    <select id="feeFrequency" name="feeFrequency" class="form-select" required>
+                        <option value="Annual">Annual</option>
+                        <option value="Bi-Annual">Bi-Annual</option>
+                        <option value="Quarterly">Quarterly</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="One-Time">One-Time</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="feeDueDate">Due Date</label>
+                    <input type="text" id="feeDueDate" name="feeDueDate" class="form-input" placeholder="e.g., 15th of January" required>
+                </div>
+                <div class="form-group">
+                    <label for="feeDescription">Description (Optional)</label>
+                    <textarea id="feeDescription" name="feeDescription" class="form-input" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn-primary w-full mt-4">Add Fee Structure</button>
             </form>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-outline py-2 px-4 modal-close">Cancel</button>
-            <button class="btn-primary py-2 px-4 ml-2" id="saveFeeBtn">Save Fee Structure</button>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="{{ url_for('static', filename='js/intelleva-charts.js') }}"></script>
+<!-- Generate Report Modal -->
+<div id="generateReportModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Generate Financial Report</h2>
+            <span class="close" onclick="closeModal('generateReportModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="generateReportForm">
+                <div class="form-group">
+                    <label for="reportType">Report Type</label>
+                    <select id="reportType" name="reportType" class="form-select" required>
+                        <option value="">Select Report Type</option>
+                        <option value="collection_summary">Fee Collection Summary</option>
+                        <option value="payment_transactions">Payment Transactions</option>
+                        <option value="outstanding_fees">Outstanding Fees</option>
+                        <option value="class_wise">Class-wise Collection</option>
+                        <option value="fee_type_wise">Fee Type-wise Collection</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reportPeriod">Period</label>
+                    <select id="reportPeriod" name="reportPeriod" class="form-select" required>
+                        <option value="current_month">Current Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="current_quarter">Current Quarter</option>
+                        <option value="last_quarter">Last Quarter</option>
+                        <option value="current_year">Current Year</option>
+                        <option value="last_year">Last Year</option>
+                        <option value="custom">Custom Date Range</option>
+                    </select>
+                </div>
+                <div id="customDateRange" class="form-group hidden">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="startDate">Start Date</label>
+                            <input type="date" id="startDate" name="startDate" class="form-input">
+                        </div>
+                        <div>
+                            <label for="endDate">End Date</label>
+                            <input type="date" id="endDate" name="endDate" class="form-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reportFormat">Format</label>
+                    <select id="reportFormat" name="reportFormat" class="form-select" required>
+                        <option value="pdf">PDF</option>
+                        <option value="excel">Excel</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary w-full mt-4">Generate Report</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Send Reminder Modal -->
+<div id="sendReminderModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Send Payment Reminders</h2>
+            <span class="close" onclick="closeModal('sendReminderModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="sendReminderForm">
+                <div class="form-group">
+                    <label for="reminderRecipients">Recipients</label>
+                    <select id="reminderRecipients" name="reminderRecipients" class="form-select" required>
+                        <option value="selected">Selected Students</option>
+                        <option value="all_overdue">All Overdue Payments</option>
+                        <option value="days_overdue">Days Overdue</option>
+                        <option value="specific_class">Specific Class</option>
+                    </select>
+                </div>
+                <div id="daysOverdueGroup" class="form-group hidden">
+                    <label for="daysOverdue">Minimum Days Overdue</label>
+                    <input type="number" id="daysOverdue" name="daysOverdue" class="form-input" min="1" value="7">
+                </div>
+                <div id="specificClassGroup" class="form-group hidden">
+                    <label for="reminderClass">Class</label>
+                    <select id="reminderClass" name="reminderClass" class="form-select">
+                        <option value="Grade 9">Grade 9</option>
+                        <option value="Grade 10">Grade 10</option>
+                        <option value="Grade 11">Grade 11</option>
+                        <option value="Grade 12">Grade 12</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reminderChannel">Notification Channel</label>
+                    <div class="mt-1 space-y-2">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="reminderChannel[]" value="email" class="form-checkbox" checked>
+                            <span class="ml-2">Email</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="reminderChannel[]" value="sms" class="form-checkbox" checked>
+                            <span class="ml-2">SMS</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="reminderChannel[]" value="app" class="form-checkbox" checked>
+                            <span class="ml-2">In-App Notification</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reminderTemplate">Message Template</label>
+                    <select id="reminderTemplate" name="reminderTemplate" class="form-select" required>
+                        <option value="standard">Standard Reminder</option>
+                        <option value="gentle">Gentle Reminder</option>
+                        <option value="urgent">Urgent Reminder</option>
+                        <option value="custom">Custom Message</option>
+                    </select>
+                </div>
+                <div id="customMessageGroup" class="form-group hidden">
+                    <label for="customMessage">Custom Message</label>
+                    <textarea id="customMessage" name="customMessage" class="form-input" rows="4" placeholder="Enter your custom reminder message here..."></textarea>
+                    <p class="text-sm text-gray-500 mt-1">Use {STUDENT_NAME}, {FEE_TYPE}, {AMOUNT}, {DUE_DATE} as placeholders.</p>
+                </div>
+                <div class="form-group">
+                    <label for="includePaymentLink">Include Payment Link</label>
+                    <div class="flex items-center mt-1">
+                        <label class="inline-flex items-center mr-4">
+                            <input type="radio" name="includePaymentLink" value="yes" class="form-radio" checked>
+                            <span class="ml-2">Yes</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="includePaymentLink" value="no" class="form-radio">
+                            <span class="ml-2">No</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary w-full mt-4">Send Reminders</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Details Modal -->
+<div id="transactionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Transaction Details</h2>
+            <span class="close" onclick="closeModal('transactionModal')">&times;</span>
+        </div>
+        <div class="modal-body" id="transactionDetails">
+            <!-- Transaction details will be loaded here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="printTransactionDetails()">
+                <i class="icon icon-printer mr-1"></i> Print
+            </button>
+            <button class="btn-primary" onclick="downloadTransactionDetails()">
+                <i class="icon icon-download mr-1"></i> Download
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Manual Payment Modal -->
+<div id="manualPaymentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Record Manual Payment</h2>
+            <span class="close" onclick="closeModal('manualPaymentModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="manualPaymentForm">
+                <input type="hidden" id="manualPaymentStudentId" name="studentId">
+                <div class="form-group">
+                    <label for="manualPaymentStudent">Student</label>
+                    <input type="text" id="manualPaymentStudent" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="manualPaymentFeeType">Fee Type</label>
+                    <select id="manualPaymentFeeType" name="feeType" class="form-select" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="manualPaymentAmount">Amount (₦)</label>
+                    <input type="number" id="manualPaymentAmount" name="amount" class="form-input" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="manualPaymentMethod">Payment Method</label>
+                    <select id="manualPaymentMethod" name="paymentMethod" class="form-select" required>
+                        <option value="cash">Cash</option>
+                        <option value="bank_transfer">Bank Transfer</option>
+                        <option value="check">Check/Cheque</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="manualPaymentDate">Payment Date</label>
+                    <input type="date" id="manualPaymentDate" name="paymentDate" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="manualPaymentReference">Reference/Receipt Number</label>
+                    <input type="text" id="manualPaymentReference" name="reference" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="manualPaymentNotes">Notes (Optional)</label>
+                    <textarea id="manualPaymentNotes" name="notes" class="form-input" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn-primary w-full mt-4">Record Payment</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+    // Initialize charts
     document.addEventListener('DOMContentLoaded', function() {
-        lucide.createIcons();
-        
-        // Initialize charts
-        const paymentMethodData = {
-            labels: ['Credit Card', 'Bank Transfer', 'Paystack', 'Cash', 'Other'],
-            values: [42, 28, 18, 10, 2]
-        };
-        initDoughnutChart('paymentMethodChart', paymentMethodData, 'Payment Method Distribution (%)');
-        
-        const feeByClassData = {
-            labels: ['Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-            values: [58250, 67500, 75000, 48000]
-        };
-        initDoughnutChart('feeByClassChart', feeByClassData, 'Fee Collection by Class ($)');
-        
-        // Fee Collection Trend Chart
-        const ctx = document.getElementById('feeCollectionChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
+        // Fee Collection Chart
+        const feeCollectionCtx = document.getElementById('feeCollectionChart').getContext('2d');
+        const feeCollectionChart = new Chart(feeCollectionCtx, {
+            type: 'bar',
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 datasets: [{
                     label: 'Expected Collection',
-                    data: [85000, 15000, 10000, 85000, 15000, 10000, 85000, 15000, 10000, 85000, 15000, 10000],
-                    borderColor: '#94a3b8',
-                    backgroundColor: 'transparent',
-                    borderDashed: [5, 5],
-                    tension: 0.1
+                    data: [320000, 280000, 350000, 300000, 250000, 220000, 310000, 290000, 330000, 280000, 260000, 310000],
+                    backgroundColor: 'rgba(203, 213, 225, 0.5)',
+                    borderColor: 'rgba(203, 213, 225, 1)',
+                    borderWidth: 1
                 }, {
                     label: 'Actual Collection',
-                    data: [82500, 14200, 9500, 83000, 14800, 9200, 84500, 14500, 9800, 0, 0, 0],
-                    borderColor: '#14b8a6',
-                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
-                    tension: 0.1,
-                    fill: true
+                    data: [300000, 260000, 280000, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(20, 184, 166, 0.5)',
+                    borderColor: 'rgba(20, 184, 166, 1)',
+                    borderWidth: 1
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            usePointStyle: true,
-                            boxWidth: 6
-                        }
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false
-                    }
-                },
                 scales: {
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    },
                     y: {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return '$' + value.toLocaleString();
+                                return '₦' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ₦' + context.raw.toLocaleString();
                             }
                         }
                     }
@@ -563,77 +756,396 @@
             }
         });
         
-        // Modal functionality
-        const modals = document.querySelectorAll('.modal');
-        const modalTriggers = document.querySelectorAll('[data-modal-target]');
-        const modalCloseButtons = document.querySelectorAll('.modal-close');
+        // Payment Methods Chart
+        const paymentMethodsCtx = document.getElementById('paymentMethodsChart').getContext('2d');
+        const paymentMethodsChart = new Chart(paymentMethodsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Paystack', 'Bank Transfer', 'Cash', 'Other'],
+                datasets: [{
+                    data: [65, 20, 10, 5],
+                    backgroundColor: [
+                        'rgba(20, 184, 166, 0.7)',
+                        'rgba(79, 70, 229, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(156, 163, 175, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(20, 184, 166, 1)',
+                        'rgba(79, 70, 229, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(156, 163, 175, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
         
-        modalTriggers.forEach(trigger => {
-            trigger.addEventListener('click', () => {
-                const modalId = trigger.getAttribute('data-modal-target');
-                const modal = document.getElementById(modalId);
-                modal.classList.add('modal-open');
+        // Fee Type Chart
+        const feeTypeCtx = document.getElementById('feeTypeChart').getContext('2d');
+        const feeTypeChart = new Chart(feeTypeCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Tuition Fee', 'Library Fee', 'Laboratory Fee', 'Technology Fee', 'Sports Fee', 'Other Fees'],
+                datasets: [{
+                    data: [70, 5, 8, 10, 4, 3],
+                    backgroundColor: [
+                        'rgba(20, 184, 166, 0.7)',
+                        'rgba(79, 70, 229, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(236, 72, 153, 0.7)',
+                        'rgba(34, 197, 94, 0.7)',
+                        'rgba(156, 163, 175, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(20, 184, 166, 1)',
+                        'rgba(79, 70, 229, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(236, 72, 153, 1)',
+                        'rgba(34, 197, 94, 1)',
+                        'rgba(156, 163, 175, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart period change handler
+        document.getElementById('chartPeriod').addEventListener('change', function() {
+            // In a real implementation, this would fetch new data based on the selected period
+            // For now, we'll just update the chart with dummy data
+            const period = this.value;
+            let labels = [];
+            let expectedData = [];
+            let actualData = [];
+            
+            if (period === 'monthly') {
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                expectedData = [320000, 280000, 350000, 300000, 250000, 220000, 310000, 290000, 330000, 280000, 260000, 310000];
+                actualData = [300000, 260000, 280000, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            } else if (period === 'quarterly') {
+                labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+                expectedData = [950000, 770000, 930000, 850000];
+                actualData = [840000, 0, 0, 0];
+            } else if (period === 'yearly') {
+                labels = ['2023', '2024', '2025'];
+                expectedData = [3200000, 3500000, 3800000];
+                actualData = [3200000, 3500000, 840000];
+            }
+            
+            feeCollectionChart.data.labels = labels;
+            feeCollectionChart.data.datasets[0].data = expectedData;
+            feeCollectionChart.data.datasets[1].data = actualData;
+            feeCollectionChart.update();
+        });
+        
+        // Select all reminders checkbox
+        document.getElementById('selectAllReminders').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.reminder-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
             });
         });
         
-        modalCloseButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const modal = button.closest('.modal');
-                modal.classList.remove('modal-open');
-            });
+        // Auto reminders toggle
+        document.querySelector('input[name="autoReminders"]').addEventListener('change', function() {
+            const reminderFrequency = document.getElementById('reminderFrequency');
+            reminderFrequency.disabled = this.value === 'no';
         });
         
-        // Close modal when clicking outside
-        modals.forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('modal-open');
-                }
-            });
+        // Custom date range toggle
+        document.getElementById('reportPeriod').addEventListener('change', function() {
+            const customDateRange = document.getElementById('customDateRange');
+            customDateRange.classList.toggle('hidden', this.value !== 'custom');
         });
         
-        // Show/hide other fee type field
-        const feeTypeSelect = document.getElementById('feeType');
-        const otherFeeTypeContainer = document.getElementById('otherFeeTypeContainer');
+        // Reminder recipients change handler
+        document.getElementById('reminderRecipients').addEventListener('change', function() {
+            const daysOverdueGroup = document.getElementById('daysOverdueGroup');
+            const specificClassGroup = document.getElementById('specificClassGroup');
+            
+            daysOverdueGroup.classList.toggle('hidden', this.value !== 'days_overdue');
+            specificClassGroup.classList.toggle('hidden', this.value !== 'specific_class');
+        });
         
-        if (feeTypeSelect && otherFeeTypeContainer) {
-            feeTypeSelect.addEventListener('change', function() {
-                if (this.value === 'other') {
-                    otherFeeTypeContainer.style.display = 'block';
-                    document.getElementById('otherFeeType').setAttribute('required', 'required');
-                } else {
-                    otherFeeTypeContainer.style.display = 'none';
-                    document.getElementById('otherFeeType').removeAttribute('required');
-                }
-            });
-        }
+        // Reminder template change handler
+        document.getElementById('reminderTemplate').addEventListener('change', function() {
+            const customMessageGroup = document.getElementById('customMessageGroup');
+            customMessageGroup.classList.toggle('hidden', this.value !== 'custom');
+        });
         
-        // Save fee structure form
-        const saveFeeBtn = document.getElementById('saveFeeBtn');
-        const addFeeForm = document.getElementById('addFeeForm');
+        // Form submission handlers
+        document.getElementById('addFeeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // In a real implementation, this would send the form data to the server
+            alert('Fee structure added successfully!');
+            closeModal('addFeeModal');
+        });
         
-        if (saveFeeBtn && addFeeForm) {
-            saveFeeBtn.addEventListener('click', function() {
-                // Validate form
-                if (addFeeForm.checkValidity()) {
-                    // In a real implementation, this would submit the form data to the server
-                    console.log('Form is valid, submitting...');
-                    
-                    // Simulate API call
-                    setTimeout(() => {
-                        // Close modal
-                        const modal = document.getElementById('addFeeModal');
-                        modal.classList.remove('modal-open');
-                        
-                        // Show success message (in a real implementation)
-                        alert('Fee structure added successfully!');
-                    }, 1000);
-                } else {
-                    // Trigger form validation
-                    addFeeForm.reportValidity();
-                }
-            });
-        }
+        document.getElementById('generateReportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // In a real implementation, this would generate and download the report
+            alert('Report generated successfully!');
+            closeModal('generateReportModal');
+        });
+        
+        document.getElementById('sendReminderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // In a real implementation, this would send the reminders
+            alert('Payment reminders sent successfully!');
+            closeModal('sendReminderModal');
+        });
+        
+        document.getElementById('paystackConfigForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // In a real implementation, this would save the Paystack configuration
+            alert('Paystack configuration saved successfully!');
+        });
+        
+        document.getElementById('paymentOptionsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // In a real implementation, this would save the payment options
+            alert('Payment options saved successfully!');
+        });
+        
+        document.getElementById('manualPaymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // In a real implementation, this would record the manual payment
+            alert('Manual payment recorded successfully!');
+            closeModal('manualPaymentModal');
+        });
     });
+    
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'block';
+    }
+    
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    }
+    
+    // Fee structure functions
+    function editFeeStructure(feeClass, feeType, amount, frequency, dueDate) {
+        // In a real implementation, this would populate the edit form with the fee structure details
+        openModal('addFeeModal');
+        document.getElementById('feeClass').value = feeClass;
+        document.getElementById('feeType').value = feeType;
+        document.getElementById('feeAmount').value = amount;
+        document.getElementById('feeFrequency').value = frequency;
+        document.getElementById('feeDueDate').value = dueDate;
+    }
+    
+    function deleteFeeStructure(feeClass, feeType) {
+        // In a real implementation, this would delete the fee structure after confirmation
+        if (confirm(`Are you sure you want to delete the ${feeType} for ${feeClass}?`)) {
+            alert('Fee structure deleted successfully!');
+        }
+    }
+    
+    // Transaction functions
+    function viewTransaction(transactionId) {
+        // In a real implementation, this would fetch the transaction details from the server
+        const transactionHTML = `
+            <div class="p-4">
+                <div class="text-center mb-4">
+                    <h3 class="text-xl font-bold">Intelleva School</h3>
+                    <p>Transaction Details</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Transaction ID:</p>
+                        <p class="font-medium">${transactionId}</p>
+                        
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1 mt-3">Student Name:</p>
+                        <p class="font-medium">John Doe</p>
+                        
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1 mt-3">Student ID:</p>
+                        <p class="font-medium">S12345</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Date:</p>
+                        <p class="font-medium">Mar 15, 2025</p>
+                        
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1 mt-3">Payment Method:</p>
+                        <p class="font-medium">Paystack</p>
+                        
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1 mt-3">Status:</p>
+                        <p class="font-medium text-green-500">Successful</p>
+                    </div>
+                </div>
+                
+                <div class="border-t border-b border-gray-200 dark:border-gray-700 py-4 mb-4">
+                    <h4 class="font-semibold mb-3">Payment Details</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>Fee Type</span>
+                            <span>Tuition Fee</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Amount</span>
+                            <span>₦45,000.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Processing Fee</span>
+                            <span>₦675.00</span>
+                        </div>
+                        <div class="flex justify-between font-semibold">
+                            <span>Total Amount</span>
+                            <span>₦45,675.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-3">Payment Metadata</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>Card Type</span>
+                            <span>Visa</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Card Last 4</span>
+                            <span>4242</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Authorization Code</span>
+                            <span>AUTH_123456789</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center text-sm text-gray-500 mt-6">
+                    <p>This is an electronic receipt. No signature required.</p>
+                    <p>For any queries regarding this transaction, please contact the school administration.</p>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('transactionDetails').innerHTML = transactionHTML;
+        openModal('transactionModal');
+    }
+    
+    function approveTransaction(transactionId) {
+        // In a real implementation, this would approve the pending transaction
+        if (confirm(`Are you sure you want to approve transaction ${transactionId}?`)) {
+            alert('Transaction approved successfully!');
+        }
+    }
+    
+    function printReceipt(transactionId) {
+        // In a real implementation, this would print the receipt
+        alert(`Printing receipt for transaction ${transactionId}`);
+    }
+    
+    // Reminder functions
+    function sendIndividualReminder(studentId) {
+        // In a real implementation, this would open the send reminder modal with the student pre-selected
+        openModal('sendReminderModal');
+        document.getElementById('reminderRecipients').value = 'selected';
+    }
+    
+    // Manual payment functions
+    function recordManualPayment(studentId, feeType, amount) {
+        // In a real implementation, this would populate the manual payment form with the student details
+        openModal('manualPaymentModal');
+        document.getElementById('manualPaymentStudentId').value = studentId;
+        document.getElementById('manualPaymentStudent').value = 'Student ' + studentId;
+        
+        // Populate fee type dropdown
+        const feeTypeSelect = document.getElementById('manualPaymentFeeType');
+        feeTypeSelect.innerHTML = '';
+        
+        const option = document.createElement('option');
+        option.value = feeType.toLowerCase().replace(' ', '_');
+        option.textContent = feeType;
+        option.selected = true;
+        feeTypeSelect.appendChild(option);
+        
+        document.getElementById('manualPaymentAmount').value = amount;
+        document.getElementById('manualPaymentDate').valueAsDate = new Date();
+        document.getElementById('manualPaymentReference').value = 'MAN-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    }
+    
+    // Utility functions
+    function copyWebhookUrl() {
+        const webhookUrl = document.getElementById('paystackWebhook').value;
+        navigator.clipboard.writeText(webhookUrl)
+            .then(() => {
+                alert('Webhook URL copied to clipboard!');
+            })
+            .catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy webhook URL. Please try again.');
+            });
+    }
+    
+    function printTransactionDetails() {
+        const printContents = document.getElementById('transactionDetails').innerHTML;
+        const originalContents = document.body.innerHTML;
+        
+        document.body.innerHTML = `
+            <div style="padding: 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1>Intelleva School Management System</h1>
+                    <h2>Transaction Details</h2>
+                </div>
+                ${printContents}
+            </div>
+        `;
+        
+        window.print();
+        document.body.innerHTML = originalContents;
+        
+        // Reattach event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Re-initialize all event listeners
+        });
+    }
+    
+    function downloadTransactionDetails() {
+        // Implementation would depend on server-side functionality
+        alert('Transaction details download functionality will be implemented on the server side.');
+    }
 </script>
 {% endblock %}

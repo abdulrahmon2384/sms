@@ -76,6 +76,105 @@
                 </div>
             </div>
             
+            <!-- Textbooks and Learning Materials Section -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Textbooks & Learning Materials</h2>
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {{ stat_card('book', 'Required Textbooks', required_textbooks|default(8, true)|string, 'For current term', 'neutral') }}
+                    {{ stat_card('check-circle', 'Purchased', purchased_textbooks|default(5, true)|string, '{:.0f}%'.format(textbook_percentage|default(62.5, true)) + ' of required books', 'positive') }}
+                    {{ stat_card('alert-circle', 'Pending Purchase', pending_textbooks|default(3, true)|string, 'Recommended soon', 'warning') }}
+                </div>
+                
+                <!-- Textbooks List -->
+                <div class="overflow-x-auto">
+                    <table class="intelleva-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Textbook Title</th>
+                                <th>Author</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for textbook in textbooks|default([
+                                {'subject': 'Mathematics', 'title': 'Advanced Mathematics for Science Students', 'author': 'Dr. Alan Smith', 'price': 3500, 'status': 'purchased', 'purchase_date': 'Jan 15, 2025'},
+                                {'subject': 'Physics', 'title': 'Principles of Physics', 'author': 'Prof. Richard Miller', 'price': 4200, 'status': 'purchased', 'purchase_date': 'Jan 16, 2025'},
+                                {'subject': 'Chemistry', 'title': 'Modern Chemistry', 'author': 'Dr. Sarah Johnson', 'price': 3800, 'status': 'purchased', 'purchase_date': 'Jan 18, 2025'},
+                                {'subject': 'Biology', 'title': 'Biology: The Science of Life', 'author': 'Dr. Michael Brown', 'price': 4000, 'status': 'purchased', 'purchase_date': 'Feb 2, 2025'},
+                                {'subject': 'English', 'title': 'Advanced English Grammar & Composition', 'author': 'Prof. Elizabeth Taylor', 'price': 3000, 'status': 'purchased', 'purchase_date': 'Feb 5, 2025'},
+                                {'subject': 'Computer Science', 'title': 'Introduction to Programming with Python', 'author': 'Dr. James Wilson', 'price': 4500, 'status': 'pending', 'purchase_date': None},
+                                {'subject': 'Economics', 'title': 'Principles of Economics', 'author': 'Prof. Robert Davis', 'price': 3200, 'status': 'pending', 'purchase_date': None},
+                                {'subject': 'History', 'title': 'World History: Modern Era', 'author': 'Dr. Patricia Moore', 'price': 2800, 'status': 'pending', 'purchase_date': None}
+                            ], true) %}
+                            <tr>
+                                <td>{{ textbook.subject }}</td>
+                                <td>{{ textbook.title }}</td>
+                                <td>{{ textbook.author }}</td>
+                                <td>₦{{ '{:,.2f}'.format(textbook.price) }}</td>
+                                <td>
+                                    {% if textbook.status == 'purchased' %}
+                                    <span class="badge badge-success">Purchased</span>
+                                    <div class="text-xs text-gray-500">{{ textbook.purchase_date }}</div>
+                                    {% else %}
+                                    <span class="badge badge-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if textbook.status == 'pending' %}
+                                    <button class="btn-sm btn-primary" onclick="purchaseTextbook('{{ current_user.id }}', '{{ textbook.subject }}', '{{ textbook.title }}', {{ textbook.price }})">
+                                        Purchase
+                                    </button>
+                                    {% else %}
+                                    <button class="btn-sm btn-outline" onclick="viewTextbookReceipt('{{ textbook.subject }}')">
+                                        <i class="icon icon-file-text mr-1"></i> Receipt
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Additional Learning Materials -->
+                <div class="mt-8">
+                    <h3 class="text-md font-semibold text-gray-800 dark:text-white mb-4">Additional Learning Materials</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {% for material in learning_materials|default([
+                            {'name': 'Science Laboratory Kit', 'description': 'Essential equipment for physics and chemistry experiments', 'price': 8500, 'status': 'optional'},
+                            {'name': 'Graphing Calculator', 'description': 'Required for advanced mathematics and physics', 'price': 12000, 'status': 'recommended'},
+                            {'name': 'Digital Learning Subscription', 'description': 'Online resources and practice tests', 'price': 5000, 'status': 'recommended'},
+                            {'name': 'Language Learning Software', 'description': 'Interactive language learning tools', 'price': 3500, 'status': 'optional'},
+                            {'name': 'Art Supplies Kit', 'description': 'Complete set of art supplies for creative projects', 'price': 4500, 'status': 'optional'},
+                            {'name': 'Programming Software License', 'description': 'Professional IDE for computer science class', 'price': 7500, 'status': 'recommended'}
+                        ], true) %}
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium text-gray-800 dark:text-white">{{ material.name }}</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ material.description }}</p>
+                                    <p class="text-sm font-medium text-gray-800 dark:text-white mt-2">₦{{ '{:,.2f}'.format(material.price) }}</p>
+                                </div>
+                                <span class="badge badge-{{ 'info' if material.status == 'recommended' else 'neutral' }}">
+                                    {{ material.status|title }}
+                                </span>
+                            </div>
+                            <div class="mt-4">
+                                <button class="btn-sm btn-primary w-full" onclick="purchaseLearningMaterial('{{ current_user.id }}', '{{ material.name }}', {{ material.price }})">
+                                    Purchase
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
             <!-- Class Schedule -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
                 <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Weekly Class Schedule</h2>
@@ -155,7 +254,7 @@
                             <!-- Lunch Break -->
                             <tr>
                                 <td class="font-medium">11:15 - 12:00</td>
-                                <td class="bg-gray-100 dark:bg-gray-700 text-center" colspan="5">
+                                <td colspan="5" class="bg-gray-50 dark:bg-gray-700 text-center">
                                     <div class="font-medium">Lunch Break</div>
                                 </td>
                             </tr>
@@ -163,437 +262,491 @@
                             <!-- 3rd Period -->
                             <tr>
                                 <td class="font-medium">12:00 - 1:30</td>
-                                <td class="bg-orange-50 dark:bg-orange-900/20">
+                                <td class="bg-green-50 dark:bg-green-900/20">
+                                    <div class="font-medium">Biology</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Mrs. Thompson</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Lab 103</div>
+                                </td>
+                                <td class="bg-yellow-50 dark:bg-yellow-900/20">
                                     <div class="font-medium">History</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Mr. Thompson</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Room 105</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Mr. Anderson</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Room 207</div>
                                 </td>
                                 <td class="bg-green-50 dark:bg-green-900/20">
-                                    <div class="font-medium">Computer Science</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Ms. Chen</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Lab 201</div>
+                                    <div class="font-medium">Biology</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Mrs. Thompson</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Lab 103</div>
                                 </td>
-                                <td class="bg-orange-50 dark:bg-orange-900/20">
+                                <td class="bg-yellow-50 dark:bg-yellow-900/20">
                                     <div class="font-medium">History</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Mr. Thompson</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Room 105</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Mr. Anderson</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Room 207</div>
                                 </td>
                                 <td class="bg-green-50 dark:bg-green-900/20">
-                                    <div class="font-medium">Computer Science</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Ms. Chen</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Lab 201</div>
-                                </td>
-                                <td class="bg-orange-50 dark:bg-orange-900/20">
-                                    <div class="font-medium">History</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Mr. Thompson</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Room 105</div>
+                                    <div class="font-medium">Biology</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Mrs. Thompson</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Lab 103</div>
                                 </td>
                             </tr>
                             
                             <!-- 4th Period -->
                             <tr>
                                 <td class="font-medium">1:45 - 3:15</td>
-                                <td class="bg-yellow-50 dark:bg-yellow-900/20">
-                                    <div class="font-medium">Physical Education</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Coach Wilson</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Sports Field</div>
+                                <td class="bg-indigo-50 dark:bg-indigo-900/20">
+                                    <div class="font-medium">Computer Science</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Mr. Wilson</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Lab 201</div>
+                                </td>
+                                <td class="bg-red-50 dark:bg-red-900/20">
+                                    <div class="font-medium">Economics</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Ms. Roberts</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Room 208</div>
                                 </td>
                                 <td class="bg-indigo-50 dark:bg-indigo-900/20">
-                                    <div class="font-medium">Art & Design</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Ms. Rodriguez</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Art Studio</div>
+                                    <div class="font-medium">Computer Science</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Mr. Wilson</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Lab 201</div>
                                 </td>
-                                <td class="bg-yellow-50 dark:bg-yellow-900/20">
-                                    <div class="font-medium">Physical Education</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Coach Wilson</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Sports Field</div>
-                                </td>
-                                <td class="bg-indigo-50 dark:bg-indigo-900/20">
-                                    <div class="font-medium">Art & Design</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Ms. Rodriguez</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Art Studio</div>
+                                <td class="bg-red-50 dark:bg-red-900/20">
+                                    <div class="font-medium">Economics</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Ms. Roberts</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Room 208</div>
                                 </td>
                                 <td class="bg-gray-50 dark:bg-gray-700">
-                                    <div class="font-medium">Club Activities</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Various</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Various Locations</div>
+                                    <div class="font-medium">Free Period</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Study Hall</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Library</div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
-                <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                    <p>Note: Schedule is subject to change. Please check announcements for any updates.</p>
-                </div>
-            </div>
-            
-            <!-- Teachers -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <!-- Subject Teachers -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Subject Teachers</h2>
-                    <div class="space-y-4">
-                        <!-- Teacher 1 -->
-                        <div class="flex items-start p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <img src="https://f005.backblazeb2.com/file/School-management-system/teacher-1.jpg" alt="Teacher" class="w-12 h-12 rounded-full mr-4">
-                            <div class="flex-1">
-                                <h3 class="font-medium text-gray-900 dark:text-white">Mr. Robert Johnson</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Mathematics</p>
-                                <div class="flex items-center mt-1">
-                                    <i data-lucide="mail" class="w-4 h-4 text-gray-400 mr-1"></i>
-                                    <span class="text-sm text-gray-600 dark:text-gray-300">r.johnson@intelleva-academy.edu</span>
-                                </div>
-                                <div class="flex items-center mt-1">
-                                    <i data-lucide="clock" class="w-4 h-4 text-gray-400 mr-1"></i>
-                                    <span class="text-sm text-gray-600 dark:text-gray-300">Office Hours: Mon, Tue, Thu (2:00 - 3:30 PM)</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Teacher 2 -->
-                        <div class="flex items-start p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <img src="https://f005.backblazeb2.com/file/School-management-system/teacher-2.jpg" alt="Teacher" class="w-12 h-12 rounded-full mr-4">
-                            <div class="flex-1">
-                                <h3 class="font-medium text-gray-900 dark:text-white">Ms. Sarah Williams</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Physics</p>
-                                <div class="flex items-center mt-1">
-                                    <i data-lucide="mail" class="w-4 h-4 text-gray-400 mr-1"></i>
-                                    <span class="text-sm text-gray-600 dark:text-gray-300">s.williams@intelleva-academy.edu</span>
-                                </div>
-                                <div class="flex items-center mt-1">
-                                    <i data-lucide="clock" class="w-4 h-4 text-gray-400 mr-1"></i>
-                                    <span class="text-sm text-gray-600 dark:text-gray-300">Office Hours: Wed, Fri (1:45 - 3:15 PM)</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Teacher 3 -->
-                        <div class="flex items-start p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <img src="https://f005.backblazeb2.com/file/School-management-system/teacher-3.jpg" alt="Teacher" class="w-12 h-12 rounded-full mr-4">
-                            <div class="flex-1">
-                                <h3 class="font-medium text-gray-900 dark:text-white">Dr. Elena Martinez</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Chemistry</p>
-                                <div class="flex items-center mt-1">
-                                    <i data-lucide="mail" class="w-4 h-4 text-gray-400 mr-1"></i>
-                                    <span class="text-sm text-gray-600 dark:text-gray-300">e.martinez@intelleva-academy.edu</span>
-                                </div>
-                                <div class="flex items-center mt-1">
-                                    <i data-lucide="clock" class="w-4 h-4 text-gray-400 mr-1"></i>
-                                    <span class="text-sm text-gray-600 dark:text-gray-300">Office Hours: Tue, Thu (3:30 - 5:00 PM)</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- View All Button -->
-                        <div class="text-center mt-4">
-                            <button class="btn-outline py-2 px-4">
-                                View All Teachers
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Class Representatives -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Class Representatives</h2>
-                    <div class="space-y-4">
-                        <!-- Class Captain -->
-                        <div class="flex items-start p-3 rounded-lg bg-teal-50 dark:bg-teal-900/20">
-                            <img src="https://f005.backblazeb2.com/file/School-management-system/student-1.jpg" alt="Student" class="w-12 h-12 rounded-full mr-4">
-                            <div class="flex-1">
-                                <div class="flex justify-between">
-                                    <h3 class="font-medium text-gray-900 dark:text-white">Michael Chen</h3>
-                                    <span class="badge badge-success">Class Captain</span>
-                                </div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Student ID: STU-2025-001</p>
-                                <div class="flex items-center mt-1">
-                                    <i data-lucide="mail" class="w-4 h-4 text-gray-400 mr-1"></i>
-                                    <span class="text-sm text-gray-600 dark:text-gray-300">m.chen@student.intelleva-academy.edu</span>
-                                </div>
-                                <div class="flex items-center mt-1">
-                                    <i data-lucide="award" class="w-4 h-4 text-gray-400 mr-1"></i>
-                                    <span class="text-sm text-gray-600 dark:text-gray-300">Academic Rank: 1st</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Assistant Class Captain -->
-                        <div class="flex items-start p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20">
-                            <img src="https://f005.backblazeb2.com/file/School-management-system/student-2.jpg" alt="Student" class="w-12 h-12 rounded-full mr-4">
-                            <div class="flex-1">
-                                <div class="flex justify-between">
-                                    <h3 class="font-medium text-gray-900 dark:text-white">Sophia Rodriguez</h3>
-                                    <span class="badge badge-info">Assistant Captain</span>
-                                </div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Student ID: STU-2025-015</p>
-                                <div class="flex items-center mt-1">
-                                    <i data-lucide="mail" class="w-4 h-4 text-gray-400 mr-1"></i>
-                                    <span class="text-sm text-gray-600 dark:text-gray-300">s.rodriguez@student.intelleva-academy.edu</span>
-                                </div>
-                                <div class="flex items-center mt-1">
-                                    <i data-lucide="award" class="w-4 h-4 text-gray-400 mr-1"></i>
-                                    <span class="text-sm text-gray-600 dark:text-gray-300">Academic Rank: 3rd</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Subject Representatives -->
-                        <h3 class="font-medium text-gray-700 dark:text-gray-300 mt-6 mb-3">Subject Representatives</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
-                                <div class="flex items-center">
-                                    <img src="https://f005.backblazeb2.com/file/School-management-system/student-3.jpg" alt="Student" class="w-8 h-8 rounded-full mr-3">
-                                    <div>
-                                        <h4 class="font-medium text-gray-900 dark:text-white">David Kim</h4>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Science Representative</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
-                                <div class="flex items-center">
-                                    <img src="https://f005.backblazeb2.com/file/School-management-system/student-4.jpg" alt="Student" class="w-8 h-8 rounded-full mr-3">
-                                    <div>
-                                        <h4 class="font-medium text-gray-900 dark:text-white">Emily Johnson</h4>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Arts Representative</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
-                                <div class="flex items-center">
-                                    <img src="https://f005.backblazeb2.com/file/School-management-system/student-5.jpg" alt="Student" class="w-8 h-8 rounded-full mr-3">
-                                    <div>
-                                        <h4 class="font-medium text-gray-900 dark:text-white">James Wilson</h4>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Sports Representative</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
-                                <div class="flex items-center">
-                                    <img src="https://f005.backblazeb2.com/file/School-management-system/student-6.jpg" alt="Student" class="w-8 h-8 rounded-full mr-3">
-                                    <div>
-                                        <h4 class="font-medium text-gray-900 dark:text-white">Olivia Smith</h4>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Cultural Representative</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
             
             <!-- Classmates -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Classmates</h2>
-                    <div class="flex items-center">
-                        <div class="relative mr-2">
-                            <input type="text" placeholder="Search classmates..." class="form-input py-1 pl-8 pr-4 text-sm">
-                            <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-2 top-1/2 transform -translate-y-1/2"></i>
-                        </div>
-                        <select class="form-select py-1 text-sm">
-                            <option value="all">All Students</option>
-                            <option value="boys">Boys</option>
-                            <option value="girls">Girls</option>
-                        </select>
+                    <div class="relative">
+                        <input type="text" placeholder="Search classmates..." class="form-control pr-8">
+                        <i data-lucide="search" class="w-4 h-4 absolute right-3 top-3 text-gray-400"></i>
                     </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="intelleva-table">
-                        <thead>
-                            <tr>
-                                <th>Student ID</th>
-                                <th>Name</th>
-                                <th>Gender</th>
-                                <th>Contact</th>
-                                <th>Academic Rank</th>
-                                <th>Extracurricular</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Student 1 -->
-                            <tr>
-                                <td>STU-2025-001</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-1.jpg" alt="Student" class="h-8 w-8 rounded-full mr-2">
-                                        <div>
-                                            <div class="font-medium text-gray-900 dark:text-white">Michael Chen</div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">Class Captain</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Male</td>
-                                <td>m.chen@student.intelleva-academy.edu</td>
-                                <td>
-                                    <span class="badge badge-success">1st</span>
-                                </td>
-                                <td>Debate Club, Chess Club</td>
-                                <td>
-                                    <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300 mr-2">
-                                        <i data-lucide="message-circle" class="w-4 h-4"></i>
-                                    </button>
-                                    <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                        <i data-lucide="user" class="w-4 h-4"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            
-                            <!-- Student 2 -->
-                            <tr>
-                                <td>STU-2025-002</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-7.jpg" alt="Student" class="h-8 w-8 rounded-full mr-2">
-                                        <div>
-                                            <div class="font-medium text-gray-900 dark:text-white">John Smith</div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">Student</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Male</td>
-                                <td>j.smith@student.intelleva-academy.edu</td>
-                                <td>
-                                    <span class="badge badge-success">2nd</span>
-                                </td>
-                                <td>Basketball Team, Science Club</td>
-                                <td>
-                                    <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300 mr-2">
-                                        <i data-lucide="message-circle" class="w-4 h-4"></i>
-                                    </button>
-                                    <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                        <i data-lucide="user" class="w-4 h-4"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            
-                            <!-- Student 3 -->
-                            <tr>
-                                <td>STU-2025-015</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-2.jpg" alt="Student" class="h-8 w-8 rounded-full mr-2">
-                                        <div>
-                                            <div class="font-medium text-gray-900 dark:text-white">Sophia Rodriguez</div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">Assistant Captain</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Female</td>
-                                <td>s.rodriguez@student.intelleva-academy.edu</td>
-                                <td>
-                                    <span class="badge badge-success">3rd</span>
-                                </td>
-                                <td>Drama Club, Student Council</td>
-                                <td>
-                                    <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300 mr-2">
-                                        <i data-lucide="message-circle" class="w-4 h-4"></i>
-                                    </button>
-                                    <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                        <i data-lucide="user" class="w-4 h-4"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            
-                            <!-- Student 4 -->
-                            <tr>
-                                <td>STU-2025-008</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-8.jpg" alt="Student" class="h-8 w-8 rounded-full mr-2">
-                                        <div>
-                                            <div class="font-medium text-gray-900 dark:text-white">Emma Johnson</div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">Student</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Female</td>
-                                <td>e.johnson@student.intelleva-academy.edu</td>
-                                <td>
-                                    <span class="badge badge-info">4th</span>
-                                </td>
-                                <td>Art Club, Choir</td>
-                                <td>
-                                    <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300 mr-2">
-                                        <i data-lucide="message-circle" class="w-4 h-4"></i>
-                                    </button>
-                                    <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                        <i data-lucide="user" class="w-4 h-4"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            
-                            <!-- Student 5 (Current User) -->
-                            <tr class="bg-teal-50 dark:bg-teal-900/10">
-                                <td>STU-2025-012</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://f005.backblazeb2.com/file/School-management-system/student-9.jpg" alt="Student" class="h-8 w-8 rounded-full mr-2">
-                                        <div>
-                                            <div class="font-medium text-gray-900 dark:text-white">John Doe (You)</div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">Student</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Male</td>
-                                <td>j.doe@student.intelleva-academy.edu</td>
-                                <td>
-                                    <span class="badge badge-info">5th</span>
-                                </td>
-                                <td>Robotics Club, Math Olympiad</td>
-                                <td>
-                                    <button class="text-gray-400 dark:text-gray-500 cursor-not-allowed mr-2">
-                                        <i data-lucide="message-circle" class="w-4 h-4"></i>
-                                    </button>
-                                    <button class="text-gray-400 dark:text-gray-500 cursor-not-allowed">
-                                        <i data-lucide="user" class="w-4 h-4"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Pagination -->
-                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-4 sm:mb-0">
-                            Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">30</span> students
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Classmate 1 -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mr-4">
+                            <span class="text-lg font-semibold text-blue-600 dark:text-blue-400">JD</span>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <button class="btn-outline py-1 px-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                                Previous
-                            </button>
-                            <button class="btn-outline py-1 px-3 text-sm bg-teal-50 dark:bg-teal-900 text-teal-600 dark:text-teal-400 border-teal-500 dark:border-teal-400">
-                                1
-                            </button>
-                            <button class="btn-outline py-1 px-3 text-sm">
-                                2
-                            </button>
-                            <button class="btn-outline py-1 px-3 text-sm">
-                                3
-                            </button>
-                            <span class="text-gray-500 dark:text-gray-400">...</span>
-                            <button class="btn-outline py-1 px-3 text-sm">
-                                6
-                            </button>
-                            <button class="btn-outline py-1 px-3 text-sm">
-                                Next
-                            </button>
+                        <div>
+                            <h3 class="font-medium text-gray-800 dark:text-white">John Doe</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Student ID: S12345</p>
                         </div>
                     </div>
+                    
+                    <!-- Classmate 2 -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center mr-4">
+                            <span class="text-lg font-semibold text-pink-600 dark:text-pink-400">JS</span>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-800 dark:text-white">Jane Smith</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Student ID: S12346</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Classmate 3 -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mr-4">
+                            <span class="text-lg font-semibold text-green-600 dark:text-green-400">MJ</span>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-800 dark:text-white">Michael Johnson</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Student ID: S12347</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Classmate 4 -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mr-4">
+                            <span class="text-lg font-semibold text-purple-600 dark:text-purple-400">EW</span>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-800 dark:text-white">Emily Williams</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Student ID: S12348</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Classmate 5 -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center mr-4">
+                            <span class="text-lg font-semibold text-yellow-600 dark:text-yellow-400">DB</span>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-800 dark:text-white">David Brown</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Student ID: S12349</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Classmate 6 -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mr-4">
+                            <span class="text-lg font-semibold text-red-600 dark:text-red-400">SL</span>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-800 dark:text-white">Sarah Lee</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Student ID: S12350</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-center">
+                    <button class="btn-outline">
+                        View All Classmates
+                    </button>
                 </div>
             </div>
         </main>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<!-- Textbook Purchase Modal -->
+<div id="textbookModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Purchase Textbook</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="mb-4">
+                <h3 id="textbookTitle" class="text-lg font-semibold mb-1"></h3>
+                <p id="textbookSubject" class="text-sm text-gray-600"></p>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-4">
+                <div class="flex justify-between mb-2">
+                    <span>Price:</span>
+                    <span id="textbookPrice" class="font-semibold"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Payment Method:</span>
+                    <span>Paystack</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="deliveryOption">Delivery Option</label>
+                <select id="deliveryOption" class="form-control">
+                    <option value="school">Deliver to School</option>
+                    <option value="home">Deliver to Home Address</option>
+                    <option value="pickup">Pickup from Bookstore</option>
+                </select>
+            </div>
+            <button id="confirmPurchaseBtn" class="btn-primary w-full mt-4">Confirm Purchase</button>
+        </div>
+    </div>
+</div>
+
+<!-- Learning Material Purchase Modal -->
+<div id="materialModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Purchase Learning Material</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="mb-4">
+                <h3 id="materialName" class="text-lg font-semibold mb-1"></h3>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-4">
+                <div class="flex justify-between mb-2">
+                    <span>Price:</span>
+                    <span id="materialPrice" class="font-semibold"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Payment Method:</span>
+                    <span>Paystack</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="materialDeliveryOption">Delivery Option</label>
+                <select id="materialDeliveryOption" class="form-control">
+                    <option value="school">Deliver to School</option>
+                    <option value="home">Deliver to Home Address</option>
+                    <option value="pickup">Pickup from Store</option>
+                </select>
+            </div>
+            <button id="confirmMaterialPurchaseBtn" class="btn-primary w-full mt-4">Confirm Purchase</button>
+        </div>
+    </div>
+</div>
+
+<!-- Receipt Modal -->
+<div id="receiptModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Purchase Receipt</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body" id="receiptContent">
+            <!-- Receipt content will be loaded here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="printReceipt()">
+                <i class="icon icon-printer mr-1"></i> Print
+            </button>
+            <button class="btn-primary" onclick="downloadReceipt()">
+                <i class="icon icon-download mr-1"></i> Download
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        lucide.createIcons();
-    });
+    // Purchase textbook
+    function purchaseTextbook(studentId, subject, title, price) {
+        // Set modal content
+        document.getElementById('textbookTitle').textContent = title;
+        document.getElementById('textbookSubject').textContent = subject;
+        document.getElementById('textbookPrice').textContent = '₦' + price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        
+        // Show modal
+        const modal = document.getElementById('textbookModal');
+        modal.style.display = 'block';
+        
+        // Close modal when clicking on X
+        const closeBtn = modal.querySelector('.close');
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Handle confirm button click
+        document.getElementById('confirmPurchaseBtn').onclick = function() {
+            const deliveryOption = document.getElementById('deliveryOption').value;
+            
+            // Prepare payment data
+            const paymentData = {
+                student_id: studentId,
+                amount: price,
+                payment_type: 'textbook',
+                description: `Textbook: ${title} (${subject})`,
+                metadata: {
+                    textbook_title: title,
+                    subject: subject,
+                    delivery_option: deliveryOption
+                }
+            };
+            
+            // Close modal
+            modal.style.display = 'none';
+            
+            // Send payment request to server
+            fetch('/payment/initiate-student-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(paymentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    // Redirect to payment page
+                    window.location.href = data.data.authorization_url;
+                } else {
+                    alert('Payment initialization failed: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing your payment. Please try again.');
+            });
+        }
+    }
+    
+    // Purchase learning material
+    function purchaseLearningMaterial(studentId, materialName, price) {
+        // Set modal content
+        document.getElementById('materialName').textContent = materialName;
+        document.getElementById('materialPrice').textContent = '₦' + price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        
+        // Show modal
+        const modal = document.getElementById('materialModal');
+        modal.style.display = 'block';
+        
+        // Close modal when clicking on X
+        const closeBtn = modal.querySelector('.close');
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Handle confirm button click
+        document.getElementById('confirmMaterialPurchaseBtn').onclick = function() {
+            const deliveryOption = document.getElementById('materialDeliveryOption').value;
+            
+            // Prepare payment data
+            const paymentData = {
+                student_id: studentId,
+                amount: price,
+                payment_type: 'learning_material',
+                description: `Learning Material: ${materialName}`,
+                metadata: {
+                    material_name: materialName,
+                    delivery_option: deliveryOption
+                }
+            };
+            
+            // Close modal
+            modal.style.display = 'none';
+            
+            // Send payment request to server
+            fetch('/payment/initiate-student-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(paymentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    // Redirect to payment page
+                    window.location.href = data.data.authorization_url;
+                } else {
+                    alert('Payment initialization failed: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing your payment. Please try again.');
+            });
+        }
+    }
+    
+    // View textbook receipt
+    function viewTextbookReceipt(subject) {
+        // In a real implementation, this would fetch the receipt from the server
+        // For now, we'll just show a sample receipt
+        
+        const receiptHTML = `
+            <div class="p-4">
+                <div class="text-center mb-4">
+                    <h3 class="text-xl font-bold">Intelleva School</h3>
+                    <p>Textbook Purchase Receipt</p>
+                </div>
+                
+                <div class="border-t border-b border-gray-200 dark:border-gray-700 py-4 mb-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-medium">Subject:</span>
+                        <span>${subject}</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="font-medium">Purchase Date:</span>
+                        <span>Feb 5, 2025</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="font-medium">Transaction ID:</span>
+                        <span>TXN-${Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="font-medium">Payment Method:</span>
+                        <span>Paystack</span>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex justify-between font-bold">
+                        <span>Total Amount:</span>
+                        <span>₦4,200.00</span>
+                    </div>
+                </div>
+                
+                <div class="text-center text-sm text-gray-500 mt-6">
+                    <p>Thank you for your purchase!</p>
+                    <p>For any questions, please contact the school administration.</p>
+                </div>
+            </div>
+        `;
+        
+        // Set receipt content
+        document.getElementById('receiptContent').innerHTML = receiptHTML;
+        
+        // Show modal
+        const modal = document.getElementById('receiptModal');
+        modal.style.display = 'block';
+        
+        // Close modal when clicking on X
+        const closeBtn = modal.querySelector('.close');
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    }
+    
+    // Print receipt
+    function printReceipt() {
+        const printContents = document.getElementById('receiptContent').innerHTML;
+        const originalContents = document.body.innerHTML;
+        
+        document.body.innerHTML = `
+            <div style="padding: 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1>Intelleva School Management System</h1>
+                    <h2>Textbook Purchase Receipt</h2>
+                </div>
+                ${printContents}
+            </div>
+        `;
+        
+        window.print();
+        document.body.innerHTML = originalContents;
+        
+        // Reattach event listeners
+        attachEventListeners();
+    }
+    
+    // Download receipt
+    function downloadReceipt() {
+        // Implementation would depend on server-side functionality
+        alert('Receipt download functionality will be implemented on the server side.');
+    }
+    
+    // Attach all event listeners
+    function attachEventListeners() {
+        // Re-attach event listeners for modals
+        const modals = document.querySelectorAll('.modal');
+        const closeBtns = document.querySelectorAll('.close');
+        
+        for (let i = 0; i < closeBtns.length; i++) {
+            closeBtns[i].onclick = function() {
+                modals[i].style.display = 'none';
+            }
+        }
+        
+        window.onclick = function(event) {
+            for (let i = 0; i < modals.length; i++) {
+                if (event.target == modals[i]) {
+                    modals[i].style.display = 'none';
+                }
+            }
+        }
+    }
 </script>
 {% endblock %}

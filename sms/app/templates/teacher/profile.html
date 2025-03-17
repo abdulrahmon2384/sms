@@ -121,6 +121,158 @@
                 </div>
             </div>
             
+            <!-- Salary & Financial Information -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Salary & Financial Information</h2>
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    {{ stat_card('credit-card', 'Current Salary', '₦' + '{:,.2f}'.format(current_salary|default(150000, true)), 'Monthly', 'neutral') }}
+                    {{ stat_card('calendar', 'Next Payment', next_payment_date|default('Mar 28, 2025', true), 'In ' + days_until_payment|default(11, true)|string + ' days', 'neutral') }}
+                    {{ stat_card('trending-up', 'YTD Earnings', '₦' + '{:,.2f}'.format(ytd_earnings|default(450000, true)), 'Jan - Mar 2025', 'positive') }}
+                    {{ stat_card('percent', 'Tax Rate', tax_rate|default(20, true)|string + '%', 'Current fiscal year', 'neutral') }}
+                </div>
+                
+                <!-- Salary Breakdown -->
+                <div class="mb-6">
+                    <h3 class="text-md font-semibold text-gray-800 dark:text-white mb-3">Current Salary Breakdown</h3>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600 dark:text-gray-400">Base Salary:</span>
+                                    <span class="text-gray-800 dark:text-white font-medium">₦{{ '{:,.2f}'.format(base_salary|default(120000, true)) }}</span>
+                                </div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600 dark:text-gray-400">Teaching Allowance:</span>
+                                    <span class="text-gray-800 dark:text-white font-medium">₦{{ '{:,.2f}'.format(teaching_allowance|default(15000, true)) }}</span>
+                                </div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600 dark:text-gray-400">Transport Allowance:</span>
+                                    <span class="text-gray-800 dark:text-white font-medium">₦{{ '{:,.2f}'.format(transport_allowance|default(10000, true)) }}</span>
+                                </div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600 dark:text-gray-400">Housing Allowance:</span>
+                                    <span class="text-gray-800 dark:text-white font-medium">₦{{ '{:,.2f}'.format(housing_allowance|default(20000, true)) }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600 dark:text-gray-400">Tax Deduction:</span>
+                                    <span class="text-red-500 dark:text-red-400">-₦{{ '{:,.2f}'.format(tax_deduction|default(30000, true)) }}</span>
+                                </div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600 dark:text-gray-400">Pension Contribution:</span>
+                                    <span class="text-red-500 dark:text-red-400">-₦{{ '{:,.2f}'.format(pension_contribution|default(7500, true)) }}</span>
+                                </div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600 dark:text-gray-400">Health Insurance:</span>
+                                    <span class="text-red-500 dark:text-red-400">-₦{{ '{:,.2f}'.format(health_insurance|default(5000, true)) }}</span>
+                                </div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600 dark:text-gray-400">Other Deductions:</span>
+                                    <span class="text-red-500 dark:text-red-400">-₦{{ '{:,.2f}'.format(other_deductions|default(2500, true)) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                            <div class="flex justify-between">
+                                <span class="text-gray-800 dark:text-white font-semibold">Net Salary:</span>
+                                <span class="text-gray-800 dark:text-white font-semibold">₦{{ '{:,.2f}'.format(net_salary|default(120000, true)) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bank Account Information -->
+                <div class="mb-6">
+                    <h3 class="text-md font-semibold text-gray-800 dark:text-white mb-3">Bank Account Information</h3>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Account Name:</p>
+                                <p class="text-gray-800 dark:text-white font-medium mb-3">{{ account_name|default('Robert Johnson', true) }}</p>
+                                
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Bank Name:</p>
+                                <p class="text-gray-800 dark:text-white font-medium mb-3">{{ bank_name|default('First National Bank', true) }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Account Number:</p>
+                                <p class="text-gray-800 dark:text-white font-medium mb-3">{{ account_number|default('1234567890', true) }}</p>
+                                
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Account Type:</p>
+                                <p class="text-gray-800 dark:text-white font-medium mb-3">{{ account_type|default('Savings', true) }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <button class="btn-outline py-2 px-4" data-toggle="modal" data-target="#updateBankModal">
+                                <i data-lucide="edit" class="w-4 h-4 mr-2"></i>
+                                Update Bank Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment History -->
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-md font-semibold text-gray-800 dark:text-white">Payment History</h3>
+                        <div>
+                            <button class="btn-sm btn-outline" onclick="downloadPaymentHistory()">
+                                <i class="icon icon-download mr-1"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="intelleva-table">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Payment Date</th>
+                                    <th>Gross Amount</th>
+                                    <th>Deductions</th>
+                                    <th>Net Amount</th>
+                                    <th>Status</th>
+                                    <th>Payslip</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payment_history|default([
+                                    {'month': 'March 2025', 'payment_date': 'Mar 28, 2025', 'gross_amount': 165000, 'deductions': 45000, 'net_amount': 120000, 'status': 'pending', 'reference': 'SAL-MAR2025'},
+                                    {'month': 'February 2025', 'payment_date': 'Feb 28, 2025', 'gross_amount': 165000, 'deductions': 45000, 'net_amount': 120000, 'status': 'paid', 'reference': 'SAL-FEB2025'},
+                                    {'month': 'January 2025', 'payment_date': 'Jan 28, 2025', 'gross_amount': 165000, 'deductions': 45000, 'net_amount': 120000, 'status': 'paid', 'reference': 'SAL-JAN2025'},
+                                    {'month': 'December 2024', 'payment_date': 'Dec 28, 2024', 'gross_amount': 165000, 'deductions': 45000, 'net_amount': 120000, 'status': 'paid', 'reference': 'SAL-DEC2024'},
+                                    {'month': 'November 2024', 'payment_date': 'Nov 28, 2024', 'gross_amount': 165000, 'deductions': 45000, 'net_amount': 120000, 'status': 'paid', 'reference': 'SAL-NOV2024'},
+                                    {'month': 'October 2024', 'payment_date': 'Oct 28, 2024', 'gross_amount': 165000, 'deductions': 45000, 'net_amount': 120000, 'status': 'paid', 'reference': 'SAL-OCT2024'}
+                                ], true) %}
+                                <tr>
+                                    <td>{{ payment.month }}</td>
+                                    <td>{{ payment.payment_date }}</td>
+                                    <td>₦{{ '{:,.2f}'.format(payment.gross_amount) }}</td>
+                                    <td>₦{{ '{:,.2f}'.format(payment.deductions) }}</td>
+                                    <td>₦{{ '{:,.2f}'.format(payment.net_amount) }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ 'success' if payment.status == 'paid' else 'warning' }}">
+                                            {{ payment.status|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if payment.status == 'paid' %}
+                                        <button class="btn-sm btn-outline" onclick="viewPayslip('{{ payment.reference }}')">
+                                            <i class="icon icon-file-text mr-1"></i> View
+                                        </button>
+                                        {% else %}
+                                        <span class="text-sm text-gray-500">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Professional Information -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <!-- Qualifications and Skills -->
@@ -167,7 +319,7 @@
                                     <i data-lucide="award" class="w-5 h-5 text-gray-500 dark:text-gray-400 mr-2 mt-0.5"></i>
                                     <div>
                                         <p class="text-gray-700 dark:text-gray-300">STEM Education Specialist</p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">American Association of STEM Educators, 2018</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">American Association for the Advancement of Science, 2018</p>
                                     </div>
                                 </li>
                             </ul>
@@ -175,336 +327,487 @@
                         
                         <div>
                             <h3 class="text-md font-medium text-gray-800 dark:text-white">Skills</h3>
-                            <div class="mt-2 flex flex-wrap gap-2">
-                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Advanced Mathematics</span>
-                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Calculus</span>
-                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Statistics</span>
-                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Algebra</span>
-                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Curriculum Development</span>
-                                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">Educational Technology</span>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <span class="badge badge-neutral">Advanced Mathematics</span>
+                                <span class="badge badge-neutral">Calculus</span>
+                                <span class="badge badge-neutral">Statistics</span>
+                                <span class="badge badge-neutral">Algebra</span>
+                                <span class="badge badge-neutral">Curriculum Development</span>
+                                <span class="badge badge-neutral">Student Assessment</span>
+                                <span class="badge badge-neutral">Educational Technology</span>
+                                <span class="badge badge-neutral">Python Programming</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Teaching Information -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 lg:col-span-2">
-                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Teaching Information</h2>
-                    <form id="teachingInfoForm">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="form-group">
-                                <label for="employeeId">Employee ID</label>
-                                <input type="text" id="employeeId" name="employeeId" class="form-input" value="TCH-2025-042" readonly>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="department">Department</label>
-                                <select id="department" name="department" class="form-select">
-                                    <option value="mathematics" selected>Mathematics</option>
-                                    <option value="science">Science</option>
-                                    <option value="english">English</option>
-                                    <option value="history">History</option>
-                                    <option value="arts">Arts</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="position">Position</label>
-                                <select id="position" name="position" class="form-select">
-                                    <option value="teacher" selected>Teacher</option>
-                                    <option value="head-teacher">Head Teacher</option>
-                                    <option value="department-head">Department Head</option>
-                                    <option value="coordinator">Coordinator</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="joiningDate">Joining Date</label>
-                                <input type="date" id="joiningDate" name="joiningDate" class="form-input" value="2020-09-01" readonly>
-                            </div>
-                            
-                            <div class="form-group md:col-span-2">
-                                <label>Assigned Classes</label>
-                                <div class="mt-2 space-y-2">
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="class10A" name="assignedClasses" value="10A" class="form-checkbox" checked>
-                                        <label for="class10A" class="ml-2">Grade 10-A (Mathematics)</label>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="class11B" name="assignedClasses" value="11B" class="form-checkbox" checked>
-                                        <label for="class11B" class="ml-2">Grade 11-B (Mathematics)</label>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="class9A" name="assignedClasses" value="9A" class="form-checkbox" checked>
-                                        <label for="class9A" class="ml-2">Grade 9-A (Mathematics)</label>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="class12A" name="assignedClasses" value="12A" class="form-checkbox">
-                                        <label for="class12A" class="ml-2">Grade 12-A (Mathematics)</label>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Note: Class assignments can only be modified by administrators</p>
-                            </div>
-                            
-                            <div class="form-group md:col-span-2">
-                                <label for="bio">Professional Bio</label>
-                                <textarea id="bio" name="bio" rows="4" class="form-input">Experienced mathematics teacher with over 10 years of teaching experience. Specializes in advanced mathematics, calculus, and statistics. Passionate about making complex mathematical concepts accessible to students of all learning styles and abilities.</textarea>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-6 flex justify-end">
-                            <button type="button" class="btn-outline py-2 px-4 mr-2">Cancel</button>
-                            <button type="submit" class="btn-primary py-2 px-4">Save Changes</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            <!-- Schedule and Preferences -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <!-- Weekly Schedule -->
+                <!-- Teaching Experience -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Weekly Schedule</h2>
-                        <span class="text-sm text-gray-500 dark:text-gray-400">Current Term</span>
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Teaching Experience</h2>
+                        <button class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+                            <i data-lucide="edit" class="w-4 h-4"></i>
+                        </button>
                     </div>
                     
-                    <div class="overflow-x-auto">
-                        <table class="intelleva-table">
-                            <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Monday</th>
-                                    <th>Tuesday</th>
-                                    <th>Wednesday</th>
-                                    <th>Thursday</th>
-                                    <th>Friday</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="font-medium">8:00 - 9:30</td>
-                                    <td class="bg-teal-50 dark:bg-teal-900/20">Grade 10-A</td>
-                                    <td>-</td>
-                                    <td class="bg-teal-50 dark:bg-teal-900/20">Grade 10-A</td>
-                                    <td>-</td>
-                                    <td class="bg-teal-50 dark:bg-teal-900/20">Grade 10-A</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-medium">9:45 - 11:15</td>
-                                    <td>-</td>
-                                    <td class="bg-blue-50 dark:bg-blue-900/20">Grade 11-B</td>
-                                    <td>-</td>
-                                    <td class="bg-blue-50 dark:bg-blue-900/20">Grade 11-B</td>
-                                    <td>-</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-medium">11:30 - 1:00</td>
-                                    <td class="bg-purple-50 dark:bg-purple-900/20">Grade 9-A</td>
-                                    <td>-</td>
-                                    <td class="bg-purple-50 dark:bg-purple-900/20">Grade 9-A</td>
-                                    <td>-</td>
-                                    <td class="bg-purple-50 dark:bg-purple-900/20">Grade 9-A</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-medium">2:00 - 3:30</td>
-                                    <td class="bg-gray-50 dark:bg-gray-700">Office Hours</td>
-                                    <td class="bg-gray-50 dark:bg-gray-700">Office Hours</td>
-                                    <td>-</td>
-                                    <td class="bg-gray-50 dark:bg-gray-700">Office Hours</td>
-                                    <td>-</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                        <p>Note: Schedule is set by administration and may change based on school requirements.</p>
+                    <div class="space-y-4">
+                        <div class="border-l-2 border-teal-500 pl-4 py-1">
+                            <h3 class="text-md font-medium text-gray-800 dark:text-white">Mathematics Teacher</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Intelleva Academy | 2020 - Present</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                                Teaching advanced mathematics to high school students, developing curriculum, and mentoring junior teachers.
+                            </p>
+                        </div>
+                        
+                        <div class="border-l-2 border-gray-300 dark:border-gray-600 pl-4 py-1">
+                            <h3 class="text-md font-medium text-gray-800 dark:text-white">Senior Mathematics Teacher</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Westview High School | 2015 - 2020</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                                Led the mathematics department, implemented new teaching methodologies, and improved student performance by 25%.
+                            </p>
+                        </div>
+                        
+                        <div class="border-l-2 border-gray-300 dark:border-gray-600 pl-4 py-1">
+                            <h3 class="text-md font-medium text-gray-800 dark:text-white">Mathematics Teacher</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Eastside Academy | 2010 - 2015</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                                Taught algebra, geometry, and calculus to high school students. Developed after-school tutoring program.
+                            </p>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Notification Preferences -->
+                <!-- Performance & Achievements -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Notification Preferences</h2>
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Performance & Achievements</h2>
                     
                     <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="font-medium text-gray-700 dark:text-gray-300">Email Notifications</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Receive notifications via email</p>
+                        <div>
+                            <h3 class="text-md font-medium text-gray-800 dark:text-white">Current Performance Rating</h3>
+                            <div class="mt-2">
+                                <div class="flex items-center mb-1">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">Overall:</span>
+                                    <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-teal-500 to-green-500" style="width: 92%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-2">92%</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 mt-3">
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>Teaching Quality</span>
+                                            <span>95%</span>
+                                        </div>
+                                        <div class="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-teal-500" style="width: 95%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>Student Engagement</span>
+                                            <span>90%</span>
+                                        </div>
+                                        <div class="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-teal-500" style="width: 90%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>Curriculum Development</span>
+                                            <span>88%</span>
+                                        </div>
+                                        <div class="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-teal-500" style="width: 88%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>Professional Conduct</span>
+                                            <span>98%</span>
+                                        </div>
+                                        <div class="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-teal-500" style="width: 98%"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider round"></span>
-                            </label>
                         </div>
                         
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="font-medium text-gray-700 dark:text-gray-300">SMS Notifications</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Receive notifications via SMS</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox">
-                                <span class="slider round"></span>
-                            </label>
+                        <div>
+                            <h3 class="text-md font-medium text-gray-800 dark:text-white">Recent Achievements</h3>
+                            <ul class="mt-2 space-y-2">
+                                <li class="flex items-start">
+                                    <i data-lucide="trophy" class="w-5 h-5 text-yellow-500 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-700 dark:text-gray-300">Teacher of the Year</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Intelleva Academy, 2024</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="award" class="w-5 h-5 text-teal-500 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-700 dark:text-gray-300">Excellence in STEM Education</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">State Education Board, 2023</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="users" class="w-5 h-5 text-blue-500 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-700 dark:text-gray-300">Mentorship Program Leader</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Guided 5 new teachers, 2022-2024</p>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="font-medium text-gray-700 dark:text-gray-300">System Notifications</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Receive in-app notifications</p>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
-                        
-                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Notification Types</h3>
-                            
-                            <div class="space-y-2">
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="notif_announcements" class="form-checkbox" checked>
-                                    <label for="notif_announcements" class="ml-2">School Announcements</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="notif_attendance" class="form-checkbox" checked>
-                                    <label for="notif_attendance" class="ml-2">Attendance Updates</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="notif_grades" class="form-checkbox" checked>
-                                    <label for="notif_grades" class="ml-2">Grade Submissions</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="notif_messages" class="form-checkbox" checked>
-                                    <label for="notif_messages" class="ml-2">Messages from Students/Parents</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="notif_events" class="form-checkbox" checked>
-                                    <label for="notif_events" class="ml-2">School Events</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6 flex justify-end">
-                        <button class="btn-primary py-2 px-4">Save Preferences</button>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+<!-- Update Bank Details Modal -->
+<div id="updateBankModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Update Bank Details</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="bankDetailsForm">
+                <div class="form-group">
+                    <label for="bankName">Bank Name</label>
+                    <input type="text" id="bankName" name="bankName" class="form-control" value="{{ bank_name|default('First National Bank', true) }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="accountName">Account Name</label>
+                    <input type="text" id="accountName" name="accountName" class="form-control" value="{{ account_name|default('Robert Johnson', true) }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="accountNumber">Account Number</label>
+                    <input type="text" id="accountNumber" name="accountNumber" class="form-control" value="{{ account_number|default('1234567890', true) }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="accountType">Account Type</label>
+                    <select id="accountType" name="accountType" class="form-control" required>
+                        <option value="savings" {{ 'selected' if account_type|default('Savings', true) == 'Savings' else '' }}>Savings</option>
+                        <option value="checking" {{ 'selected' if account_type|default('Savings', true) == 'Checking' else '' }}>Checking</option>
+                        <option value="current" {{ 'selected' if account_type|default('Savings', true) == 'Current' else '' }}>Current</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary w-full mt-4">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Payslip Modal -->
+<div id="payslipModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Salary Payslip</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body" id="payslipContent">
+            <!-- Payslip content will be loaded here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="printPayslip()">
+                <i class="icon icon-printer mr-1"></i> Print
+            </button>
+            <button class="btn-primary" onclick="downloadPayslip()">
+                <i class="icon icon-download mr-1"></i> Download
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        lucide.createIcons();
+    // View payslip
+    function viewPayslip(reference) {
+        // In a real implementation, this would fetch the payslip from the server
+        // For now, we'll just show a sample payslip
         
-        // Profile image upload preview
-        const profileImageInput = document.getElementById('profileImage');
-        const profileImagePreview = document.getElementById('profileImagePreview');
+        const payslipHTML = `
+            <div class="p-4">
+                <div class="text-center mb-4">
+                    <h3 class="text-xl font-bold">Intelleva School</h3>
+                    <p>Salary Payslip</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Employee Name:</p>
+                        <p class="font-medium">Robert Johnson</p>
+                        
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1 mt-3">Employee ID:</p>
+                        <p class="font-medium">T12345</p>
+                        
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1 mt-3">Department:</p>
+                        <p class="font-medium">Mathematics</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Pay Period:</p>
+                        <p class="font-medium">February 2025</p>
+                        
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1 mt-3">Payment Date:</p>
+                        <p class="font-medium">February 28, 2025</p>
+                        
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1 mt-3">Reference:</p>
+                        <p class="font-medium">${reference}</p>
+                    </div>
+                </div>
+                
+                <div class="border-t border-b border-gray-200 dark:border-gray-700 py-4 mb-4">
+                    <h4 class="font-semibold mb-3">Earnings</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>Base Salary</span>
+                            <span>₦120,000.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Teaching Allowance</span>
+                            <span>₦15,000.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Transport Allowance</span>
+                            <span>₦10,000.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Housing Allowance</span>
+                            <span>₦20,000.00</span>
+                        </div>
+                        <div class="flex justify-between font-semibold">
+                            <span>Total Earnings</span>
+                            <span>₦165,000.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="border-b border-gray-200 dark:border-gray-700 py-4 mb-4">
+                    <h4 class="font-semibold mb-3">Deductions</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>Tax</span>
+                            <span>₦30,000.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Pension Contribution</span>
+                            <span>₦7,500.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Health Insurance</span>
+                            <span>₦5,000.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Other Deductions</span>
+                            <span>₦2,500.00</span>
+                        </div>
+                        <div class="flex justify-between font-semibold">
+                            <span>Total Deductions</span>
+                            <span>₦45,000.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex justify-between font-bold text-lg">
+                        <span>Net Pay</span>
+                        <span>₦120,000.00</span>
+                    </div>
+                </div>
+                
+                <div class="text-center text-sm text-gray-500 mt-6">
+                    <p>This is a computer-generated document and does not require a signature.</p>
+                    <p>For any queries regarding this payslip, please contact the HR department.</p>
+                </div>
+            </div>
+        `;
         
-        if (profileImageInput && profileImagePreview) {
-            profileImageInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        profileImagePreview.src = e.target.result;
-                    }
-                    
-                    reader.readAsDataURL(this.files[0]);
+        // Set payslip content
+        document.getElementById('payslipContent').innerHTML = payslipHTML;
+        
+        // Show modal
+        const modal = document.getElementById('payslipModal');
+        modal.style.display = 'block';
+        
+        // Close modal when clicking on X
+        const closeBtn = modal.querySelector('.close');
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    }
+    
+    // Print payslip
+    function printPayslip() {
+        const printContents = document.getElementById('payslipContent').innerHTML;
+        const originalContents = document.body.innerHTML;
+        
+        document.body.innerHTML = `
+            <div style="padding: 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1>Intelleva School Management System</h1>
+                    <h2>Salary Payslip</h2>
+                </div>
+                ${printContents}
+            </div>
+        `;
+        
+        window.print();
+        document.body.innerHTML = originalContents;
+        
+        // Reattach event listeners
+        attachEventListeners();
+    }
+    
+    // Download payslip
+    function downloadPayslip() {
+        // Implementation would depend on server-side functionality
+        alert('Payslip download functionality will be implemented on the server side.');
+    }
+    
+    // Download payment history
+    function downloadPaymentHistory() {
+        // Implementation would depend on server-side functionality
+        alert('Payment history download functionality will be implemented on the server side.');
+    }
+    
+    // Handle bank details form submission
+    document.getElementById('bankDetailsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const bankData = {
+            bank_name: document.getElementById('bankName').value,
+            account_name: document.getElementById('accountName').value,
+            account_number: document.getElementById('accountNumber').value,
+            account_type: document.getElementById('accountType').value
+        };
+        
+        // Send bank details update request to server
+        fetch('/teacher/update-bank-details', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bankData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status) {
+                // Close modal
+                document.getElementById('updateBankModal').style.display = 'none';
+                
+                // Show success message
+                alert('Bank details updated successfully!');
+                
+                // Reload page to reflect changes
+                window.location.reload();
+            } else {
+                alert('Failed to update bank details: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating bank details. Please try again.');
+        });
+    });
+    
+    // Attach all event listeners
+    function attachEventListeners() {
+        // Re-attach event listeners for modals
+        const modals = document.querySelectorAll('.modal');
+        const closeBtns = document.querySelectorAll('.close');
+        
+        for (let i = 0; i < closeBtns.length; i++) {
+            closeBtns[i].onclick = function() {
+                modals[i].style.display = 'none';
+            }
+        }
+        
+        window.onclick = function(event) {
+            for (let i = 0; i < modals.length; i++) {
+                if (event.target == modals[i]) {
+                    modals[i].style.display = 'none';
                 }
-            });
+            }
         }
         
-        // Form submission handlers
-        const personalInfoForm = document.getElementById('personalInfoForm');
-        const teachingInfoForm = document.getElementById('teachingInfoForm');
-        
-        if (personalInfoForm) {
-            personalInfoForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                // In a real implementation, this would submit the form data to the server
-                console.log('Personal info form submitted');
-                
-                // Show success message
-                alert('Personal information updated successfully!');
+        // Re-attach form submission handler
+        document.getElementById('bankDetailsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const bankData = {
+                bank_name: document.getElementById('bankName').value,
+                account_name: document.getElementById('accountName').value,
+                account_number: document.getElementById('accountNumber').value,
+                account_type: document.getElementById('accountType').value
+            };
+            
+            // Send bank details update request to server
+            fetch('/teacher/update-bank-details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bankData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    // Close modal
+                    document.getElementById('updateBankModal').style.display = 'none';
+                    
+                    // Show success message
+                    alert('Bank details updated successfully!');
+                    
+                    // Reload page to reflect changes
+                    window.location.reload();
+                } else {
+                    alert('Failed to update bank details: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating bank details. Please try again.');
             });
-        }
-        
-        if (teachingInfoForm) {
-            teachingInfoForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                // In a real implementation, this would submit the form data to the server
-                console.log('Teaching info form submitted');
-                
-                // Show success message
-                alert('Teaching information updated successfully!');
-            });
+        });
+    }
+    
+    // Initialize profile image preview
+    document.getElementById('profileImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profileImagePreview').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
         }
     });
+    
+    // Initialize modals
+    const modals = document.querySelectorAll('.modal');
+    const closeBtns = document.querySelectorAll('.close');
+    
+    for (let i = 0; i < closeBtns.length; i++) {
+        closeBtns[i].onclick = function() {
+            modals[i].style.display = 'none';
+        }
+    }
+    
+    window.onclick = function(event) {
+        for (let i = 0; i < modals.length; i++) {
+            if (event.target == modals[i]) {
+                modals[i].style.display = 'none';
+            }
+        }
+    }
 </script>
-<style>
-    /* Custom switch styling */
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 50px;
-        height: 24px;
-    }
-    
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-    
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: .4s;
-    }
-    
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 16px;
-        width: 16px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: .4s;
-    }
-    
-    input:checked + .slider {
-        background-color: #14b8a6;
-    }
-    
-    input:focus + .slider {
-        box-shadow: 0 0 1px #14b8a6;
-    }
-    
-    input:checked + .slider:before {
-        transform: translateX(26px);
-    }
-    
-    .slider.round {
-        border-radius: 24px;
-    }
-    
-    .slider.round:before {
-        border-radius: 50%;
-    }
-</style>
 {% endblock %}

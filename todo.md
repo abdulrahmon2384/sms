@@ -54,21 +54,29 @@
 - [x] Implement role-based access control
 - [x] Create API documentation
 
-## 6. Integrate Database with Supabase
-- [ ] Set up Supabase connection
+## 6. Integrate Database with AivenCloud PostgreSQL
+- [ ] Verify existing AivenCloud PostgreSQL connection
+- [ ] Delete all existing data in the database
 - [ ] Implement shared schema approach
 - [ ] Create database migrations
 - [ ] Implement data validation
 - [ ] Set up backup and recovery procedures
 
-## 7. Implement Payment System with Paystack
+## 7. Create Encrypted Fake Dataset
+- [ ] Design data structure for schools, admins, teachers, and students
+- [ ] Generate fake data using Faker library
+- [ ] Implement encryption for sensitive data using Fernet
+- [ ] Create relationships between different data entities
+- [ ] Save encrypted dataset to AivenCloud database
+
+## 8. Implement Payment System with Paystack
 - [ ] Integrate Paystack API
 - [ ] Create payment processing workflows
 - [ ] Implement demo mode for development
 - [ ] Design payment pages and forms
 - [ ] Add payment tracking and reporting
 
-## 8. Test and Optimize System
+## 9. Test and Optimize System
 - [ ] Perform unit testing
 - [ ] Conduct integration testing
 - [ ] Optimize performance
